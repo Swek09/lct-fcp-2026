@@ -108,8 +108,7 @@ export function CandidateProfile() {
       ) : (
         q.data && (
           <div className="profile-layout">
-            <section>
-              <EvidencePassport />
+            <section className="profile-main">
               <div className="profile-summary">
                 <span className="avatar large">{initials(q.data.name)}</span>
                 <div>
@@ -122,6 +121,7 @@ export function CandidateProfile() {
                   </span>
                 </div>
               </div>
+              <EvidencePassport />
               <form className="form-stack" onSubmit={submit}>
                 <div className="section-heading">
                   <h2>О вас</h2>

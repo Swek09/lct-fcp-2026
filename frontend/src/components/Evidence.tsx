@@ -70,18 +70,25 @@ export function EvidencePassport({ candidateId }: { candidateId?: string }) {
               </p>
             )}
             {q.data.grade && (
-              <div className="passport-footer">
-                <span>
-                  Результат <strong>{q.data.score}/100</strong>
-                </span>
-                <span>
-                  {q.data.last_practice_at
-                    ? `Практика ${date(q.data.last_practice_at)}`
-                    : "Практика ещё не подтверждена"}
-                </span>
-              </div>
+              <dl className="passport-footer">
+                <div>
+                  <dt>Результат теста</dt>
+                  <dd className="passport-score">
+                    {q.data.score}
+                    <span>/100</span>
+                  </dd>
+                </div>
+                <div>
+                  <dt>Практика от работодателя</dt>
+                  <dd>
+                    {q.data.last_practice_at
+                      ? date(q.data.last_practice_at)
+                      : "Ещё не подтверждена"}
+                  </dd>
+                </div>
+              </dl>
             )}
-            <small>
+            <small className="passport-note">
               Тест подтверждает специализацию и грейд. Перечень технологий и
               стаж указаны в резюме кандидата.
             </small>
