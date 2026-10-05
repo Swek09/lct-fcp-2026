@@ -35,6 +35,11 @@ import { Select } from "../components/ui/select";
 import { EvidencePassport, MatchBreakdown } from "../components/Evidence";
 import { SaveCandidate } from "../components/SaveCandidate";
 import {
+  CompareCandidate,
+  comparisonQuery,
+  useComparison,
+} from "../components/Comparison";
+import {
   Empty,
   ErrorBox,
   Field,
@@ -68,7 +73,11 @@ export function SearchPage({ saved = false }: { saved?: boolean }) {
   }>();
   const [previewError, setPreviewError] = useState<unknown>();
   const [previewBusy, setPreviewBusy] = useState(false);
-  const [selected, setSelected] = useState<string[]>([]);
+  const comparison = useComparison();
+  const contextQuery = comparisonQuery(params);
+  useEffect(() => {
+    comparison.setContext(contextQuery, returnPath);
+  }, [comparison.setContext, contextQuery, returnPath]);
   const previewTest = async () => {
     setPreviewBusy(true);
     setPreviewError(undefined);
@@ -231,26 +240,6 @@ export function SearchPage({ saved = false }: { saved?: boolean }) {
           {w}
         </p>
       ))}
-      {selected.length > 0 && (
-        <div className="comparison-bar" role="status">
-          <span>Выбрано {selected.length} из 3 для сравнения</span>
-          <Button asChild size="sm" disabled={selected.length < 2}>
-            <Link
-              aria-disabled={selected.length < 2}
-              onClick={(e) => {
-                if (selected.length < 2) e.preventDefault();
-              }}
-              to={`/compare?${new URLSearchParams({ ids: selected.join(","), need: params.get("need") || "", skills: params.get("skills") || "" })}`}
-            >
-              Сравнить
-              <ArrowRight size={16} />
-            </Link>
-          </Button>
-          <button className="text-link" onClick={() => setSelected([])}>
-            Снять выбор
-          </button>
-        </div>
-      )}
       <div className="results-heading">
         <h2>
           {q.data ? (
@@ -263,6 +252,7 @@ export function SearchPage({ saved = false }: { saved?: boolean }) {
         </h2>
         <div>
           {q.isFetching && <span>Обновляем…</span>}
+          <span className="comparison-hint">Выберите 2–3 для сравнения</span>
           <span>По соответствию запросу</span>
         </div>
       </div>
@@ -304,29 +294,17 @@ export function SearchPage({ saved = false }: { saved?: boolean }) {
           }
         >
           {q.data.candidates.map((c) => (
-            <article className="candidate-row" key={c.user_id}>
-              <div className="candidate-toolbar">
-                <label className="check">
-                  <input
-                    type="checkbox"
-                    checked={selected.includes(c.user_id)}
-                    disabled={
-                      !selected.includes(c.user_id) && selected.length >= 3
-                    }
-                    onChange={(e) =>
-                      setSelected(
-                        e.target.checked
-                          ? [...selected, c.user_id]
-                          : selected.filter((v) => v !== c.user_id),
-                      )
-                    }
-                  />
-                  <span>
-                    Сравнить <span className="sr-only">{c.name}</span>
-                  </span>
-                </label>
-                <SaveCandidate id={c.user_id} />
-              </div>
+            <article
+              className={
+                "candidate-row " +
+                (comparison.candidates.some(
+                  (item) => item.user_id === c.user_id,
+                )
+                  ? "is-compared"
+                  : "")
+              }
+              key={c.user_id}
+            >
               <div className="candidate-main">
                 <span className="avatar">{initials(c.name)}</span>
                 <div className="candidate-info">
@@ -355,38 +333,48 @@ export function SearchPage({ saved = false }: { saved?: boolean }) {
                     ))}
                   </div>
                 </div>
-                <div className="candidate-evidence">
-                  <span>
-                    <ShieldCheck size={17} />
-                    Тест <strong>{c.test_score}/100</strong>
-                  </span>
-                  {c.last_practice_at && (
-                    <span className="practice-date">
-                      Практика: {date(c.last_practice_at)}
-                    </span>
-                  )}
-                  {c.achievements.length > 0 ? (
+                <div className="candidate-decision">
+                  <div className="candidate-evidence">
                     <span>
-                      <Trophy size={16} />
-                      {c.achievements.length}{" "}
-                      {plural(c.achievements.length, [
-                        "достижение",
-                        "достижения",
-                        "достижений",
-                      ])}{" "}
-                      ФСП
+                      <ShieldCheck size={17} />
+                      Тест <strong>{c.test_score}/100</strong>
                     </span>
-                  ) : (
-                    <span className="muted">Без истории ФСП</span>
-                  )}
-                  <Link
-                    className="text-link"
-                    to={"/candidates/" + c.user_id + "?" + params}
-                    state={{ returnTo: returnPath }}
-                  >
-                    Открыть профиль
-                    <ArrowRight size={16} />
-                  </Link>
+                    {c.last_practice_at && (
+                      <span className="practice-date">
+                        Практика: {date(c.last_practice_at)}
+                      </span>
+                    )}
+                    {c.achievements.length > 0 ? (
+                      <span>
+                        <Trophy size={16} />
+                        {c.achievements.length}{" "}
+                        {plural(c.achievements.length, [
+                          "достижение",
+                          "достижения",
+                          "достижений",
+                        ])}{" "}
+                        ФСП
+                      </span>
+                    ) : (
+                      <span className="muted">Без истории ФСП</span>
+                    )}
+                    <Link
+                      className="text-link"
+                      to={"/candidates/" + c.user_id + "?" + params}
+                      state={{ returnTo: returnPath }}
+                    >
+                      Открыть профиль
+                      <ArrowRight size={16} />
+                    </Link>
+                  </div>
+                  <div className="candidate-actions">
+                    <CompareCandidate
+                      candidate={c}
+                      query={comparisonQuery(params)}
+                      returnTo={returnPath}
+                    />
+                    <SaveCandidate id={c.user_id} />
+                  </div>
                 </div>
               </div>
               <details className="match-explanation">
@@ -456,7 +444,8 @@ export function CandidateDetail() {
   const returnTo =
     typeof location.state?.returnTo === "string" &&
     (location.state.returnTo.startsWith("/candidates?") ||
-      location.state.returnTo.startsWith("/shortlist?"))
+      location.state.returnTo.startsWith("/shortlist?") ||
+      location.state.returnTo.startsWith("/compare?"))
       ? location.state.returnTo
       : "/candidates";
   const q = useQuery({
@@ -498,7 +487,12 @@ export function CandidateDetail() {
   return (
     <>
       <Link className="text-link back" to={returnTo}>
-        <ArrowLeft size={16} />К подборке
+        <ArrowLeft size={16} />
+        {returnTo.startsWith("/compare?")
+          ? "К сравнению"
+          : returnTo.startsWith("/shortlist")
+            ? "К избранному"
+            : "К подборке"}
       </Link>
       <ErrorBox error={q.error} />
       {q.isPending ? (
@@ -509,7 +503,12 @@ export function CandidateDetail() {
             <PageTitle
               eyebrow="Профиль кандидата"
               title={q.data.name}
-              action={<SaveCandidate id={q.data.user_id} />}
+              action={
+                <div className="candidate-actions">
+                  <CompareCandidate candidate={q.data} />
+                  <SaveCandidate id={q.data.user_id} />
+                </div>
+              }
             >
               {q.data.headline}
             </PageTitle>

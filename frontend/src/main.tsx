@@ -11,6 +11,7 @@ import "@fontsource/manrope/700.css";
 import { queryClient } from "./api";
 import { App } from "./App";
 import "./styles.css";
+import "./comparison.css";
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>

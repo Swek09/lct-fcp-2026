@@ -48,6 +48,11 @@ import { Overview } from "./pages/Overview";
 import { Vacancies, VacancyDetail, VacancyEditor } from "./pages/Vacancies";
 import { Applications } from "./pages/Applications";
 import { Compare } from "./pages/Compare";
+import {
+  ComparisonDock,
+  ComparisonProvider,
+  clearComparisonSession,
+} from "./components/Comparison";
 import { ErrorBox, Loading } from "./components/shared";
 import { Button } from "./components/ui/button";
 export function useUser() {
@@ -82,12 +87,13 @@ function Layout() {
       : 0;
   useEffect(() => {
     const expired = () => {
+      if (me.data) clearComparisonSession(me.data.id);
       queryClient.clear();
       navigate("/login", { replace: true, state: { sessionExpired: true } });
     };
     window.addEventListener("fsp:session-expired", expired);
     return () => window.removeEventListener("fsp:session-expired", expired);
-  }, [navigate]);
+  }, [navigate, me.data?.id]);
   useEffect(() => {
     if (!menu) return;
     const previous = document.body.style.overflow;
@@ -175,6 +181,7 @@ function Layout() {
     try {
       await api("/auth/logout", "POST");
       setCSRF("");
+      clearComparisonSession(user.id);
       queryClient.clear();
       navigate("/login");
     } catch (e) {
@@ -182,118 +189,123 @@ function Layout() {
     }
   };
   return (
-    <div className="app-shell">
-      <a className="skip-link" href="#main">
-        К содержимому
-      </a>
-      <button
-        className="mobile-menu"
-        aria-label="Меню"
-        aria-expanded={menu}
-        aria-controls="main-navigation"
-        onClick={() => setMenu(!menu)}
-      >
-        {menu ? <X /> : <Menu />}
-      </button>
-      {menu && (
+    <ComparisonProvider key={user.id} userId={user.id}>
+      <div className="app-shell">
+        <a className="skip-link" href="#main">
+          К содержимому
+        </a>
         <button
-          className="menu-backdrop"
-          aria-label="Закрыть меню"
-          onClick={() => setMenu(false)}
-        />
-      )}
-      <aside
-        id="main-navigation"
-        role={menu ? "dialog" : undefined}
-        aria-modal={menu ? true : undefined}
-        aria-label={menu ? "Навигация" : undefined}
-        className={"sidebar " + (menu ? "is-open" : "")}
-      >
-        <NavLink to="/" className="brand">
-          <img src="/brand/fsp-symbol.svg" alt="ФСП" />
-          <div>
-            Карьера<span>Федерация спортивного программирования</span>
-          </div>
-        </NavLink>
-        <div className="workspace-label">
-          {user.role === "employer" ? "Работодатель" : "Участник платформы"}
-        </div>
-        <nav aria-label="Главная навигация">
-          {links.map(({ to, icon: Icon, label }) => (
-            <NavLink key={to} to={to}>
-              <Icon size={19} />
-              <span>{label}</span>
-              {to === "/invitations" && newInvitations > 0 && (
-                <span
-                  className="nav-count"
-                  aria-label={`${newInvitations} новых приглашений`}
-                >
-                  {newInvitations}
-                </span>
-              )}
-              <ChevronRight size={14} />
-            </NavLink>
-          ))}
-        </nav>
-        <div className="sidebar-note">
-          <ShieldCheck size={22} />
-          <p>
-            Навыки говорят
-            <br />
-            <strong>громче резюме.</strong>
-          </p>
-          <span>От достижений — к возможностям</span>
-        </div>
-        <div className="sidebar-bottom">
-          <div className="account">
-            <span className="avatar small">{initials(user.name)}</span>
+          className="mobile-menu"
+          aria-label="Меню"
+          aria-expanded={menu}
+          aria-controls="main-navigation"
+          onClick={() => setMenu(!menu)}
+        >
+          {menu ? <X /> : <Menu />}
+        </button>
+        {menu && (
+          <button
+            className="menu-backdrop"
+            aria-label="Закрыть меню"
+            onClick={() => setMenu(false)}
+          />
+        )}
+        <aside
+          id="main-navigation"
+          role={menu ? "dialog" : undefined}
+          aria-modal={menu ? true : undefined}
+          aria-label={menu ? "Навигация" : undefined}
+          className={"sidebar " + (menu ? "is-open" : "")}
+        >
+          <NavLink to="/" className="brand">
+            <img src="/brand/fsp-symbol.svg" alt="ФСП" />
             <div>
-              <strong>{user.name}</strong>
-              <span>
-                {user.role === "employer"
-                  ? "Кабинет работодателя"
-                  : "Кабинет кандидата"}
-              </span>
+              Карьера<span>Федерация спортивного программирования</span>
             </div>
-            <button
-              className="icon-button"
-              title="Выйти"
-              aria-label="Выйти"
-              onClick={logout}
-            >
-              <LogOut size={18} />
-            </button>
+          </NavLink>
+          <div className="workspace-label">
+            {user.role === "employer" ? "Работодатель" : "Участник платформы"}
           </div>
+          <nav aria-label="Главная навигация">
+            {links.map(({ to, icon: Icon, label }) => (
+              <NavLink key={to} to={to}>
+                <Icon size={19} />
+                <span>{label}</span>
+                {to === "/invitations" && newInvitations > 0 && (
+                  <span
+                    className="nav-count"
+                    aria-label={`${newInvitations} новых приглашений`}
+                  >
+                    {newInvitations}
+                  </span>
+                )}
+                <ChevronRight size={14} />
+              </NavLink>
+            ))}
+          </nav>
+          <div className="sidebar-note">
+            <ShieldCheck size={22} />
+            <p>
+              Навыки говорят
+              <br />
+              <strong>громче резюме.</strong>
+            </p>
+            <span>От достижений — к возможностям</span>
+          </div>
+          <div className="sidebar-bottom">
+            <div className="account">
+              <span className="avatar small">{initials(user.name)}</span>
+              <div>
+                <strong>{user.name}</strong>
+                <span>
+                  {user.role === "employer"
+                    ? "Кабинет работодателя"
+                    : "Кабинет кандидата"}
+                </span>
+              </div>
+              <button
+                className="icon-button"
+                title="Выйти"
+                aria-label="Выйти"
+                onClick={logout}
+              >
+                <LogOut size={18} />
+              </button>
+            </div>
+          </div>
+        </aside>
+        <div className="workspace">
+          <header className="topbar">
+            <span>
+              Рабочее пространство <span className="separator">/</span>{" "}
+              {links.find((l) => location.pathname.startsWith(l.to))?.label ||
+                (location.pathname === "/compare"
+                  ? "Сравнение кандидатов"
+                  : "Карьера")}
+            </span>
+            <div>
+              <span className="live-dot" />
+              {config.data?.demo
+                ? "Демонстрационный стенд"
+                : "Рабочее пространство"}
+              <NavLink to="/invitations" aria-label="Открыть приглашения">
+                <ArrowUpRight size={16} />
+              </NavLink>
+            </div>
+          </header>
+          <main id="main" tabIndex={-1}>
+            <ErrorBox error={error} />
+            <Outlet />
+          </main>
+          <footer className="footer">
+            <span>ФСП · Карьера</span>
+            <span>Профессиональный путь начинается с навыков</span>
+            <span>2026</span>
+          </footer>
+          {user.role === "employer" && <ComparisonDock />}
         </div>
-      </aside>
-      <div className="workspace">
-        <header className="topbar">
-          <span>
-            Рабочее пространство <span className="separator">/</span>{" "}
-            {links.find((l) => location.pathname.startsWith(l.to))?.label ||
-              "Карьера"}
-          </span>
-          <div>
-            <span className="live-dot" />
-            {config.data?.demo
-              ? "Демонстрационный стенд"
-              : "Рабочее пространство"}
-            <NavLink to="/invitations" aria-label="Открыть приглашения">
-              <ArrowUpRight size={16} />
-            </NavLink>
-          </div>
-        </header>
-        <main id="main" tabIndex={-1}>
-          <ErrorBox error={error} />
-          <Outlet />
-        </main>
-        <footer className="footer">
-          <span>ФСП · Карьера</span>
-          <span>Профессиональный путь начинается с навыков</span>
-          <span>2026</span>
-        </footer>
       </div>
-    </div>
+    </ComparisonProvider>
   );
 }
 function Home() {

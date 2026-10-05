@@ -328,37 +328,10 @@
 .candidate-overview-meta > span + span {
   color: var(--muted);
 }
-.candidate-toolbar {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  border-bottom: 1px solid var(--line);
-  padding: 10px 20px;
-  align-items: center;
-}
-.candidate-toolbar .check {
-  font-size: 0.79rem;
-}
 .save-candidate .notice {
   font-size: 0.79rem;
   max-width: 24rem;
   padding: 8px;
-}
-.comparison-bar {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  padding: 12px 20px;
-  margin: 24px 0;
-  background: var(--raised);
-  position: sticky;
-  top: 12px;
-  z-index: 10;
-}
-.comparison-bar > span {
-  flex: 1;
 }
 .parse-warning {
   color: var(--muted);
@@ -457,71 +430,6 @@
 }
 .passport-footer strong {
   color: var(--text);
-}
-.compare-scroll {
-  overflow-x: auto;
-  max-width: 100%;
-  padding-bottom: 12px;
-}
-.compare-table {
-  border-collapse: collapse;
-  width: 100%;
-  min-width: 820px;
-  table-layout: fixed;
-}
-.compare-table th,
-.compare-table td {
-  border: 1px solid var(--line);
-  padding: 24px;
-  text-align: left;
-  vertical-align: top;
-}
-.compare-table th:first-child {
-  width: 170px;
-  font-size: 0.86rem;
-}
-.compare-table thead th {
-  background: var(--surface);
-  font-weight: 500;
-}
-.compare-table thead th > a {
-  font-family: Manrope, sans-serif;
-  font-size: 1.3rem;
-  font-weight: 600;
-}
-.compare-table thead p {
-  margin: 10px 0;
-  font-size: 0.79rem;
-  color: var(--muted);
-}
-.compare-table tbody th {
-  color: var(--muted);
-  font-weight: 400;
-}
-.compare-cell {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  font-size: 0.86rem;
-}
-.compare-score {
-  font-size: 2rem;
-  font-family: Manrope, sans-serif;
-}
-.compare-score small {
-  margin-left: 4px;
-}
-.compare-table .score-component {
-  grid-template-columns: 1fr auto;
-  gap: 6px;
-  font-size: 0.72rem;
-}
-.compare-table .score-track {
-  grid-column: 1/-1;
-  grid-row: 2;
-}
-.compare-table .match-breakdown {
-  padding: 0;
 }
 .vacancy-list,
 .application-list {
@@ -848,19 +756,6 @@
   }
   .candidate-overview-meta {
     gap: 12px;
-  }
-  .candidate-toolbar {
-    padding: 8px 12px;
-  }
-  .comparison-bar {
-    flex-wrap: wrap;
-    gap: 12px;
-    top: 4px;
-  }
-  .comparison-bar > span {
-    width: 100%;
-    flex-basis: 100%;
-    font-size: 0.86rem;
   }
   .score-component {
     grid-template-columns: 1fr auto;
