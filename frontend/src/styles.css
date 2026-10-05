@@ -1,25 +1,32 @@
 @import "tailwindcss";
 @theme {
-  --font-sans: "Golos Text", sans-serif;
+  --font-sans: "JetBrains Mono", monospace;
+  --font-mono: "JetBrains Mono", monospace;
 }
 :root {
   color-scheme: dark;
-  --bg: oklch(0.17 0.014 234);
-  --surface: rgba(17, 24, 28, 0.8);
-  --raised: oklch(0.23 0.016 238);
-  --line: oklch(0.32 0.015 240);
-  --text: oklch(0.95 0.008 230);
-  --muted: oklch(0.7 0.016 234);
-  --accent: #402fff;
+  --font-ui: "JetBrains Mono", monospace;
+  --brand-gray: #C8C9CA;
+  --brand-dark: #1B1C21;
+  --bg: var(--brand-dark);
+  --surface: var(--brand-dark);
+  --raised: color-mix(in srgb, var(--brand-gray) 7%, var(--brand-dark));
+  --hover: color-mix(in srgb, var(--brand-gray) 11%, var(--brand-dark));
+  --line: color-mix(in srgb, var(--brand-gray) 20%, transparent);
+  --text: var(--brand-gray);
+  --muted: color-mix(in srgb, var(--brand-gray) 78%, transparent);
+  --accent: #402FFF;
   --blue: var(--accent);
-  --accent-readable: color-mix(in oklch, var(--accent) 40%, var(--text));
-  --green: oklch(0.79 0.105 159);
-  --red: oklch(0.74 0.15 24);
+  --accent-readable: var(--brand-gray);
+  --success: var(--brand-gray);
+  --success-bg: color-mix(in srgb, var(--accent) 12%, var(--surface));
+  --success-line: color-mix(in srgb, var(--accent) 50%, var(--line));
+  --red: #EC1D35;
   --space-sm: 8px;
   --space-md: 16px;
   --space-lg: 24px;
   --space-xl: 40px;
-  font-family: "Golos Text", sans-serif;
+  font-family: var(--font-ui);
   font-size: 14px;
   color: var(--text);
   background: var(--bg);
@@ -100,7 +107,7 @@
   font-size: 2rem;
   line-height: 1.35;
   margin: 20px 0 28px;
-  letter-spacing: -0.045em;
+  letter-spacing: -0.025em;
 }
 .hiring-start form label {
   display: block;
@@ -144,7 +151,7 @@
 }
 .hiring-pulse {
   padding: 36px;
-  background: color-mix(in oklch, var(--blue) 7%, var(--bg));
+  background: color-mix(in srgb, var(--blue) 7%, var(--bg));
   border-left: 1px solid var(--line);
 }
 .hiring-pulse h2 {
@@ -171,7 +178,7 @@
   flex: 1;
 }
 .hiring-stages a > strong {
-  font-family: Manrope, sans-serif;
+  font-family: var(--font-ui);
   font-size: 1.4rem;
 }
 .hiring-stages a:hover {
@@ -304,8 +311,8 @@
   color: var(--muted);
 }
 .onboarding-route .done a > span {
-  color: var(--green);
-  border-color: color-mix(in oklch, var(--green) 35%, var(--line));
+  color: var(--success);
+  border-color: color-mix(in srgb, var(--success) 35%, var(--line));
 }
 .onboarding-route a > div {
   display: grid;
@@ -398,7 +405,7 @@
   margin-bottom: 16px;
 }
 .passport-stamp strong {
-  color: var(--green);
+  color: var(--success);
   font-size: 1.14rem;
 }
 .competency-grid {
@@ -421,7 +428,7 @@
   color: var(--muted);
 }
 .competency-grid .is-passed svg {
-  color: var(--green);
+  color: var(--success);
 }
 .passport-footer {
   display: grid;
@@ -507,7 +514,7 @@
   align-self: flex-start;
 }
 .vacancy-salary strong {
-  font-family: Manrope, sans-serif;
+  font-family: var(--font-ui);
   font-size: 1.35rem;
   font-variant-numeric: tabular-nums;
 }
@@ -554,7 +561,7 @@
 }
 .vacancy-pay > strong {
   font-size: 2rem;
-  font-family: Manrope, sans-serif;
+  font-family: var(--font-ui);
   letter-spacing: -0.04em;
   font-variant-numeric: tabular-nums;
 }
@@ -618,8 +625,8 @@
 }
 .status.published,
 .status.shortlisted {
-  color: var(--green);
-  background: color-mix(in oklch, var(--green) 9%, var(--surface));
+  color: var(--success);
+  background: color-mix(in srgb, var(--success) 9%, var(--surface));
 }
 .status.draft,
 .status.withdrawn,
@@ -629,7 +636,7 @@
 }
 .status.rejected {
   color: var(--red);
-  background: color-mix(in oklch, var(--red) 8%, var(--surface));
+  background: color-mix(in srgb, var(--red) 8%, var(--surface));
 }
 .sidebar {
   overflow-y: auto;
@@ -875,11 +882,12 @@ p {
 h1,
 h2,
 h3 {
-  font-family: Manrope, "Golos Text", sans-serif;
+  font-family: var(--font-ui);
+  overflow-wrap: anywhere;
 }
 h1 {
   font-size: 2.5rem;
-  letter-spacing: -0.055em;
+  letter-spacing: -0.03em;
   line-height: 1.2;
   font-weight: 600;
 }
@@ -957,7 +965,7 @@ main:focus {
   border-color: var(--accent);
 }
 .button-primary:hover {
-  background: color-mix(in oklch, var(--accent) 88%, var(--bg));
+  background: color-mix(in srgb, var(--accent) 88%, var(--bg));
 }
 .button-secondary {
   background: var(--raised);
@@ -965,7 +973,7 @@ main:focus {
   color: var(--text);
 }
 .button-secondary:hover {
-  background: oklch(0.29 0.02 240);
+  background: var(--hover);
 }
 .button-ghost {
   background: transparent;
@@ -977,7 +985,7 @@ main:focus {
 }
 .button-danger {
   color: var(--red);
-  background: oklch(0.25 0.03 25);
+  background: color-mix(in srgb, var(--red) 10%, var(--surface));
 }
 .button-sm {
   padding: 8px 12px;
@@ -1051,13 +1059,16 @@ main:focus {
   color: var(--text);
 }
 .brand img {
-  width: 40px;
+  width: 44px;
   height: 44px;
-  object-fit: cover;
-  object-position: top;
+  display: block;
+  flex-shrink: 0;
+  object-fit: contain;
+  object-position: center;
 }
 .brand > div {
-  font-family: Manrope, sans-serif;
+  min-width: 0;
+  font-family: var(--font-ui);
   font-size: 1.5rem;
   font-weight: 700;
   line-height: 1.25;
@@ -1065,7 +1076,7 @@ main:focus {
 }
 .brand span {
   display: block;
-  font-family: "Golos Text", sans-serif;
+  font-family: var(--font-ui);
   font-size: 0.6rem;
   color: var(--muted);
   font-weight: 400;
@@ -1107,7 +1118,7 @@ nav > a:hover {
   color: var(--text);
 }
 nav > a.active {
-  background: color-mix(in oklch, var(--accent) 23%, var(--surface));
+  background: color-mix(in srgb, var(--accent) 23%, var(--surface));
   color: var(--text);
 }
 nav > a.active > svg:last-child {
@@ -1125,7 +1136,7 @@ nav > a.active > svg:first-child {
   margin-bottom: 14px;
 }
 .sidebar-note p {
-  font-family: Manrope, sans-serif;
+  font-family: var(--font-ui);
   font-size: 1.25rem;
   line-height: 1.5;
   letter-spacing: -0.03em;
@@ -1171,9 +1182,9 @@ nav > a.active > svg:first-child {
   height: 48px;
   display: grid;
   place-items: center;
-  border: 1px solid color-mix(in oklch, var(--accent) 25%, var(--line));
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, var(--line));
   border-radius: 50%;
-  background: color-mix(in oklch, var(--accent) 12%, var(--surface));
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
   font-size: 0.9rem;
   font-weight: 500;
   color: var(--text);
@@ -1224,7 +1235,7 @@ nav > a.active > svg:first-child {
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: var(--green);
+  background: var(--accent);
 }
 main {
   width: 100%;
@@ -1300,7 +1311,7 @@ textarea {
   min-width: 0;
   width: 100%;
   border: 1px solid var(--line);
-  background: oklch(0.19 0.012 237);
+  background: var(--bg);
   color: var(--text);
   border-radius: 6px;
   padding: 12px 14px;
@@ -1309,12 +1320,12 @@ textarea {
 }
 input::placeholder,
 textarea::placeholder {
-  color: oklch(0.55 0.014 236);
+  color: var(--muted);
 }
 input:focus,
 textarea:focus {
   border-color: var(--accent);
-  outline: 2px solid color-mix(in oklch, var(--accent) 20%, transparent);
+  outline: 2px solid color-mix(in srgb, var(--accent) 20%, transparent);
   outline-offset: 1px;
 }
 textarea {
@@ -1331,7 +1342,7 @@ textarea {
   padding: 11px 14px;
   border: 1px solid var(--line);
   border-radius: 6px;
-  background: oklch(0.19 0.012 237);
+  background: var(--bg);
   color: var(--text);
   font: inherit;
   line-height: 1.5;
@@ -1342,13 +1353,13 @@ textarea {
     background-color 0.18s;
 }
 .select-trigger:hover:not([data-disabled]) {
-  border-color: color-mix(in oklch, var(--muted) 65%, var(--line));
-  background: oklch(0.22 0.014 237);
+  border-color: color-mix(in srgb, var(--muted) 65%, var(--line));
+  background: var(--raised);
 }
 .select-trigger:focus-visible,
 .select-trigger[data-state="open"] {
   border-color: var(--accent);
-  outline: 2px solid color-mix(in oklch, var(--accent) 20%, transparent);
+  outline: 2px solid color-mix(in srgb, var(--accent) 20%, transparent);
   outline-offset: 1px;
 }
 .select-trigger[data-disabled] {
@@ -1378,11 +1389,11 @@ textarea {
   max-height: min(320px, var(--radix-select-content-available-height));
   overflow: hidden;
   padding: 5px;
-  border: 1px solid oklch(0.39 0.02 242);
+  border: 1px solid color-mix(in srgb, var(--brand-gray) 30%, var(--bg));
   border-radius: 10px;
-  background: oklch(0.22 0.018 238);
+  background: var(--raised);
   color: var(--text);
-  box-shadow: 0 12px 32px oklch(0.1 0.012 238 / 0.38);
+  box-shadow: 0 12px 32px color-mix(in srgb, var(--brand-dark) 60%, transparent);
   transform-origin: var(--radix-select-content-transform-origin);
   animation: select-appear 0.14s ease-out;
 }
@@ -1408,7 +1419,7 @@ textarea {
   background: var(--accent);
 }
 .select-item[data-highlighted]:not([data-state="checked"]) {
-  background: color-mix(in oklch, var(--accent) 18%, var(--raised));
+  background: color-mix(in srgb, var(--accent) 18%, var(--raised));
 }
 .select-item-check {
   position: absolute;
@@ -1515,7 +1526,7 @@ input[type="radio"] {
   font-size: 1.2rem;
 }
 .results-heading h2 > span {
-  font-family: "Golos Text", sans-serif;
+  font-family: var(--font-ui);
   font-size: 0.8rem;
   padding: 3px 9px;
   border-radius: 5px;
@@ -1549,7 +1560,7 @@ input[type="radio"] {
   border: 0;
 }
 .candidate-row:hover {
-  background: oklch(0.205 0.015 238);
+  background: var(--raised);
 }
 .candidate-main {
   display: flex;
@@ -1566,7 +1577,7 @@ input[type="radio"] {
   margin-bottom: 6px;
 }
 .candidate-name > a {
-  font-family: Manrope, sans-serif;
+  font-family: var(--font-ui);
   font-size: 1.18rem;
   font-weight: 600;
   letter-spacing: -0.02em;
@@ -1608,18 +1619,18 @@ input[type="radio"] {
 }
 .tag.grade {
   color: var(--text);
-  border-color: color-mix(in oklch, var(--accent) 35%, var(--line));
-  background: color-mix(in oklch, var(--accent) 15%, var(--surface));
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+  background: color-mix(in srgb, var(--accent) 15%, var(--surface));
 }
 .tag.verified,
 .tag.status-accepted {
-  color: var(--green);
-  background: oklch(0.26 0.028 164);
-  border-color: oklch(0.36 0.05 164);
+  color: var(--success);
+  background: var(--success-bg);
+  border-color: var(--success-line);
 }
 .tag.status-sent {
   color: var(--text);
-  background: color-mix(in oklch, var(--accent) 15%, var(--surface));
+  background: color-mix(in srgb, var(--accent) 15%, var(--surface));
 }
 .tag.status-declined {
   color: var(--red);
@@ -1629,7 +1640,7 @@ input[type="radio"] {
   padding: 5px 9px;
   border-radius: 4px;
   background: var(--raised);
-  color: oklch(0.82 0.014 238);
+  color: var(--text);
 }
 .candidate-evidence {
   display: flex;
@@ -1647,7 +1658,7 @@ input[type="radio"] {
   color: var(--muted);
 }
 .candidate-evidence > span:first-child {
-  color: var(--green);
+  color: var(--success);
 }
 .candidate-evidence strong {
   color: var(--text);
@@ -1659,7 +1670,7 @@ input[type="radio"] {
 .match-explanation {
   margin: 20px 0 0 66px;
   padding-top: 14px;
-  border-top: 1px solid color-mix(in oklch, var(--line) 70%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
 }
 .match-explanation summary {
   list-style: none;
@@ -1701,7 +1712,7 @@ input[type="radio"] {
   gap: 6px;
 }
 .match-explanation li svg {
-  color: var(--green);
+  color: var(--success);
 }
 .search-note {
   font-size: 0.73rem;
@@ -1758,14 +1769,17 @@ input[type="radio"] {
   margin: 0;
 }
 .notice.error {
-  color: oklch(0.84 0.08 24);
-  background: oklch(0.24 0.028 25);
-  border-color: oklch(0.37 0.054 25);
+  color: var(--text);
+  background: color-mix(in srgb, var(--red) 8%, var(--surface));
+  border-color: color-mix(in srgb, var(--red) 45%, var(--line));
+}
+.notice.error > svg {
+  color: var(--red);
 }
 .notice.success {
-  color: var(--green);
-  background: oklch(0.23 0.025 166);
-  border-color: oklch(0.36 0.04 166);
+  color: var(--success);
+  background: var(--success-bg);
+  border-color: var(--success-line);
 }
 .loading {
   display: flex;
@@ -1901,7 +1915,7 @@ input[type="radio"] {
   gap: 14px;
 }
 .verification > svg {
-  color: var(--green);
+  color: var(--success);
 }
 .verification > p {
   margin: 0 0 8px;
@@ -1979,7 +1993,7 @@ input[type="radio"] {
 .achievement > span:first-child,
 .achievement > svg {
   color: var(--accent-readable);
-  font-family: Manrope, sans-serif;
+  font-family: var(--font-ui);
   font-size: 1.3rem;
 }
 .achievement > div {
@@ -2019,7 +2033,7 @@ input[type="radio"] {
   border-top: 1px solid var(--line);
 }
 .proof-strip > svg {
-  color: var(--green);
+  color: var(--success);
 }
 .proof-strip > div {
   display: flex;
@@ -2149,7 +2163,7 @@ input[type="radio"] {
   gap: 8px;
   align-items: center;
   font-variant-numeric: tabular-nums;
-  color: var(--green);
+  color: var(--success);
   white-space: nowrap;
 }
 .timer.urgent {
@@ -2203,11 +2217,11 @@ input[type="radio"] {
   background: var(--surface);
 }
 .option:hover {
-  border-color: oklch(0.5 0.04 275);
+  border-color: var(--accent);
 }
 .option.selected {
   border-color: var(--accent);
-  background: oklch(0.24 0.025 282);
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
 }
 .option input {
   margin-top: 3px;
@@ -2246,7 +2260,7 @@ input[type="radio"] {
   min-width: 90px;
 }
 .result-score strong {
-  font-family: Manrope, sans-serif;
+  font-family: var(--font-ui);
   font-size: 3rem;
   line-height: 1.2;
 }
@@ -2326,13 +2340,13 @@ input[type="radio"] {
   align-self: flex-start;
 }
 .salary {
-  font-family: Manrope, sans-serif;
+  font-family: var(--font-ui);
   font-size: 1.7rem;
   letter-spacing: -0.025em;
   margin: 26px 0 24px;
 }
 .salary > span {
-  font-family: "Golos Text", sans-serif;
+  font-family: var(--font-ui);
   display: block;
   color: var(--muted);
   font-size: 0.73rem;
@@ -2678,12 +2692,12 @@ input[type="radio"] {
     transform: translateX(-100%);
     transition: transform 0.2s;
     width: 260px;
-    background: oklch(0.18 0.015 235);
+    background: var(--surface);
     padding-top: 76px;
   }
   .sidebar.is-open {
     transform: translateX(0);
-    box-shadow: 12px 0 40px #080d1260;
+    box-shadow: 12px 0 40px color-mix(in srgb, var(--brand-dark) 60%, transparent);
   }
   .workspace {
     margin-left: 0;
@@ -2914,8 +2928,8 @@ input[type="radio"] {
   }
   :root {
     color-scheme: light;
-    background: white;
-    color: #172127;
+    background: var(--brand-gray);
+    color: var(--brand-dark);
   }
 }
 
@@ -2926,7 +2940,7 @@ input[type="radio"] {
   margin-top: 20px;
 }
 .test-preview summary {
-  font-family: Manrope, sans-serif;
+  font-family: var(--font-ui);
   font-weight: 600;
   cursor: pointer;
 }
@@ -2993,7 +3007,7 @@ input[type="radio"] {
   margin-bottom: 12px;
 }
 .challenge-item h2 {
-  font-family: Manrope, sans-serif;
+  font-family: var(--font-ui);
   font-size: 1.35rem;
   margin: 0 0 12px;
 }
@@ -3058,7 +3072,7 @@ input[type="radio"] {
   margin-top: 16px;
 }
 .practice-date {
-  color: var(--green);
+  color: var(--success);
 }
 .nav-count {
   display: inline-flex;
@@ -3089,7 +3103,7 @@ input[type="radio"] {
     display: block;
     position: fixed;
     inset: 0;
-    background: #070c12a6;
+    background: color-mix(in srgb, var(--brand-dark) 75%, transparent);
     z-index: 29;
     border: 0;
     padding: 0;
