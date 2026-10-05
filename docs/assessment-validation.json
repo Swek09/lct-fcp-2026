@@ -1,0 +1,79 @@
+{
+  "experiment": "100 new variants per category; copy the answer key of seed=1 without solving new facts",
+  "limitations": "Synthetic mechanical validation. Not evidence of real candidate grade accuracy or resistance to LLM assistance.",
+  "results": [
+    {
+      "category": "backend/junior",
+      "variants": 100,
+      "unique_facts": 100,
+      "copied_key_passes": 9,
+      "correct_key_passes": 100,
+      "copied_key_pass_rate": 0.09
+    },
+    {
+      "category": "backend/middle",
+      "variants": 100,
+      "unique_facts": 100,
+      "copied_key_passes": 3,
+      "correct_key_passes": 100,
+      "copied_key_pass_rate": 0.03
+    },
+    {
+      "category": "backend/senior",
+      "variants": 100,
+      "unique_facts": 100,
+      "copied_key_passes": 3,
+      "correct_key_passes": 100,
+      "copied_key_pass_rate": 0.03
+    },
+    {
+      "category": "frontend/junior",
+      "variants": 100,
+      "unique_facts": 100,
+      "copied_key_passes": 1,
+      "correct_key_passes": 100,
+      "copied_key_pass_rate": 0.01
+    },
+    {
+      "category": "frontend/middle",
+      "variants": 100,
+      "unique_facts": 100,
+      "copied_key_passes": 1,
+      "correct_key_passes": 100,
+      "copied_key_pass_rate": 0.01
+    },
+    {
+      "category": "frontend/senior",
+      "variants": 100,
+      "unique_facts": 100,
+      "copied_key_passes": 9,
+      "correct_key_passes": 100,
+      "copied_key_pass_rate": 0.09
+    },
+    {
+      "category": "analytics/junior",
+      "variants": 100,
+      "unique_facts": 100,
+      "copied_key_passes": 3,
+      "correct_key_passes": 100,
+      "copied_key_pass_rate": 0.03
+    },
+    {
+      "category": "analytics/middle",
+      "variants": 100,
+      "unique_facts": 100,
+      "copied_key_passes": 0,
+      "correct_key_passes": 100,
+      "copied_key_pass_rate": 0
+    },
+    {
+      "category": "analytics/senior",
+      "variants": 100,
+      "unique_facts": 100,
+      "copied_key_passes": 2,
+      "correct_key_passes": 100,
+      "copied_key_pass_rate": 0.02
+    }
+  ],
+  "template_version": "2026.10-v2"
+}

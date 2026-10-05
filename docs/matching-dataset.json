@@ -1,0 +1,27 @@
+{
+  "description": "Synthetic development fixtures. Labels were assigned manually before evaluation. This is a regression set, not an independent hiring benchmark.",
+  "candidates": [
+    {"name":"Александр Морозов","specialization":"backend","grade":"middle","score":92,"skills":["Go","PostgreSQL","Redis","Docker"],"achievements":2},
+    {"name":"Елена Волкова","specialization":"backend","grade":"senior","score":96,"skills":["Go","PostgreSQL","Kubernetes","Redis"],"achievements":3},
+    {"name":"Максим Лебедев","specialization":"backend","grade":"middle","score":84,"skills":["Python","PostgreSQL","Docker"],"achievements":0},
+    {"name":"Анна Соколова","specialization":"frontend","grade":"middle","score":94,"skills":["React","TypeScript","CSS","HTML"],"achievements":1},
+    {"name":"Иван Ковалёв","specialization":"backend","grade":"junior","score":83,"skills":["Go","SQL","Docker"],"achievements":0},
+    {"name":"Дарья Белова","specialization":"analytics","grade":"middle","score":91,"skills":["SQL","Python","Excel"],"achievements":2},
+    {"name":"Никита Орлов","specialization":"frontend","grade":"junior","score":84,"skills":["React","JavaScript","CSS"],"achievements":0},
+    {"name":"Ольга Миронова","specialization":"analytics","grade":"senior","score":96,"skills":["SQL","Python"],"achievements":1}
+  ],
+  "cases": [
+    {"need":"middle backend Go PostgreSQL Redis","k":1,"relevant":["Александр Морозов"]},
+    {"need":"middle backend Python Docker","k":1,"relevant":["Максим Лебедев"]},
+    {"need":"middle frontend React TypeScript","k":1,"relevant":["Анна Соколова"]},
+    {"need":"middle аналитик SQL Python","k":1,"relevant":["Дарья Белова"]},
+    {"need":"senior backend Go Kubernetes","k":1,"relevant":["Елена Волкова"]},
+    {"need":"junior backend Go Docker","k":1,"relevant":["Иван Ковалёв"]},
+    {"need":"junior frontend React JavaScript","k":1,"relevant":["Никита Орлов"]},
+    {"need":"senior аналитик SQL Python","k":1,"relevant":["Ольга Миронова"]},
+    {"need":"backend Go Redis","k":2,"relevant":["Елена Волкова","Александр Морозов"]},
+    {"need":"backend Python Docker","k":1,"relevant":["Максим Лебедев"]},
+    {"need":"frontend React CSS","k":2,"relevant":["Анна Соколова","Никита Орлов"]},
+    {"need":"аналитик SQL Python","k":2,"relevant":["Ольга Миронова","Дарья Белова"]}
+  ]
+}

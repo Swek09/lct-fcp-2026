@@ -1,0 +1,218 @@
+import { QueryClient } from "@tanstack/react-query";
+export const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { retry: false, staleTime: 15000, refetchOnWindowFocus: true },
+  },
+});
+let csrf = "";
+export function setCSRF(value: string) {
+  csrf = value;
+}
+export class APIError extends Error {
+  status: number;
+  constructor(message: string, status: number) {
+    super(message);
+    this.status = status;
+  }
+}
+export async function api<T>(
+  path: string,
+  method = "GET",
+  body?: unknown,
+): Promise<T> {
+  let res: Response;
+  try {
+    res = await fetch("/api" + path, {
+      method,
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Requested-With": "fsp",
+        ...(csrf ? { "X-CSRF-Token": csrf } : {}),
+      },
+      body: body === undefined ? undefined : JSON.stringify(body),
+    });
+  } catch {
+    throw new APIError(
+      "Нет соединения с сервером. Проверьте подключение и повторите действие.",
+      0,
+    );
+  }
+  if (!res.ok) {
+    const raw = await res.text();
+    let message = /^\s*</.test(raw)
+      ? "Сервис временно недоступен. Повторите действие через несколько секунд."
+      : raw;
+    try {
+      const data = JSON.parse(raw);
+      message = data.detail || "Проверьте заполнение полей";
+      if (res.status === 422) {
+        const labels: Record<string, string> = {
+          email: "Электронная почта",
+          password: "Пароль",
+          name: "Имя",
+          title: "Название",
+          message: "Описание предложения",
+          salary_min: "Зарплата от",
+          salary_max: "Зарплата до",
+          answer: "Решение",
+          body: "Условие задачи",
+          feedback: "Обратная связь",
+          estimated_minutes: "Время решения",
+        };
+        const fields = [
+          ...new Set(
+            (data.errors || [])
+              .map(
+                (e: { location?: string }) =>
+                  labels[e.location?.split(".").at(-1) || ""] || e.location,
+              )
+              .filter(Boolean),
+          ),
+        ];
+        message = fields.length
+          ? `Проверьте заполнение полей: ${fields.join(", ")}.`
+          : "Проверьте заполнение полей и ограничения рядом с ними.";
+      }
+    } catch {
+      /* Non-JSON proxy error. */
+    }
+    if (res.status === 401 && csrf && path !== "/auth/login") {
+      setCSRF("");
+      window.dispatchEvent(new Event("fsp:session-expired"));
+    }
+    throw new APIError(message || "Сервис временно недоступен", res.status);
+  }
+  return res.json();
+}
+export const specs: Record<string, string> = {
+  backend: "Backend-разработка",
+  frontend: "Frontend-разработка",
+  analytics: "Аналитика данных",
+};
+export const grades: Record<string, string> = {
+  junior: "Junior",
+  middle: "Middle",
+  senior: "Senior",
+};
+export const date = (v: string) => new Date(v).toLocaleDateString("ru-RU");
+export const money = (v: number) => new Intl.NumberFormat("ru-RU").format(v);
+export const initials = (v: string) =>
+  v
+    .split(" ")
+    .slice(0, 2)
+    .map((v) => v[0])
+    .join("");
+export function plural(n: number, words: [string, string, string]) {
+  const last = n % 10,
+    hundred = n % 100;
+  return hundred >= 11 && hundred <= 14
+    ? words[2]
+    : last === 1
+      ? words[0]
+      : last >= 2 && last <= 4
+        ? words[1]
+        : words[2];
+}
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: "candidate" | "employer";
+  verified: boolean;
+  csrf: string;
+}
+export interface Achievement {
+  title: string;
+  year: number;
+  place: number;
+  source: string;
+}
+export interface Profile {
+  user_id: string;
+  name: string;
+  headline: string;
+  city: string;
+  about: string;
+  skills: string[];
+  experience_years: number;
+  specialization: string;
+  grade: string;
+  test_score: number;
+  published: boolean;
+  fsp_id: string;
+  achievements: Achievement[];
+  next_grade_change_at: string | null;
+  last_practice_at: string | null;
+}
+export interface Candidate extends Profile {
+  match_score: number;
+  reasons: string[];
+  email?: string;
+}
+export interface Question {
+  id: string;
+  prompt: string;
+  topic: string;
+  kind: "number" | "choice";
+  options: string[];
+}
+export interface Attempt {
+  id: string;
+  specialization: string;
+  grade: string;
+  questions: Question[];
+  started_at: string;
+  expires_at: string;
+  submitted_at: string | null;
+  score: number | null;
+  passed: boolean | null;
+  template_version: string;
+}
+export interface Invitation {
+  id: string;
+  candidate_id: string;
+  candidate_name: string;
+  company_name: string;
+  company_email: string;
+  candidate_email?: string;
+  title: string;
+  message: string;
+  salary_min: number;
+  salary_max: number;
+  status: "sent" | "viewed" | "accepted" | "declined";
+  created_at: string;
+}
+export interface Config {
+  demo: boolean;
+  grade_cooldown_days: number;
+  test_minutes: number;
+}
+
+export interface ChallengeSubmission {
+  id: string;
+  candidate_id: string;
+  candidate_name: string;
+  answer: string;
+  status: "submitted" | "accepted" | "needs_work";
+  feedback: string;
+  submitted_at: string;
+  reviewed_at: string | null;
+}
+export interface Challenge {
+  id: string;
+  title: string;
+  body: string;
+  company_name: string;
+  specialization: string;
+  grade: string;
+  estimated_minutes: number;
+  created_at: string;
+  closes_at: string;
+  submission_count: number;
+  submission: ChallengeSubmission | null;
+}
+export interface ChallengeFeed {
+  challenges: Challenge[];
+  next_submission_at: string | null;
+}

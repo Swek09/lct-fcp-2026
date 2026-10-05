@@ -1,0 +1,203 @@
+{
+  "dataset": "8 synthetic candidates, 12 manually labelled descriptions",
+  "limitations": "Same fixtures used for development. Small category groups; no independent expert or user validation. The HTTP API is covered separately by integration tests.",
+  "mean_precision_at_k": 1,
+  "mode": "offline parser and ranker; no HTTP/database validation in this experiment",
+  "results": [
+    {
+      "need": "middle backend Go PostgreSQL Redis",
+      "k": 1,
+      "relevant": [
+        "Александр Морозов"
+      ],
+      "top": [
+        {
+          "name": "Александр Морозов",
+          "score": 92
+        }
+      ],
+      "total": 2,
+      "precision_at_k": 1
+    },
+    {
+      "need": "middle backend Python Docker",
+      "k": 1,
+      "relevant": [
+        "Максим Лебедев"
+      ],
+      "top": [
+        {
+          "name": "Максим Лебедев",
+          "score": 82
+        }
+      ],
+      "total": 2,
+      "precision_at_k": 1
+    },
+    {
+      "need": "middle frontend React TypeScript",
+      "k": 1,
+      "relevant": [
+        "Анна Соколова"
+      ],
+      "top": [
+        {
+          "name": "Анна Соколова",
+          "score": 90
+        }
+      ],
+      "total": 1,
+      "precision_at_k": 1
+    },
+    {
+      "need": "middle аналитик SQL Python",
+      "k": 1,
+      "relevant": [
+        "Дарья Белова"
+      ],
+      "top": [
+        {
+          "name": "Дарья Белова",
+          "score": 91
+        }
+      ],
+      "total": 1,
+      "precision_at_k": 1
+    },
+    {
+      "need": "senior backend Go Kubernetes",
+      "k": 1,
+      "relevant": [
+        "Елена Волкова"
+      ],
+      "top": [
+        {
+          "name": "Елена Волкова",
+          "score": 98
+        }
+      ],
+      "total": 1,
+      "precision_at_k": 1
+    },
+    {
+      "need": "junior backend Go Docker",
+      "k": 1,
+      "relevant": [
+        "Иван Ковалёв"
+      ],
+      "top": [
+        {
+          "name": "Иван Ковалёв",
+          "score": 81
+        }
+      ],
+      "total": 1,
+      "precision_at_k": 1
+    },
+    {
+      "need": "junior frontend React JavaScript",
+      "k": 1,
+      "relevant": [
+        "Никита Орлов"
+      ],
+      "top": [
+        {
+          "name": "Никита Орлов",
+          "score": 82
+        }
+      ],
+      "total": 1,
+      "precision_at_k": 1
+    },
+    {
+      "need": "senior аналитик SQL Python",
+      "k": 1,
+      "relevant": [
+        "Ольга Миронова"
+      ],
+      "top": [
+        {
+          "name": "Ольга Миронова",
+          "score": 91
+        }
+      ],
+      "total": 1,
+      "precision_at_k": 1
+    },
+    {
+      "need": "backend Go Redis",
+      "k": 2,
+      "relevant": [
+        "Елена Волкова",
+        "Александр Морозов"
+      ],
+      "top": [
+        {
+          "name": "Елена Волкова",
+          "score": 98
+        },
+        {
+          "name": "Александр Морозов",
+          "score": 92
+        }
+      ],
+      "total": 4,
+      "precision_at_k": 1
+    },
+    {
+      "need": "backend Python Docker",
+      "k": 1,
+      "relevant": [
+        "Максим Лебедев"
+      ],
+      "top": [
+        {
+          "name": "Максим Лебедев",
+          "score": 82
+        }
+      ],
+      "total": 4,
+      "precision_at_k": 1
+    },
+    {
+      "need": "frontend React CSS",
+      "k": 2,
+      "relevant": [
+        "Анна Соколова",
+        "Никита Орлов"
+      ],
+      "top": [
+        {
+          "name": "Анна Соколова",
+          "score": 90
+        },
+        {
+          "name": "Никита Орлов",
+          "score": 82
+        }
+      ],
+      "total": 2,
+      "precision_at_k": 1
+    },
+    {
+      "need": "аналитик SQL Python",
+      "k": 2,
+      "relevant": [
+        "Ольга Миронова",
+        "Дарья Белова"
+      ],
+      "top": [
+        {
+          "name": "Дарья Белова",
+          "score": 91
+        },
+        {
+          "name": "Ольга Миронова",
+          "score": 91
+        }
+      ],
+      "total": 2,
+      "precision_at_k": 1
+    }
+  ]
+}

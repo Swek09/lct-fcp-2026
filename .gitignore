@@ -1,0 +1,10 @@
+.env
+node_modules/
+frontend/dist/
+backend/bin/
+output/
+.playwright-cli/
+.chart-data-*/
+*.log
+*.exe
+*.tsbuildinfo
