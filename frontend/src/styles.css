@@ -175,7 +175,7 @@
   font-size: 1.4rem;
 }
 .hiring-stages a:hover {
-  color: var(--accent-readable);
+  color: var(--accent);
 }
 .overview-section {
   margin-top: 48px;
@@ -208,17 +208,17 @@
   align-items: center;
   gap: 12px;
   padding: 10px 0;
-  color: var(--muted);
+  color: var(--accent);
 }
 .category-browser a > span {
   flex: 1;
 }
 .category-browser a > strong {
-  color: var(--text);
+  color: var(--accent);
 }
 .category-browser a:hover,
 .category-browser a:hover > strong {
-  color: var(--accent-readable);
+  color: var(--accent);
 }
 .overview-action-line {
   display: flex;
@@ -254,7 +254,7 @@
   font-size: 1.1rem;
 }
 .overview-invitations > a:hover strong {
-  color: var(--accent-readable);
+  color: var(--accent);
 }
 .overview-invitations > a > div > span {
   color: var(--text);
@@ -552,7 +552,7 @@
   font-size: 1.6rem;
 }
 .vacancy-row-heading a:hover {
-  color: var(--accent-readable);
+  color: var(--accent);
 }
 .vacancy-row-heading p {
   color: var(--muted);
@@ -933,7 +933,7 @@ button:disabled {
   opacity: 0.5;
 }
 a {
-  color: inherit;
+  color: var(--accent);
   text-decoration: none;
 }
 button {
@@ -1074,7 +1074,7 @@ main:focus {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: var(--accent-readable);
+  color: var(--accent);
   font-size: 0.9rem;
   background: none;
   border: 0;
@@ -1082,7 +1082,7 @@ main:focus {
   line-height: 1.6;
 }
 .text-link:hover {
-  color: var(--text);
+  color: var(--accent);
 }
 .text-link.center {
   align-self: center;
@@ -1096,6 +1096,7 @@ main:focus {
   top: -70px;
   z-index: 100;
   background: var(--blue);
+  color: var(--text);
   padding: 12px;
 }
 .skip-link:focus {
@@ -1120,6 +1121,7 @@ main:focus {
   display: flex;
   align-items: center;
   gap: 12px;
+  color: var(--text);
 }
 .brand img {
   width: 40px;
@@ -1643,7 +1645,7 @@ input[type="radio"] {
   letter-spacing: -0.02em;
 }
 .candidate-name > a:hover {
-  color: var(--accent-readable);
+  color: var(--accent);
 }
 .candidate-info > p {
   font-size: 0.85rem;
@@ -2530,7 +2532,7 @@ input[type="radio"] {
   text-align: center;
 }
 .auth-switch > a {
-  color: var(--accent-readable);
+  color: var(--accent);
   margin-left: 6px;
 }
 .segmented {
