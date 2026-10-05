@@ -1,4 +1,4 @@
-name: Verify MVP
+name: Test and deploy FSP
 
 on:
   push:
@@ -11,7 +11,7 @@ permissions:
 jobs:
   backend:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     services:
       postgres:
         image: postgres:17.6-alpine
@@ -36,30 +36,96 @@ jobs:
       TEST_DATABASE_URL: postgres://fsp:ci_local_only@localhost:5432/fsp?sslmode=disable
       TEST_REDIS_URL: redis://localhost:6379/1
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/setup-go@v7
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version-file: backend/go.mod
           cache-dependency-path: backend/go.sum
       - run: go test ./... -race -count=1
       - run: go vet ./...
+      - name: Check the restricted deployment protocol
+        run: python3 -m unittest discover -s ../infra/deploy -p 'test_*.py' -v
 
   frontend:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     defaults:
       run:
         working-directory: frontend
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/setup-node@v7
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: '24.13.0'
           cache: npm
           cache-dependency-path: frontend/package-lock.json
       - run: npm ci
       - run: npm run build
+
+  deploy:
+    needs: [backend, frontend]
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    concurrency:
+      group: fsp-career-deployment
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Skip a superseded main commit
+        id: current
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          head=$(curl --fail --silent --show-error --connect-timeout 10 --max-time 30 \
+            -H "Authorization: Bearer $GH_TOKEN" -H 'Accept: application/vnd.github+json' \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/git/ref/heads/main" \
+            | python3 -c 'import json,sys; print(json.load(sys.stdin)["object"]["sha"])')
+          if [ "$head" = "$GITHUB_SHA" ]; then
+            printf 'deploy=true\n' >> "$GITHUB_OUTPUT"
+          else
+            printf 'deploy=false\n' >> "$GITHUB_OUTPUT"
+            printf 'A newer main commit will be deployed after its tests.\n' >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Build the tested application images
+        if: steps.current.outputs.deploy == 'true'
+        run: |
+          docker build --label "org.opencontainers.image.revision=$GITHUB_SHA" \
+            -t "fsp-career-api:$GITHUB_SHA" backend
+          docker build --label "org.opencontainers.image.revision=$GITHUB_SHA" \
+            --build-arg "APP_REVISION=$GITHUB_SHA" \
+            -f frontend/Dockerfile -t "fsp-career-web:$GITHUB_SHA" .
+          docker save "fsp-career-api:$GITHUB_SHA" "fsp-career-web:$GITHUB_SHA" \
+            | gzip -1 > "$RUNNER_TEMP/fsp-images.tar.gz"
+      - name: Deploy through the restricted SSH endpoint
+        if: steps.current.outputs.deploy == 'true'
+        env:
+          FSP_DEPLOY_KEY: ${{ secrets.FSP_DEPLOY_KEY }}
+          FSP_KNOWN_HOSTS: ${{ secrets.FSP_KNOWN_HOSTS }}
+        run: |
+          umask 077
+          printf '%s\n' "$FSP_DEPLOY_KEY" > "$RUNNER_TEMP/fsp-deploy-key"
+          printf '%s\n' "$FSP_KNOWN_HOSTS" > "$RUNNER_TEMP/fsp-known-hosts"
+          trap 'rm -f "$RUNNER_TEMP/fsp-deploy-key"' EXIT
+          { printf 'deploy %s\n' "$GITHUB_SHA"; cat "$RUNNER_TEMP/fsp-images.tar.gz"; } \
+            | timeout 900 ssh -T -o BatchMode=yes -o IdentitiesOnly=yes \
+                -o StrictHostKeyChecking=yes -o ConnectTimeout=20 \
+                -o ServerAliveInterval=15 -o ServerAliveCountMax=4 \
+                -o "UserKnownHostsFile=$RUNNER_TEMP/fsp-known-hosts" \
+                -i "$RUNNER_TEMP/fsp-deploy-key" fsp-deploy@161.104.34.75
+      - name: Verify the public HTTPS service and commit
+        if: steps.current.outputs.deploy == 'true'
+        run: |
+          curl --fail --silent --show-error --retry 6 --retry-delay 5 \
+            --connect-timeout 10 --max-time 20 https://fsp.swek.tech/api/health \
+            | python3 -c 'import json,sys; assert json.load(sys.stdin)["status"] == "ok"'
+          curl --fail --silent --show-error --retry 6 --retry-delay 5 \
+            --connect-timeout 10 --max-time 20 https://fsp.swek.tech/release.json \
+            | python3 -c 'import json,os,sys; assert json.load(sys.stdin)["revision"] == os.environ["GITHUB_SHA"]'
+          printf 'Deployed https://fsp.swek.tech at %s\n' "$GITHUB_SHA" >> "$GITHUB_STEP_SUMMARY"

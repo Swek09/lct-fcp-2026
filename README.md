@@ -50,6 +50,7 @@ docker compose up --build -d
 
 ## Документация
 
+- [Автоматический деплой и стенд fsp.swek.tech](docs/deployment.md)
 - [Технологический стек](docs/tech-stack.md)
 - [Архитектура и правила продукта](docs/architecture.md)
 - [Запуск и разработка](docs/development.md)

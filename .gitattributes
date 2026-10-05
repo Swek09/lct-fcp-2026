@@ -1,0 +1,3 @@
+infra/deploy/* text eol=lf
+.github/workflows/* text eol=lf
+compose.deploy.yaml text eol=lf
