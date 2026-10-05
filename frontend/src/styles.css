@@ -10,8 +10,9 @@
   --line: oklch(0.32 0.015 240);
   --text: oklch(0.95 0.008 230);
   --muted: oklch(0.7 0.016 234);
-  --accent: #7568ff;
-  --blue: #5140ee;
+  --accent: #402fff;
+  --blue: var(--accent);
+  --accent-readable: color-mix(in oklch, var(--accent) 40%, var(--text));
   --green: oklch(0.79 0.105 159);
   --red: oklch(0.74 0.15 24);
   --space-sm: 8px;
@@ -91,7 +92,7 @@
   background: var(--surface);
 }
 .section-index {
-  color: var(--accent);
+  color: var(--accent-readable);
   font-size: 0.79rem;
   letter-spacing: 0.025em;
 }
@@ -174,7 +175,7 @@
   font-size: 1.4rem;
 }
 .hiring-stages a:hover {
-  color: var(--accent);
+  color: var(--accent-readable);
 }
 .overview-section {
   margin-top: 48px;
@@ -217,7 +218,7 @@
 }
 .category-browser a:hover,
 .category-browser a:hover > strong {
-  color: var(--accent);
+  color: var(--accent-readable);
 }
 .overview-action-line {
   display: flex;
@@ -253,7 +254,7 @@
   font-size: 1.1rem;
 }
 .overview-invitations > a:hover strong {
-  color: var(--accent);
+  color: var(--accent-readable);
 }
 .overview-invitations > a > div > span {
   color: var(--text);
@@ -551,7 +552,7 @@
   font-size: 1.6rem;
 }
 .vacancy-row-heading a:hover {
-  color: var(--accent);
+  color: var(--accent-readable);
 }
 .vacancy-row-heading p {
   color: var(--muted);
@@ -1025,11 +1026,11 @@ main:focus {
 }
 .button-primary {
   background: var(--blue);
-  color: #f6f5ff;
-  border-color: #6655ff;
+  color: var(--text);
+  border-color: var(--accent);
 }
 .button-primary:hover {
-  background: #6352ff;
+  background: color-mix(in oklch, var(--accent) 88%, var(--bg));
 }
 .button-secondary {
   background: var(--raised);
@@ -1073,7 +1074,7 @@ main:focus {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: var(--accent);
+  color: var(--accent-readable);
   font-size: 0.9rem;
   background: none;
   border: 0;
@@ -1081,7 +1082,7 @@ main:focus {
   line-height: 1.6;
 }
 .text-link:hover {
-  color: #aaa1ff;
+  color: var(--text);
 }
 .text-link.center {
   align-self: center;
@@ -1177,21 +1178,21 @@ nav > a:hover {
   color: var(--text);
 }
 nav > a.active {
-  background: oklch(0.27 0.041 282);
-  color: #e7e3ff;
+  background: color-mix(in oklch, var(--accent) 23%, var(--surface));
+  color: var(--text);
 }
 nav > a.active > svg:last-child {
   opacity: 1;
 }
 nav > a.active > svg:first-child {
-  color: #aa9fff;
+  color: var(--text);
 }
 .sidebar-note {
   margin-top: auto;
   padding: 64px 12px 44px;
 }
 .sidebar-note > svg {
-  color: var(--accent);
+  color: var(--accent-readable);
   margin-bottom: 14px;
 }
 .sidebar-note p {
@@ -1241,12 +1242,12 @@ nav > a.active > svg:first-child {
   height: 48px;
   display: grid;
   place-items: center;
-  border: 1px solid oklch(0.37 0.026 270);
+  border: 1px solid color-mix(in oklch, var(--accent) 25%, var(--line));
   border-radius: 50%;
-  background: oklch(0.26 0.025 270);
+  background: color-mix(in oklch, var(--accent) 12%, var(--surface));
   font-size: 0.9rem;
   font-weight: 500;
-  color: #c7c0ff;
+  color: var(--text);
   flex-shrink: 0;
 }
 .avatar.small {
@@ -1342,7 +1343,7 @@ main {
   margin-bottom: 16px;
 }
 .need-search > label svg {
-  color: var(--accent);
+  color: var(--accent-readable);
 }
 .need-search > div {
   display: flex;
@@ -1439,7 +1440,7 @@ textarea {
 }
 .select-trigger[data-state="open"] .select-chevron {
   transform: rotate(180deg);
-  color: var(--accent);
+  color: var(--text);
 }
 .select-content {
   z-index: 1000;
@@ -1474,18 +1475,18 @@ textarea {
   outline: none;
 }
 .select-item[data-state="checked"] {
-  color: oklch(0.86 0.065 289);
-  background: color-mix(in oklch, var(--accent) 13%, transparent);
+  color: var(--text);
+  background: var(--accent);
 }
-.select-item[data-highlighted] {
-  background: oklch(0.31 0.026 254);
+.select-item[data-highlighted]:not([data-state="checked"]) {
+  background: color-mix(in oklch, var(--accent) 18%, var(--raised));
 }
 .select-item-check {
   position: absolute;
   right: 12px;
   display: flex;
   align-items: center;
-  color: var(--accent);
+  color: var(--text);
 }
 .select-scroll-button {
   display: flex;
@@ -1642,7 +1643,7 @@ input[type="radio"] {
   letter-spacing: -0.02em;
 }
 .candidate-name > a:hover {
-  color: var(--accent);
+  color: var(--accent-readable);
 }
 .candidate-info > p {
   font-size: 0.85rem;
@@ -1677,9 +1678,9 @@ input[type="radio"] {
   color: var(--muted);
 }
 .tag.grade {
-  color: #c7bfff;
-  border-color: oklch(0.4 0.055 285);
-  background: oklch(0.28 0.035 282);
+  color: var(--text);
+  border-color: color-mix(in oklch, var(--accent) 35%, var(--line));
+  background: color-mix(in oklch, var(--accent) 15%, var(--surface));
 }
 .tag.verified,
 .tag.status-accepted {
@@ -1688,8 +1689,8 @@ input[type="radio"] {
   border-color: oklch(0.36 0.05 164);
 }
 .tag.status-sent {
-  color: #bfb8ff;
-  background: oklch(0.26 0.035 280);
+  color: var(--text);
+  background: color-mix(in oklch, var(--accent) 15%, var(--surface));
 }
 .tag.status-declined {
   color: var(--red);
@@ -1793,7 +1794,7 @@ input[type="radio"] {
 .parsed-need button {
   background: none;
   border: 0;
-  color: var(--accent);
+  color: var(--accent-readable);
   font-size: 0.75rem;
   margin-left: 8px;
 }
@@ -1870,7 +1871,7 @@ input[type="radio"] {
 }
 .empty-symbol {
   font-size: 1.5rem;
-  color: var(--accent);
+  color: var(--accent-readable);
   letter-spacing: 4px;
 }
 .panel {
@@ -1995,7 +1996,7 @@ input[type="radio"] {
   align-items: center;
 }
 .inline-heading > svg {
-  color: var(--accent);
+  color: var(--accent-readable);
 }
 .publication {
   border: 1px solid var(--line);
@@ -2026,7 +2027,7 @@ input[type="radio"] {
 }
 .achievement > span:first-child,
 .achievement > svg {
-  color: var(--accent);
+  color: var(--accent-readable);
   font-family: Manrope, sans-serif;
   font-size: 1.3rem;
 }
@@ -2086,7 +2087,7 @@ input[type="radio"] {
   margin: 22px 0;
 }
 .offer-panel > svg {
-  color: var(--accent);
+  color: var(--accent-readable);
   margin-bottom: 16px;
 }
 .offer-panel h2 {
@@ -2167,7 +2168,7 @@ input[type="radio"] {
   top: 24px;
 }
 .test-guide > svg {
-  color: var(--accent);
+  color: var(--accent-readable);
   margin-bottom: 16px;
 }
 .test-guide ul {
@@ -2223,7 +2224,7 @@ input[type="radio"] {
 }
 .question-number {
   font-size: 0.8rem;
-  color: var(--accent);
+  color: var(--accent-readable);
   padding-top: 3px;
 }
 .question legend small {
@@ -2358,7 +2359,7 @@ input[type="radio"] {
   place-items: center;
   background: var(--raised);
   border-radius: 8px;
-  color: var(--accent);
+  color: var(--accent-readable);
 }
 .invitation-top > div:nth-child(2) {
   flex: 1;
@@ -2447,7 +2448,7 @@ input[type="radio"] {
   height: 50px;
 }
 .auth-statement .eyebrow {
-  color: #b0a6ff;
+  color: var(--accent-readable);
 }
 .auth-statement h1 {
   font-size: clamp(2.5rem, 4vw, 4.5rem);
@@ -2456,7 +2457,7 @@ input[type="radio"] {
   margin: 24px 0 28px;
 }
 .auth-statement h1 > span {
-  color: var(--accent);
+  color: var(--accent-readable);
 }
 .auth-statement > p:last-of-type {
   font-size: 1rem;
@@ -2474,7 +2475,7 @@ input[type="radio"] {
 }
 .journey > div > span {
   display: block;
-  color: var(--accent);
+  color: var(--accent-readable);
   font-size: 0.7rem;
   margin-bottom: 10px;
   letter-spacing: 0.1em;
@@ -2504,7 +2505,7 @@ input[type="radio"] {
   margin-top: -8px;
 }
 .auth-mark {
-  color: var(--accent);
+  color: var(--accent-readable);
   margin-bottom: 12px;
 }
 .auth-form > p.muted {
@@ -2529,7 +2530,7 @@ input[type="radio"] {
   text-align: center;
 }
 .auth-switch > a {
-  color: var(--accent);
+  color: var(--accent-readable);
   margin-left: 6px;
 }
 .segmented {
@@ -2993,7 +2994,7 @@ input[type="radio"] {
 .practice-rule > svg {
   flex-shrink: 0;
   margin-top: 3px;
-  color: var(--accent);
+  color: var(--accent-readable);
 }
 .practice-rule p {
   margin: 0;
