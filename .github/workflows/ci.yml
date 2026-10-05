@@ -101,6 +101,22 @@ jobs:
           docker build --label "org.opencontainers.image.revision=$GITHUB_SHA" \
             --build-arg "APP_REVISION=$GITHUB_SHA" \
             -f frontend/Dockerfile -t "fsp-career-web:$GITHUB_SHA" .
+      - name: Smoke-test the deployment containers before touching the server
+        if: steps.current.outputs.deploy == 'true'
+        env:
+          FSP_REVISION: ${{ github.sha }}
+          POSTGRES_PASSWORD: ci_runtime_only
+        run: |
+          trap 'docker compose --project-name fsp-ci -f compose.deploy.yaml down --volumes' EXIT
+          docker compose --project-name fsp-ci -f compose.deploy.yaml \
+            up -d --no-build --wait --wait-timeout 180
+          curl --fail --silent --show-error http://127.0.0.1:18080/api/health \
+            | python3 -c 'import json,sys; assert json.load(sys.stdin)["status"] == "ok"'
+          curl --fail --silent --show-error http://127.0.0.1:18080/release.json \
+            | python3 -c 'import json,os,sys; assert json.load(sys.stdin)["revision"] == os.environ["GITHUB_SHA"]'
+      - name: Package the verified application images
+        if: steps.current.outputs.deploy == 'true'
+        run: |
           docker save "fsp-career-api:$GITHUB_SHA" "fsp-career-web:$GITHUB_SHA" \
             | gzip -1 > "$RUNNER_TEMP/fsp-images.tar.gz"
       - name: Deploy through the restricted SSH endpoint

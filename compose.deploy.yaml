@@ -65,7 +65,7 @@ services:
     read_only: true
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]
-    tmpfs: [/tmp:size=16m,noexec,nosuid]
+    tmpfs: ['/tmp:size=16m,noexec,nosuid']
     environment:
       DATABASE_URL: postgres://fsp:${POSTGRES_PASSWORD}@postgres:5432/fsp?sslmode=disable
       REDIS_URL: redis://redis:6379/0
