@@ -36,3 +36,34 @@ func TestParseNeed(t *testing.T) {
 		t.Fatalf("unexpected parse: %s %s %v", s, g, skills)
 	}
 }
+func TestNeedAliasesAmbiguityAndWordBoundaries(t *testing.T) {
+	for _, c := range []struct {
+		text, spec, grade string
+		skills            []string
+	}{
+		{"Миддл бэкендер: Golang, Postgres, k8s", "backend", "middle", []string{"go", "kubernetes", "postgresql"}},
+		{"Ведущий фронтенд-разработчик React.js TS Vue.js", "frontend", "senior", []string{"react", "typescript", "vue"}},
+		{"Джун аналитик SQL Python", "analytics", "junior", []string{"python", "sql"}},
+		{"middle frontend/backend Go React", "", "middle", []string{"go", "react"}},
+		{"middle или senior backend Go", "backend", "", []string{"go"}},
+		{"Django backend без Redis", "backend", "", []string{"django"}},
+		{"Google developer JavaScript", "", "", []string{"javascript"}},
+	} {
+		s, g, skills := ParseNeed(c.text)
+		if s != c.spec || g != c.grade || !reflect.DeepEqual(skills, c.skills) {
+			t.Errorf("%q -> %s/%s %v", c.text, s, g, skills)
+		}
+	}
+}
+func TestScoreBreakdownExplainsExactTotal(t *testing.T) {
+	for _, wanted := range [][]string{nil, {"go", "redis"}, {"python"}} {
+		for score := 0; score <= 100; score++ {
+			for achievements := 0; achievements <= 4; achievements++ {
+				s := Rank(Evidence{TestScore: score, Skills: []string{"Go"}, Achievements: achievements}, wanted)
+				if s.Total != s.Test+s.Stack+s.FSP || s.Total < 0 || s.Total > 100 {
+					t.Fatalf("invalid breakdown: %+v", s)
+				}
+			}
+		}
+	}
+}

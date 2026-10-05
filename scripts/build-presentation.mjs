@@ -71,10 +71,15 @@ chart.yAxis={visible:false,textStyle:{fontFamily:family,fontSize:24,fill:light},
 text(s,'ФСП даёт бонус.\nКандидат без истории\nостаётся в подборке.',859,234,339,198,30,light);
 text(s,'Подтверждённая категория задаёт фильтр. Навыки профиля уточняют совпадение.',72,595,1120,76,26,mute);
 
-s=slide('Рабочий прототип','Источник изображения: собственный скриншот приложения output/playwright/employer-desktop.png. Данные синтетические. Локальное приложение http://localhost:8080.');
-const screenshot=await fs.readFile(path.join(workspaceDir,'output','playwright','employer-desktop.png'));
-s.images.add({blob:new Uint8Array(screenshot),contentType:'image/png',alt:'Поиск кандидатов в кабинете работодателя',fit:'contain',position:{left:71,top:152,width:1138,height:490}});
-text(s,'Два кабинета. Поиск, профиль и приглашения с зарплатой.',72,661,1110,30,23,mute);
+s=slide('Кабинет работодателя','Источник изображения: собственный скриншот приложения output/playwright/employer-overview.png. Данные синтетические. Локальное приложение http://localhost:8080.');
+const screenshot=await fs.readFile(path.join(workspaceDir,'output','playwright','employer-overview.png'));
+s.images.add({blob:new Uint8Array(screenshot),contentType:'image/png',alt:'Обзор найма и описание потребности',fit:'contain',position:{left:71,top:152,width:1138,height:490}});
+text(s,'Потребность, категории и этапы найма в одном рабочем пространстве.',72,661,1110,30,23,mute);
+
+s=slide('Сравнение кандидатов','Источник: собственный скриншот output/playwright/candidate-comparison.png. Демонстрационные профили. Совпадение стека опирается на самоописание, общая категория подтверждается тестом.');
+const comparison=await fs.readFile(path.join(workspaceDir,'output','playwright','candidate-comparison.png'));
+s.images.add({blob:new Uint8Array(comparison),contentType:'image/png',alt:'Таблица сравнения двух кандидатов',fit:'contain',position:{left:71,top:152,width:1138,height:490}});
+text(s,'До трёх профилей рядом. Видно совпадение и темы для уточнения.',72,661,1110,30,23,mute);
 
 const report=JSON.parse(await fs.readFile(path.join(workspaceDir,'docs','assessment-validation.json'),'utf8'));
 const variants=report.results.reduce((a,r)=>a+r.variants,0);
@@ -84,6 +89,22 @@ text(s,`${(copied/variants*100).toFixed(1).replace('.',',')}%`,72,170,1050,136,1
 text(s,`${copied} из ${variants} новых тестов прошли\nс готовым ключом от другого варианта`,76,331,1100,126,38,light);
 text(s,'Условия меняются при сохранении общего плана категории.',76,493,1100,55,29,mute);
 text(s,'Точность грейдов и сопоставимость сложности\nещё требуют проверки экспертами и кандидатами.',76,588,1100,89,27,mute);
+
+const matching=JSON.parse((await fs.readFile(path.join(workspaceDir,'docs','matching-validation.json'),'utf8')).replace(/^\uFEFF/,''));
+const dataset=JSON.parse((await fs.readFile(path.join(workspaceDir,'docs','matching-dataset.json'),'utf8')).replace(/^\uFEFF/,''));
+const baseline=matching.baseline_mean_precision_at_k.test_only;
+s=slide('Проверка подбора','Источники: docs/matching-dataset.json, docs/matching-validation.json, docs/matching-http-validation.json. 12 синтетических профилей и 15 запросов. k=1,2,3. Одинаковые фильтры категории для основного алгоритма и базовых вариантов. Ручная разметка на данных разработки, без независимой проверки. HTTP-прогон воспроизводит результат.');
+text(s,matching.mean_precision_at_k.toFixed(3).replace('.',','),72,172,560,126,92,blue,true);
+text(s,'Precision@k\nс учётом стека',76,326,500,110,34,light);
+text(s,baseline.toFixed(3).replace('.',','),689,172,500,126,92,light,true);
+text(s,'Только балл теста\nпри тех же фильтрах',693,326,500,110,34,mute);
+text(s,`${dataset.candidates.length} профилей и ${dataset.cases.length} запросов с ручной разметкой.`,76,502,1100,55,29,light);
+text(s,'Синтетический набор разработки. Независимая проверка\nс экспертами и реальными пользователями ещё впереди.',76,588,1100,89,27,mute);
+
+s=slide('Вакансии и отклики','Источник: собственный скриншот output/playwright/vacancies-employer.png, backend/internal/app/vacancies.go. Контакты открываются только компании с действующим откликом, отзыв снимает это основание доступа.');
+const vacancies=await fs.readFile(path.join(workspaceDir,'output','playwright','vacancies-employer.png'));
+s.images.add({blob:new Uint8Array(vacancies),contentType:'image/png',alt:'Вакансии работодателя с открытой зарплатой',fit:'contain',position:{left:71,top:152,width:1138,height:490}});
+text(s,'Отклик дополняет обратный найм. Кандидат явно разрешает контакт.',72,661,1110,30,23,mute);
 
 s=slide('Стек и хранение','Источник: backend/go.mod, frontend/package.json, compose.yaml и docs/architecture.md. Redis хранит сессии и счётчики. PostgreSQL хранит предметные данные, дедлайны и правила смены категории. Модульный монолит.');
 text(s,'React + TypeScript',72,169,1090,65,43,blue,true);

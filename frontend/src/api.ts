@@ -58,6 +58,14 @@ export async function api<T>(
           answer: "Решение",
           body: "Условие задачи",
           feedback: "Обратная связь",
+          description: "Задачи и описание",
+          cover_letter: "Сопроводительное письмо",
+          specialization: "Направление",
+          grade: "Уровень",
+          work_format: "Формат работы",
+          skills: "Навыки",
+          city: "Город",
+          consent: "Согласие на контакт",
           estimated_minutes: "Время решения",
         };
         const fields = [
@@ -149,7 +157,80 @@ export interface Candidate extends Profile {
   match_score: number;
   reasons: string[];
   email?: string;
+  match: Match;
 }
+export interface Match {
+  total: number;
+  test: number;
+  stack: number;
+  fsp: number;
+  test_max: number;
+  stack_max: number;
+  fsp_max: number;
+  matched: string[];
+  missing: string[];
+  reasons: string[];
+}
+export interface QualificationEvidence {
+  source: "assessment" | "demo" | "imported" | "unconfirmed";
+  specialization: string;
+  grade: string;
+  score: number;
+  confirmed_at: string | null;
+  version: string;
+  topics: { topic: string; passed: boolean }[];
+  next_grade_change_at: string | null;
+  last_practice_at: string | null;
+}
+export interface Vacancy {
+  id: string;
+  title: string;
+  description: string;
+  company_name: string;
+  company_description: string;
+  company_website: string;
+  specialization: string;
+  grade: string;
+  skills: string[];
+  work_format: "remote" | "hybrid" | "office";
+  city: string;
+  salary_min: number;
+  salary_max: number;
+  status: "draft" | "published" | "closed";
+  created_at: string;
+  application_count: number;
+  my_application: Application | null;
+}
+export interface Application {
+  id: string;
+  vacancy_id: string;
+  candidate_id: string;
+  candidate_name: string;
+  candidate_email?: string;
+  specialization: string;
+  grade: string;
+  test_score: number;
+  vacancy_title: string;
+  company_name: string;
+  salary_min: number;
+  salary_max: number;
+  cover_letter: string;
+  status: "new" | "viewed" | "shortlisted" | "rejected" | "withdrawn";
+  created_at: string;
+  updated_at: string;
+}
+export const workFormats: Record<string, string> = {
+  remote: "Удалённо",
+  hybrid: "Гибрид",
+  office: "В офисе",
+};
+export const applicationStatuses: Record<string, string> = {
+  new: "Отправлен",
+  viewed: "Рассмотрен",
+  shortlisted: "В подборке",
+  rejected: "Не подошёл",
+  withdrawn: "Отозван",
+};
 export interface Question {
   id: string;
   prompt: string;
@@ -168,6 +249,7 @@ export interface Attempt {
   score: number | null;
   passed: boolean | null;
   template_version: string;
+  topics: Record<string, boolean>;
 }
 export interface Invitation {
   id: string;

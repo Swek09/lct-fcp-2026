@@ -1,7 +1,7 @@
 {
-  "dataset": "8 synthetic candidates, 12 manually labelled descriptions",
-  "limitations": "Same demo fixtures used for development. No independent expert or user validation; eight queries leave one or two candidates after category filtering.",
-  "mean_precision_at_k": 1.0,
+  "dataset": "12 synthetic candidates, 15 manually labelled descriptions",
+  "limitations": "Same demo fixtures used for development. No independent expert or user validation. Labels measure regression on this small synthetic set only.",
+  "mean_precision_at_k": 0.9666666666666667,
   "results": [
     {
       "need": "middle backend Go PostgreSQL Redis",
@@ -11,11 +11,11 @@
       ],
       "top": [
         {
-          "name": "Александр Морозов",
-          "score": 89
+          "score": 89,
+          "name": "Александр Морозов"
         }
       ],
-      "total": 2,
+      "total": 4,
       "precision_at_k": 1.0
     },
     {
@@ -26,11 +26,11 @@
       ],
       "top": [
         {
-          "name": "Максим Лебедев",
-          "score": 82
+          "score": 82,
+          "name": "Максим Лебедев"
         }
       ],
-      "total": 2,
+      "total": 4,
       "precision_at_k": 1.0
     },
     {
@@ -41,11 +41,11 @@
       ],
       "top": [
         {
-          "name": "Анна Соколова",
-          "score": 90
+          "score": 90,
+          "name": "Анна Соколова"
         }
       ],
-      "total": 1,
+      "total": 2,
       "precision_at_k": 1.0
     },
     {
@@ -56,11 +56,11 @@
       ],
       "top": [
         {
-          "name": "Дарья Белова",
-          "score": 91
+          "score": 91,
+          "name": "Дарья Белова"
         }
       ],
-      "total": 1,
+      "total": 2,
       "precision_at_k": 1.0
     },
     {
@@ -71,8 +71,8 @@
       ],
       "top": [
         {
-          "name": "Елена Волкова",
-          "score": 98
+          "score": 98,
+          "name": "Елена Волкова"
         }
       ],
       "total": 1,
@@ -86,8 +86,8 @@
       ],
       "top": [
         {
-          "name": "Иван Ковалёв",
-          "score": 81
+          "score": 81,
+          "name": "Иван Ковалёв"
         }
       ],
       "total": 1,
@@ -101,8 +101,8 @@
       ],
       "top": [
         {
-          "name": "Никита Орлов",
-          "score": 82
+          "score": 82,
+          "name": "Никита Орлов"
         }
       ],
       "total": 1,
@@ -116,8 +116,8 @@
       ],
       "top": [
         {
-          "name": "Ольга Миронова",
-          "score": 91
+          "score": 91,
+          "name": "Ольга Миронова"
         }
       ],
       "total": 1,
@@ -132,15 +132,15 @@
       ],
       "top": [
         {
-          "name": "Елена Волкова",
-          "score": 98
+          "score": 98,
+          "name": "Елена Волкова"
         },
         {
-          "name": "Александр Морозов",
-          "score": 89
+          "score": 89,
+          "name": "Александр Морозов"
         }
       ],
-      "total": 4,
+      "total": 6,
       "precision_at_k": 1.0
     },
     {
@@ -151,11 +151,11 @@
       ],
       "top": [
         {
-          "name": "Максим Лебедев",
-          "score": 82
+          "score": 82,
+          "name": "Максим Лебедев"
         }
       ],
-      "total": 4,
+      "total": 6,
       "precision_at_k": 1.0
     },
     {
@@ -167,16 +167,16 @@
       ],
       "top": [
         {
-          "name": "Анна Соколова",
-          "score": 90
+          "score": 90,
+          "name": "Анна Соколова"
         },
         {
-          "name": "Никита Орлов",
-          "score": 82
+          "score": 85,
+          "name": "Вера Павлова"
         }
       ],
-      "total": 2,
-      "precision_at_k": 1.0
+      "total": 3,
+      "precision_at_k": 0.5
     },
     {
       "need": "аналитик SQL Python",
@@ -187,12 +187,77 @@
       ],
       "top": [
         {
-          "name": "Дарья Белова",
-          "score": 91
+          "score": 91,
+          "name": "Дарья Белова"
         },
         {
-          "name": "Ольга Миронова",
-          "score": 91
+          "score": 91,
+          "name": "Ольга Миронова"
+        }
+      ],
+      "total": 3,
+      "precision_at_k": 1.0
+    },
+    {
+      "need": "миддл бэкенд Go PostgreSQL Redis",
+      "k": 3,
+      "expected_relevant": [
+        "Александр Морозов",
+        "Андрей Новиков",
+        "София Смирнова"
+      ],
+      "top": [
+        {
+          "score": 89,
+          "name": "Александр Морозов"
+        },
+        {
+          "score": 72,
+          "name": "Андрей Новиков"
+        },
+        {
+          "score": 70,
+          "name": "София Смирнова"
+        }
+      ],
+      "total": 4,
+      "precision_at_k": 1.0
+    },
+    {
+      "need": "middle frontend React TypeScript CSS",
+      "k": 2,
+      "expected_relevant": [
+        "Анна Соколова",
+        "Вера Павлова"
+      ],
+      "top": [
+        {
+          "score": 90,
+          "name": "Анна Соколова"
+        },
+        {
+          "score": 85,
+          "name": "Вера Павлова"
+        }
+      ],
+      "total": 2,
+      "precision_at_k": 1.0
+    },
+    {
+      "need": "middle аналитик SQL Python",
+      "k": 2,
+      "expected_relevant": [
+        "Дарья Белова",
+        "Павел Фомин"
+      ],
+      "top": [
+        {
+          "score": 91,
+          "name": "Дарья Белова"
+        },
+        {
+          "score": 83,
+          "name": "Павел Фомин"
         }
       ],
       "total": 2,

@@ -12,6 +12,10 @@ import {
 import {
   ArrowUpRight,
   Building2,
+  Bookmark,
+  BriefcaseBusiness,
+  LayoutDashboard,
+  FileCheck2,
   ChevronRight,
   ClipboardCheck,
   FileUser,
@@ -40,6 +44,10 @@ import { SearchPage, CandidateDetail } from "./pages/Search";
 import { Invitations } from "./pages/Invitations";
 import { Company } from "./pages/Company";
 import { Challenges } from "./pages/Challenges";
+import { Overview } from "./pages/Overview";
+import { Vacancies, VacancyDetail, VacancyEditor } from "./pages/Vacancies";
+import { Applications } from "./pages/Applications";
+import { Compare } from "./pages/Compare";
 import { ErrorBox, Loading } from "./components/shared";
 import { Button } from "./components/ui/button";
 export function useUser() {
@@ -141,12 +149,17 @@ function Layout() {
   const links =
     user.role === "employer"
       ? [
+          { to: "/overview", icon: LayoutDashboard, label: "Обзор" },
           { to: "/candidates", icon: Search, label: "Поиск кандидатов" },
+          { to: "/shortlist", icon: Bookmark, label: "Избранное" },
           { to: "/invitations", icon: Inbox, label: "Приглашения" },
+          { to: "/vacancies", icon: BriefcaseBusiness, label: "Вакансии" },
+          { to: "/applications", icon: FileCheck2, label: "Отклики" },
           { to: "/challenges", icon: Lightbulb, label: "Задачи команды" },
           { to: "/company", icon: Building2, label: "Компания" },
         ]
       : [
+          { to: "/overview", icon: LayoutDashboard, label: "Обзор" },
           { to: "/profile", icon: FileUser, label: "Мой профиль" },
           {
             to: "/assessments",
@@ -154,6 +167,8 @@ function Layout() {
             label: "Подтвердить навыки",
           },
           { to: "/invitations", icon: Inbox, label: "Предложения" },
+          { to: "/vacancies", icon: BriefcaseBusiness, label: "Вакансии" },
+          { to: "/applications", icon: FileCheck2, label: "Мои отклики" },
           { to: "/challenges", icon: Lightbulb, label: "Короткие задания" },
         ];
   const logout = async () => {
@@ -254,21 +269,18 @@ function Layout() {
       <div className="workspace">
         <header className="topbar">
           <span>
-            ФСП <span className="separator">/</span> Карьерная платформа
+            Рабочее пространство <span className="separator">/</span>{" "}
+            {links.find((l) => location.pathname.startsWith(l.to))?.label ||
+              "Карьера"}
           </span>
           <div>
             <span className="live-dot" />
             {config.data?.demo
               ? "Демонстрационный стенд"
               : "Рабочее пространство"}
-            <a
-              href="/api/docs"
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Документация API"
-            >
+            <NavLink to="/invitations" aria-label="Открыть приглашения">
               <ArrowUpRight size={16} />
-            </a>
+            </NavLink>
           </div>
         </header>
         <main id="main" tabIndex={-1}>
@@ -287,18 +299,7 @@ function Layout() {
 function Home() {
   const me = useUser();
   if (me.isPending) return <Loading />;
-  return (
-    <Navigate
-      to={
-        me.data
-          ? me.data.role === "employer"
-            ? "/candidates"
-            : "/profile"
-          : "/login"
-      }
-      replace
-    />
-  );
+  return <Navigate to={me.data ? "/overview" : "/login"} replace />;
 }
 function Role({
   role,
@@ -319,6 +320,42 @@ export function App() {
       <Route path="/reset" element={<ResetPassword />} />
       <Route element={<Layout />}>
         <Route index element={<Home />} />
+        <Route path="/overview" element={<Overview />} />
+        <Route path="/vacancies" element={<Vacancies />} />
+        <Route
+          path="/vacancies/new"
+          element={
+            <Role role="employer">
+              <VacancyEditor />
+            </Role>
+          }
+        />
+        <Route path="/vacancies/:id" element={<VacancyDetail />} />
+        <Route
+          path="/vacancies/:id/edit"
+          element={
+            <Role role="employer">
+              <VacancyDetail edit />
+            </Role>
+          }
+        />
+        <Route path="/applications" element={<Applications />} />
+        <Route
+          path="/shortlist"
+          element={
+            <Role role="employer">
+              <SearchPage saved />
+            </Role>
+          }
+        />
+        <Route
+          path="/compare"
+          element={
+            <Role role="employer">
+              <Compare />
+            </Role>
+          }
+        />
         <Route
           path="/profile"
           element={

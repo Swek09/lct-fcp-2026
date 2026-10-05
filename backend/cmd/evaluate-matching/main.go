@@ -54,6 +54,7 @@ func main() {
 	}
 	results := []result{}
 	mean := 0.0
+	baselines := map[string]float64{"test_only": 0, "test_and_fsp": 0}
 	for _, q := range dataset.Cases {
 		if q.K < 1 {
 			panic("k must be positive")
@@ -78,15 +79,40 @@ func main() {
 		precision := float64(hits) / float64(q.K)
 		mean += precision
 		results = append(results, result{q, top, len(rows), precision})
+		for mode := range baselines {
+			base := []ranked{}
+			for _, p := range dataset.Candidates {
+				if spec != "" && p.Specialization != spec || grade != "" && p.Grade != grade {
+					continue
+				}
+				score := p.Score
+				if mode == "test_and_fsp" {
+					score = matching.Rank(matching.Evidence{TestScore: p.Score, Skills: p.Skills, Achievements: p.Achievements}, nil).Total
+				}
+				base = append(base, ranked{p.Name, score})
+			}
+			sort.SliceStable(base, func(i, j int) bool { return base[i].Score > base[j].Score })
+			hits := 0
+			for _, r := range base[:min(q.K, len(base))] {
+				if slices.Contains(q.Relevant, r.Name) {
+					hits++
+				}
+			}
+			baselines[mode] += float64(hits) / float64(q.K)
+		}
 	}
 	if len(results) == 0 {
 		panic("empty dataset")
+	}
+	for mode := range baselines {
+		baselines[mode] /= float64(len(results))
 	}
 	out := map[string]any{
 		"dataset":             fmt.Sprintf("%d synthetic candidates, %d manually labelled descriptions", len(dataset.Candidates), len(dataset.Cases)),
 		"mode":                "offline parser and ranker; no HTTP/database validation in this experiment",
 		"limitations":         "Same fixtures used for development. Small category groups; no independent expert or user validation. The HTTP API is covered separately by integration tests.",
 		"mean_precision_at_k": mean / float64(len(results)), "results": results,
+		"baseline_mean_precision_at_k": baselines,
 	}
 	enc := json.NewEncoder(os.Stdout)
 	enc.SetIndent("", "  ")

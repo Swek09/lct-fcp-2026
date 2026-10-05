@@ -20,6 +20,7 @@ import {
   specs,
 } from "../api";
 import { Button } from "../components/ui/button";
+import { EvidencePassport } from "../components/Evidence";
 import {
   ErrorBox,
   Field,
@@ -108,6 +109,7 @@ export function CandidateProfile() {
         q.data && (
           <div className="profile-layout">
             <section>
+              <EvidencePassport />
               <div className="profile-summary">
                 <span className="avatar large">{initials(q.data.name)}</span>
                 <div>
@@ -195,8 +197,9 @@ export function CandidateProfile() {
                     <strong>Разрешаю публикацию профиля работодателям</strong>
                     <small>
                       Имя, резюме и результаты будут доступны после
-                      подтверждения уровня. Почта откроется только компании,
-                      приглашение которой вы примете.
+                      подтверждения уровня. Почта откроется компании, чьё
+                      приглашение вы примете или на чью вакансию откликнетесь с
+                      согласием.
                     </small>
                   </span>
                 </label>

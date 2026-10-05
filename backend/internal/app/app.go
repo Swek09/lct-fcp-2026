@@ -107,7 +107,7 @@ func (a *App) Router() http.Handler {
 		})
 	})
 	r.Use(a.sessionMiddleware)
-	cfg := huma.DefaultConfig("ФСП · Карьера API", "0.1.0")
+	cfg := huma.DefaultConfig("ФСП · Карьера API", "0.2.0")
 	cfg.OpenAPIPath = "/api/openapi"
 	cfg.DocsPath = "/api/docs"
 	cfg.SchemasPath = "/api/schemas"
@@ -132,6 +132,9 @@ func (a *App) Router() http.Handler {
 	a.matchingRoutes(api)
 	a.invitationRoutes(api)
 	a.challengeRoutes(api)
+	a.vacancyRoutes(api)
+	a.evidenceRoutes(api)
+	a.overviewRoutes(api)
 	return r
 }
 

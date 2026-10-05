@@ -32,6 +32,10 @@ func (a *App) Seed(ctx context.Context) error {
 		{"daria@demo.fsp", "Дарья Белова", "Продуктовый аналитик", "Екатеринбург", "analytics", "middle", []string{"SQL", "Python", "Excel"}, 91, 3, 2},
 		{"nikita@demo.fsp", "Никита Орлов", "Frontend-разработчик", "Самара", "frontend", "junior", []string{"React", "JavaScript", "CSS"}, 84, 1, 0},
 		{"olga@demo.fsp", "Ольга Миронова", "Аналитик данных · эксперименты", "Москва", "analytics", "senior", []string{"SQL", "Python"}, 96, 6, 1},
+		{"sofia@demo.fsp", "София Смирнова", "Go-разработчик · платёжные сервисы", "Москва", "backend", "middle", []string{"Go", "PostgreSQL", "Docker"}, 88, 4, 0},
+		{"andrey@demo.fsp", "Андрей Новиков", "Backend-разработчик · распределённые системы", "Пермь", "backend", "middle", []string{"Go", "Redis", "Kubernetes"}, 86, 3, 1},
+		{"vera@demo.fsp", "Вера Павлова", "Frontend-разработчик · интерфейсы для бизнеса", "Санкт-Петербург", "frontend", "middle", []string{"React", "TypeScript", "CSS", "JavaScript"}, 90, 3, 0},
+		{"pavel@demo.fsp", "Павел Фомин", "Аналитик · продуктовые метрики", "Казань", "analytics", "middle", []string{"SQL", "Python", "Excel"}, 86, 2, 0},
 	}
 	tx, err := a.DB.Begin(ctx)
 	if err != nil {
@@ -74,6 +78,20 @@ func (a *App) Seed(ctx context.Context) error {
  VALUES($1,$2,'Повторная доставка событий', 'Сервис получает одно событие несколько раз из очереди. Предложите способ избежать повторного списания денег: где хранить ключ идемпотентности, как обработать параллельные запросы и что делать при сбое после записи в БД. Достаточно описать подход, писать приложение не нужно.', 'backend','middle',10) ON CONFLICT DO NOTHING`, DemoID("challenge"), id)
 	if err != nil {
 		return err
+	}
+	for _, v := range []struct {
+		key, title, description, spec, grade string
+		skills                               []string
+		min, max                             int
+	}{
+		{"vacancy-go", "Go-разработчик в команду платежей", "Развиваем платёжную платформу: API на Go, обработка событий, PostgreSQL и Redis. Предстоит проектировать идемпотентные операции, проводить ревью и повышать надёжность сервиса. Удалённая работа, гибкое начало дня, прозрачные цели и поддержка команды.", "backend", "middle", []string{"Go", "PostgreSQL", "Redis"}, 180000, 250000},
+		{"vacancy-react", "React-разработчик · продукты для бизнеса", "Создаём интерфейсы для предпринимателей. Работаем с React и TypeScript, следим за доступностью, скоростью загрузки и качеством пользовательских сценариев. Предлагаем удалённую работу, ревью с командой и задачи, результат которых виден пользователям.", "frontend", "middle", []string{"React", "TypeScript", "CSS"}, 160000, 220000},
+		{"vacancy-data", "Продуктовый аналитик", "Ищем аналитика для продуктовой команды. SQL и Python, определение метрик, проверка гипотез и A/B-эксперименты. Важно объяснять выводы и учитывать качество данных. Удалённый формат, работа вместе с разработчиками и продуктовым менеджером.", "analytics", "middle", []string{"SQL", "Python"}, 150000, 210000},
+	} {
+		_, err = tx.Exec(ctx, `INSERT INTO vacancies(id,employer_id,title,description,specialization,grade,skills,work_format,salary_min,salary_max,status) VALUES($1,$2,$3,$4,$5,$6,$7,'remote',$8,$9,'published') ON CONFLICT DO NOTHING`, DemoID(v.key), id, v.title, v.description, v.spec, v.grade, v.skills, v.min, v.max)
+		if err != nil {
+			return err
+		}
 	}
 	return tx.Commit(ctx)
 }

@@ -87,6 +87,8 @@ export function Assessments() {
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ["assessments"] }),
         queryClient.invalidateQueries({ queryKey: ["profile"] }),
+        queryClient.invalidateQueries({ queryKey: ["evidence"] }),
+        queryClient.invalidateQueries({ queryKey: ["overview"] }),
       ]);
     } catch (e) {
       setError(e);
@@ -331,18 +333,42 @@ export function Assessments() {
               {q.data
                 .filter((a) => a.submitted_at)
                 .map((a) => (
-                  <div className="history-row" key={a.id}>
-                    <div>
-                      <strong>{specs[a.specialization]}</strong>
-                      <span>
-                        {grades[a.grade]} · {date(a.started_at)}
+                  <details className="history-detail" key={a.id}>
+                    <summary className="history-row">
+                      <div>
+                        <strong>{specs[a.specialization]}</strong>
+                        <span>
+                          {grades[a.grade]} · {date(a.started_at)}
+                        </span>
+                      </div>
+                      <strong>{a.score}/100</strong>
+                      <span className={"tag " + (a.passed ? "verified" : "")}>
+                        {a.passed ? "Подтверждено" : "Не подтверждено"}
                       </span>
+                    </summary>
+                    <div className="history-feedback">
+                      <p className="muted">
+                        План тем · {a.template_version}. Правильные ответы не
+                        публикуются, чтобы сохранять ценность проверки.
+                      </p>
+                      <div className="competency-grid">
+                        {Object.entries(a.topics || {}).map(
+                          ([topic, passed]) => (
+                            <div
+                              key={topic}
+                              className={passed ? "is-passed" : ""}
+                            >
+                              <CheckCircle2 size={16} />
+                              <span>{topic}</span>
+                              <small>
+                                {passed ? "Засчитано" : "Нужно усилить"}
+                              </small>
+                            </div>
+                          ),
+                        )}
+                      </div>
                     </div>
-                    <strong>{a.score}/100</strong>
-                    <span className={"tag " + (a.passed ? "verified" : "")}>
-                      {a.passed ? "Подтверждено" : "Не подтверждено"}
-                    </span>
-                  </div>
+                  </details>
                 ))}
             </div>
           ) : (

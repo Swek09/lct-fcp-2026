@@ -83,7 +83,7 @@ export function Auth({ register = false }: { register?: boolean }) {
     setCSRF(u.csrf);
     queryClient.clear();
     queryClient.setQueryData(["me"], u);
-    navigate(u.role === "candidate" ? "/profile" : "/candidates");
+    navigate("/overview");
   };
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();

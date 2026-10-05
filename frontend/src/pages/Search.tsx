@@ -31,6 +31,8 @@ import {
   plural,
 } from "../api";
 import { Button } from "../components/ui/button";
+import { EvidencePassport, MatchBreakdown } from "../components/Evidence";
+import { SaveCandidate } from "../components/SaveCandidate";
 import {
   Empty,
   ErrorBox,
@@ -45,9 +47,12 @@ interface SearchResult {
   specialization: string;
   grade: string;
   skills: string[];
+  warnings: string[];
 }
-export function SearchPage() {
+export function SearchPage({ saved = false }: { saved?: boolean }) {
   const [params, setParams] = useSearchParams();
+  const returnPath =
+    (saved ? "/shortlist?" : "/candidates?") + params.toString();
   const [need, setNeed] = useState(params.get("need") || "");
   const [advanced, setAdvanced] = useState(!!params.get("skills"));
   const appliedNeed = params.get("need") || "";
@@ -62,6 +67,7 @@ export function SearchPage() {
   }>();
   const [previewError, setPreviewError] = useState<unknown>();
   const [previewBusy, setPreviewBusy] = useState(false);
+  const [selected, setSelected] = useState<string[]>([]);
   const previewTest = async () => {
     setPreviewBusy(true);
     setPreviewError(undefined);
@@ -74,8 +80,9 @@ export function SearchPage() {
     }
   };
   const q = useQuery({
-    queryKey: ["candidates", params.toString()],
-    queryFn: () => api<SearchResult>("/candidates?" + params),
+    queryKey: ["candidates", saved, params.toString()],
+    queryFn: () =>
+      api<SearchResult>("/candidates?" + params + (saved ? "&saved=true" : "")),
     placeholderData: keepPreviousData,
   });
   const update = (key: string, value: string) => {
@@ -91,7 +98,10 @@ export function SearchPage() {
   };
   return (
     <>
-      <PageTitle eyebrow="Банк кандидатов" title="Найдите тех, кто умеет.">
+      <PageTitle
+        eyebrow={saved ? "Ваш список для знакомства" : "Банк кандидатов"}
+        title={saved ? "Избранные специалисты" : "Найдите тех, кто умеет."}
+      >
         Специалисты с подтверждённым уровнем. Вы выбираете, с кем начать
         разговор.
       </PageTitle>
@@ -223,6 +233,31 @@ export function SearchPage() {
         </form>
       )}
       <ErrorBox error={q.error} />
+      {q.data?.warnings.map((w) => (
+        <p className="parse-warning" key={w}>
+          {w}
+        </p>
+      ))}
+      {selected.length > 0 && (
+        <div className="comparison-bar" role="status">
+          <span>Выбрано {selected.length} из 3 для сравнения</span>
+          <Button asChild size="sm" disabled={selected.length < 2}>
+            <Link
+              aria-disabled={selected.length < 2}
+              onClick={(e) => {
+                if (selected.length < 2) e.preventDefault();
+              }}
+              to={`/compare?${new URLSearchParams({ ids: selected.join(","), need: params.get("need") || "", skills: params.get("skills") || "" })}`}
+            >
+              Сравнить
+              <ArrowRight size={16} />
+            </Link>
+          </Button>
+          <button className="text-link" onClick={() => setSelected([])}>
+            Снять выбор
+          </button>
+        </div>
+      )}
       <div className="results-heading">
         <h2>
           {q.data ? (
@@ -277,13 +312,35 @@ export function SearchPage() {
         >
           {q.data.candidates.map((c) => (
             <article className="candidate-row" key={c.user_id}>
+              <div className="candidate-toolbar">
+                <label className="check">
+                  <input
+                    type="checkbox"
+                    checked={selected.includes(c.user_id)}
+                    disabled={
+                      !selected.includes(c.user_id) && selected.length >= 3
+                    }
+                    onChange={(e) =>
+                      setSelected(
+                        e.target.checked
+                          ? [...selected, c.user_id]
+                          : selected.filter((v) => v !== c.user_id),
+                      )
+                    }
+                  />
+                  <span>
+                    Сравнить <span className="sr-only">{c.name}</span>
+                  </span>
+                </label>
+                <SaveCandidate id={c.user_id} />
+              </div>
               <div className="candidate-main">
                 <span className="avatar">{initials(c.name)}</span>
                 <div className="candidate-info">
                   <div className="candidate-name">
                     <Link
-                      to={"/candidates/" + c.user_id}
-                      state={{ returnTo: "/candidates?" + params.toString() }}
+                      to={"/candidates/" + c.user_id + "?" + params}
+                      state={{ returnTo: returnPath }}
                     >
                       {c.name}
                     </Link>
@@ -331,8 +388,8 @@ export function SearchPage() {
                   )}
                   <Link
                     className="text-link"
-                    to={"/candidates/" + c.user_id}
-                    state={{ returnTo: "/candidates?" + params.toString() }}
+                    to={"/candidates/" + c.user_id + "?" + params}
+                    state={{ returnTo: returnPath }}
                   >
                     Открыть профиль
                     <ArrowRight size={16} />
@@ -347,6 +404,7 @@ export function SearchPage() {
                   </span>
                   Почему в подборке <span>+</span>
                 </summary>
+                <MatchBreakdown match={c.match} />
                 <ul>
                   {c.reasons.map((r) => (
                     <li key={r}>
@@ -400,15 +458,17 @@ export function SearchPage() {
 }
 export function CandidateDetail() {
   const { id } = useParams();
+  const [params] = useSearchParams();
   const location = useLocation();
   const returnTo =
     typeof location.state?.returnTo === "string" &&
-    location.state.returnTo.startsWith("/candidates?")
+    (location.state.returnTo.startsWith("/candidates?") ||
+      location.state.returnTo.startsWith("/shortlist?"))
       ? location.state.returnTo
       : "/candidates";
   const q = useQuery({
-    queryKey: ["candidate", id],
-    queryFn: () => api<Candidate>("/candidates/" + id),
+    queryKey: ["candidate", id, params.toString()],
+    queryFn: () => api<Candidate>("/candidates/" + id + "?" + params),
     refetchInterval: 15000,
   });
   const invitations = useQuery({
@@ -453,7 +513,11 @@ export function CandidateDetail() {
       ) : (
         q.data && (
           <>
-            <PageTitle eyebrow="Профиль кандидата" title={q.data.name}>
+            <PageTitle
+              eyebrow="Профиль кандидата"
+              title={q.data.name}
+              action={<SaveCandidate id={q.data.user_id} />}
+            >
               {q.data.headline}
             </PageTitle>
             <div className="profile-layout">
@@ -475,6 +539,7 @@ export function CandidateDetail() {
                     </span>
                   </div>
                 </div>
+                <EvidencePassport candidateId={q.data.user_id} />
                 {q.data.last_practice_at && (
                   <div className="practice-rule">
                     <Check size={18} />
@@ -537,8 +602,8 @@ export function CandidateDetail() {
                   <div className="notice">
                     <LockKeyhole size={19} />
                     <p>
-                      Контакты откроются, когда кандидат примет ваше
-                      приглашение.
+                      Контакты откроются после принятия вашего приглашения или
+                      отклика на вакансию вашей компании с согласием.
                     </p>
                   </div>
                 )}
@@ -554,6 +619,20 @@ export function CandidateDetail() {
                   <ErrorBox error={error} />
                   {invitations.isPending ? (
                     <Loading />
+                  ) : !q.data.published && q.data.email ? (
+                    <>
+                      <h3>Контакты доступны вашей компании</h3>
+                      <p className="muted">
+                        Кандидат разрешил знакомство по отклику или принятому
+                        приглашению. Напишите ему, чтобы обсудить задачи.
+                      </p>
+                      <Button asChild>
+                        <a href={"mailto:" + q.data.email}>
+                          Написать кандидату
+                          <ArrowRight size={16} />
+                        </a>
+                      </Button>
+                    </>
                   ) : sent || activeInvitation ? (
                     <>
                       <Success>
@@ -594,7 +673,6 @@ export function CandidateDetail() {
                             type="number"
                             min={1}
                             max={10000000}
-                            step={1000}
                             placeholder="180000"
                             required
                           />
@@ -605,7 +683,6 @@ export function CandidateDetail() {
                             type="number"
                             min={1}
                             max={10000000}
-                            step={1000}
                             placeholder="250000"
                             required
                           />

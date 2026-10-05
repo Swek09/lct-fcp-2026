@@ -1,0 +1,17 @@
+{
+  "measured_at_utc": "2026-10-05T18:21:32.5980714Z",
+  "scope": "Local Docker Compose, one authenticated demo employer, search, small synthetic database",
+  "requests": 200,
+  "concurrency": 20,
+  "successful": 200,
+  "failed": 0,
+  "elapsed_seconds": 0.221,
+  "requests_per_second": 905.95,
+  "latency_ms": {
+    "p50": 15.69,
+    "max": 95.13,
+    "p95": 51.67,
+    "p99": 80.35
+  },
+  "limitations": "Short read-only load with a shared session and small dataset. Does not measure independent user sessions, write contention, mail delivery, large databases or production capacity."
+}

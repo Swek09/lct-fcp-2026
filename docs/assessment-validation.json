@@ -6,57 +6,57 @@
       "category": "backend/junior",
       "variants": 100,
       "unique_facts": 100,
-      "copied_key_passes": 9,
+      "copied_key_passes": 1,
       "correct_key_passes": 100,
-      "copied_key_pass_rate": 0.09
+      "copied_key_pass_rate": 0.01
     },
     {
       "category": "backend/middle",
       "variants": 100,
       "unique_facts": 100,
-      "copied_key_passes": 3,
+      "copied_key_passes": 0,
       "correct_key_passes": 100,
-      "copied_key_pass_rate": 0.03
+      "copied_key_pass_rate": 0
     },
     {
       "category": "backend/senior",
       "variants": 100,
       "unique_facts": 100,
-      "copied_key_passes": 3,
+      "copied_key_passes": 0,
       "correct_key_passes": 100,
-      "copied_key_pass_rate": 0.03
+      "copied_key_pass_rate": 0
     },
     {
       "category": "frontend/junior",
       "variants": 100,
       "unique_facts": 100,
-      "copied_key_passes": 1,
+      "copied_key_passes": 0,
       "correct_key_passes": 100,
-      "copied_key_pass_rate": 0.01
+      "copied_key_pass_rate": 0
     },
     {
       "category": "frontend/middle",
       "variants": 100,
       "unique_facts": 100,
-      "copied_key_passes": 1,
+      "copied_key_passes": 0,
       "correct_key_passes": 100,
-      "copied_key_pass_rate": 0.01
+      "copied_key_pass_rate": 0
     },
     {
       "category": "frontend/senior",
       "variants": 100,
       "unique_facts": 100,
-      "copied_key_passes": 9,
+      "copied_key_passes": 1,
       "correct_key_passes": 100,
-      "copied_key_pass_rate": 0.09
+      "copied_key_pass_rate": 0.01
     },
     {
       "category": "analytics/junior",
       "variants": 100,
       "unique_facts": 100,
-      "copied_key_passes": 3,
+      "copied_key_passes": 1,
       "correct_key_passes": 100,
-      "copied_key_pass_rate": 0.03
+      "copied_key_pass_rate": 0.01
     },
     {
       "category": "analytics/middle",
@@ -70,10 +70,10 @@
       "category": "analytics/senior",
       "variants": 100,
       "unique_facts": 100,
-      "copied_key_passes": 2,
+      "copied_key_passes": 0,
       "correct_key_passes": 100,
-      "copied_key_pass_rate": 0.02
+      "copied_key_pass_rate": 0
     }
   ],
-  "template_version": "2026.10-v2"
+  "template_version": "2026.10-v3"
 }

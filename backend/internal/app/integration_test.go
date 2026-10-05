@@ -142,8 +142,8 @@ func TestIntegration(t *testing.T) {
 		}
 		var search SearchResponse
 		_ = json.Unmarshal(raw, &search)
-		if search.Total != 2 {
-			t.Fatalf("expected 2 middle backend, got %d", search.Total)
+		if search.Total != 4 {
+			t.Fatalf("expected 4 middle backend, got %d", search.Total)
 		}
 		if search.Candidates[0].Grade != "middle" {
 			t.Fatal("unverified grade filtering")
@@ -429,9 +429,130 @@ func TestIntegration(t *testing.T) {
 		if p.Grade != "junior" || p.Specialization != "frontend" || p.TestScore != 100 || p.NextGradeChangeAt == nil {
 			t.Fatal("category or cooldown not persisted")
 		}
+		evidenceRaw := expect(t, fresh, "GET", "/api/profile/evidence", nil, 200)
+		var evidence QualificationEvidence
+		if err := json.Unmarshal(evidenceRaw, &evidence); err != nil {
+			t.Fatal(err)
+		}
+		if evidence.Source != "assessment" || len(evidence.Topics) != 6 || evidence.ConfirmedAt == nil {
+			t.Fatal("real assessment evidence missing")
+		}
+		if bytes.Contains(evidenceRaw, []byte("expected")) || bytes.Contains(evidenceRaw, []byte("answers")) {
+			t.Fatal("evidence exposed private answer key")
+		}
 		expect(t, employer, "GET", "/api/candidates/"+freshID, nil, 404)
 		expect(t, fresh, "PUT", "/api/profile", map[string]any{"name": "Тестовый участник", "headline": "Frontend", "city": "Москва", "about": "Профиль без ФСП", "skills": []string{"React"}, "experience_years": 1, "published": true}, 200)
 		expect(t, employer, "GET", "/api/candidates/"+freshID, nil, 200)
+	})
+	t.Run("vacancies_shortlist_consent_and_isolation", func(t *testing.T) {
+		body := map[string]any{"title": "Frontend в продуктовую команду", "description": "Разрабатываем доступные интерфейсы на React. Нужен разработчик для работы с командой и проверки пользовательских сценариев.", "specialization": "frontend", "grade": "junior", "skills": []string{"React", "TypeScript"}, "work_format": "remote", "city": "", "salary_min": 100000, "salary_max": 160000}
+		expect(t, anon, "GET", "/api/vacancies", nil, 401)
+		expect(t, fresh, "POST", "/api/vacancies", body, 403)
+		body["salary_max"] = 90000
+		expect(t, employer, "POST", "/api/vacancies", body, 400)
+		body["salary_max"] = 160000
+		raw := expect(t, employer, "POST", "/api/vacancies", body, 200)
+		var created struct {
+			ID string `json:"id"`
+		}
+		if err := json.Unmarshal(raw, &created); err != nil || created.ID == "" {
+			t.Fatal("missing vacancy ID")
+		}
+		id := created.ID
+		expect(t, fresh, "GET", "/api/vacancies/"+id, nil, 404)
+		otherID := uuid.NewString()
+		otherEmail := "company-" + otherID + "@example.test"
+		if _, err := a.DB.Exec(ctx, "INSERT INTO users(id,email,password_hash,role,name,verified) SELECT $1,$2,password_hash,'employer','Другая компания',true FROM users WHERE id=$3", otherID, otherEmail, DemoID("employer@demo.fsp")); err != nil {
+			t.Fatal(err)
+		}
+		if _, err := a.DB.Exec(ctx, "INSERT INTO companies(user_id,name) VALUES($1,'Другая компания')", otherID); err != nil {
+			t.Fatal(err)
+		}
+		other := &testClient{handler: h}
+		other.login(t, otherEmail, "DemoPass2026!")
+		defer a.Redis.Del(ctx, "session:"+digest(other.cookie.Value))
+		expect(t, other, "GET", "/api/vacancies/"+id, nil, 404)
+		expect(t, other, "PUT", "/api/vacancies/"+id, body, 404)
+		expect(t, other, "PATCH", "/api/vacancies/"+id, map[string]string{"status": "published"}, 404)
+		expect(t, employer, "PATCH", "/api/vacancies/"+id, map[string]string{"status": "published"}, 200)
+		expect(t, fresh, "GET", "/api/vacancies/"+id, nil, 200)
+		if _, err := a.DB.Exec(ctx, "UPDATE profiles SET published=false WHERE user_id=$1", freshID); err != nil {
+			t.Fatal(err)
+		}
+		expect(t, employer, "GET", "/api/candidates/"+freshID, nil, 404)
+		expect(t, fresh, "POST", "/api/vacancies/"+id+"/applications", map[string]any{"cover_letter": "Интересуют задачи команды", "consent": false}, 400)
+		apply := map[string]any{"cover_letter": "Интересуют задачи команды", "consent": true}
+		expect(t, fresh, "POST", "/api/vacancies/"+id+"/applications", apply, 200)
+		expect(t, fresh, "POST", "/api/vacancies/"+id+"/applications", apply, 409)
+		raw = expect(t, employer, "GET", "/api/applications?vacancy_id="+id, nil, 200)
+		var apps []Application
+		if err := json.Unmarshal(raw, &apps); err != nil {
+			t.Fatal(err)
+		}
+		if len(apps) != 1 || apps[0].CandidateEmail != email {
+			t.Fatal("self-application did not grant scoped contact")
+		}
+		appID := apps[0].ID
+		if raw := expect(t, other, "GET", "/api/applications?vacancy_id="+id, nil, 200); string(raw) != "[]\n" && string(raw) != "[]" {
+			t.Fatalf("foreign applications leaked: %s", raw)
+		}
+		expect(t, other, "GET", "/api/candidates/"+freshID, nil, 404)
+		expect(t, employer, "GET", "/api/candidates/"+freshID, nil, 200)
+		expect(t, employer, "GET", "/api/candidates/"+freshID+"/evidence", nil, 200)
+		expect(t, employer, "POST", "/api/shortlist/"+freshID, nil, 200)
+		expect(t, fresh, "GET", "/api/shortlist", nil, 403)
+		if raw := expect(t, other, "GET", "/api/shortlist", nil, 200); bytes.Contains(raw, []byte(freshID)) {
+			t.Fatal("shortlist leaked")
+		}
+		if raw := expect(t, employer, "GET", "/api/shortlist", nil, 200); !bytes.Contains(raw, []byte(freshID)) {
+			t.Fatal("shortlist missing saved candidate")
+		}
+		if raw := expect(t, employer, "GET", "/api/candidates?saved=true", nil, 200); !bytes.Contains(raw, []byte(freshID)) {
+			t.Fatal("saved search did not honor self-application access")
+		}
+		expect(t, other, "PATCH", "/api/applications/"+appID, map[string]string{"status": "shortlisted"}, 409)
+		expect(t, fresh, "PATCH", "/api/applications/"+appID, map[string]string{"status": "shortlisted"}, 403)
+		expect(t, employer, "PATCH", "/api/applications/"+appID, map[string]string{"status": "withdrawn"}, 403)
+		expect(t, fresh, "PATCH", "/api/applications/"+appID, map[string]string{"status": "withdrawn"}, 200)
+		expect(t, employer, "GET", "/api/candidates/"+freshID, nil, 404)
+		expect(t, employer, "GET", "/api/candidates/"+freshID+"/evidence", nil, 404)
+		if raw := expect(t, employer, "GET", "/api/applications?vacancy_id="+id, nil, 200); bytes.Contains(raw, []byte(email)) {
+			t.Fatal("withdrawal did not revoke contact")
+		}
+		if raw := expect(t, employer, "GET", "/api/shortlist", nil, 200); bytes.Contains(raw, []byte(freshID)) {
+			t.Fatal("hidden withdrawn profile still visible in shortlist")
+		}
+		var wg sync.WaitGroup
+		statuses := make(chan int, 2)
+		for i := 0; i < 2; i++ {
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				code, _ := fresh.call("POST", "/api/vacancies/"+id+"/applications", apply)
+				statuses <- code
+			}()
+		}
+		wg.Wait()
+		close(statuses)
+		counts := map[int]int{}
+		for s := range statuses {
+			counts[s]++
+		}
+		if counts[200] != 1 || counts[409] != 1 {
+			t.Fatalf("concurrent application: %v", counts)
+		}
+		expect(t, employer, "PATCH", "/api/applications/"+appID, map[string]string{"status": "shortlisted"}, 200)
+		expect(t, employer, "PATCH", "/api/applications/"+appID, map[string]string{"status": "viewed"}, 409)
+		expect(t, employer, "PATCH", "/api/vacancies/"+id, map[string]string{"status": "closed"}, 200)
+		expect(t, fresh, "PATCH", "/api/applications/"+appID, map[string]string{"status": "withdrawn"}, 200)
+		expect(t, fresh, "POST", "/api/vacancies/"+id+"/applications", apply, 404)
+		expect(t, employer, "DELETE", "/api/shortlist/"+freshID, nil, 200)
+		expect(t, employer, "GET", "/api/overview", nil, 200)
+		expect(t, fresh, "GET", "/api/overview", nil, 200)
+		expect(t, anon, "GET", "/api/overview", nil, 401)
+		if _, err := a.DB.Exec(ctx, "UPDATE profiles SET published=true WHERE user_id=$1", freshID); err != nil {
+			t.Fatal(err)
+		}
 	})
 	t.Run("expiry_uses_database_deadline", func(t *testing.T) {
 		_, err := a.DB.Exec(ctx, "UPDATE profiles SET next_grade_change_at=NULL WHERE user_id=$1", freshID)

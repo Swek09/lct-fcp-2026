@@ -23,6 +23,7 @@ type Attempt struct {
 	SubmittedAt     *time.Time            `json:"submitted_at"`
 	Score           *int                  `json:"score"`
 	Passed          *bool                 `json:"passed"`
+	Topics          map[string]bool       `json:"topics"`
 }
 type storedAttempt struct {
 	ID              string                       `json:"id"`
@@ -36,10 +37,20 @@ type storedAttempt struct {
 	SubmittedAt     *time.Time                   `json:"submitted_at"`
 	Score           *int                         `json:"score"`
 	Passed          *bool                        `json:"passed"`
+	Answers         map[string]string            `json:"answers"`
 }
 
 func (s storedAttempt) public() Attempt {
-	return Attempt{s.ID, s.Specialization, s.Grade, s.TemplateVersion, assessment.Public(s.Questions), s.StartedAt, s.ExpiresAt, s.SubmittedAt, s.Score, s.Passed}
+	topics := map[string]bool{}
+	if s.SubmittedAt != nil {
+		_, topics = assessment.Score(s.Questions, s.Answers)
+		if s.Score != nil && *s.Score == 0 && s.SubmittedAt.After(s.ExpiresAt) {
+			for key := range topics {
+				topics[key] = false
+			}
+		}
+	}
+	return Attempt{ID: s.ID, Specialization: s.Specialization, Grade: s.Grade, TemplateVersion: s.TemplateVersion, Questions: assessment.Public(s.Questions), StartedAt: s.StartedAt, ExpiresAt: s.ExpiresAt, SubmittedAt: s.SubmittedAt, Score: s.Score, Passed: s.Passed, Topics: topics}
 }
 func (a *App) assessmentRoutes(api huma.API) {
 	type PreviewInput struct {
@@ -196,6 +207,9 @@ func (a *App) assessmentRoutes(api huma.API) {
 		expired := time.Now().After(s.ExpiresAt)
 		if expired {
 			score = 0
+			for key := range topics {
+				topics[key] = false
+			}
 		}
 		passed := score >= assessment.PassScore && !expired
 		raw, _ := json.Marshal(in.Body.Answers)
@@ -216,6 +230,7 @@ func (a *App) assessmentRoutes(api huma.API) {
 		s.Score = &score
 		s.Passed = &passed
 		s.SubmittedAt = &now
+		s.Answers = in.Body.Answers
 		message := "Уровень пока не подтверждён. Можно попробовать другой уровень или повторить этот через 24 часа."
 		if passed {
 			message = "Уровень подтверждён. Разрешите публикацию профиля, чтобы работодатели могли вас найти."

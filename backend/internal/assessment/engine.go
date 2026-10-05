@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-const Version = "2026.10-v2"
+const Version = "2026.10-v3"
 const PassScore = 70
 
 type Question struct {
@@ -41,6 +41,10 @@ func Generate(spec, grade string, seed uint64) []PrivateQuestion {
 		if i == 1 || i == 3 {
 			result = append(result, scenario(spec, grade, i, r, t.topic))
 			continue
+		}
+		if alternatives, ok := caseVariants[spec+"-"+grade]; ok && r.IntN(2) == 1 {
+			variant := alternatives[i/2]
+			t = template{topic: t.topic, prompt: variant.prompt, choices: variant.choices}
 		}
 		opts := append([]string{}, t.choices...)
 		expected := opts[0]

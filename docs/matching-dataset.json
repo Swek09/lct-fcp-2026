@@ -8,7 +8,11 @@
     {"name":"Иван Ковалёв","specialization":"backend","grade":"junior","score":83,"skills":["Go","SQL","Docker"],"achievements":0},
     {"name":"Дарья Белова","specialization":"analytics","grade":"middle","score":91,"skills":["SQL","Python","Excel"],"achievements":2},
     {"name":"Никита Орлов","specialization":"frontend","grade":"junior","score":84,"skills":["React","JavaScript","CSS"],"achievements":0},
-    {"name":"Ольга Миронова","specialization":"analytics","grade":"senior","score":96,"skills":["SQL","Python"],"achievements":1}
+    {"name":"Ольга Миронова","specialization":"analytics","grade":"senior","score":96,"skills":["SQL","Python"],"achievements":1},
+    {"name":"София Смирнова","specialization":"backend","grade":"middle","score":88,"skills":["Go","PostgreSQL","Docker"],"achievements":0},
+    {"name":"Андрей Новиков","specialization":"backend","grade":"middle","score":86,"skills":["Go","Redis","Kubernetes"],"achievements":1},
+    {"name":"Вера Павлова","specialization":"frontend","grade":"middle","score":90,"skills":["React","TypeScript","CSS","JavaScript"],"achievements":0},
+    {"name":"Павел Фомин","specialization":"analytics","grade":"middle","score":86,"skills":["SQL","Python","Excel"],"achievements":0}
   ],
   "cases": [
     {"need":"middle backend Go PostgreSQL Redis","k":1,"relevant":["Александр Морозов"]},
@@ -22,6 +26,9 @@
     {"need":"backend Go Redis","k":2,"relevant":["Елена Волкова","Александр Морозов"]},
     {"need":"backend Python Docker","k":1,"relevant":["Максим Лебедев"]},
     {"need":"frontend React CSS","k":2,"relevant":["Анна Соколова","Никита Орлов"]},
-    {"need":"аналитик SQL Python","k":2,"relevant":["Ольга Миронова","Дарья Белова"]}
+    {"need":"аналитик SQL Python","k":2,"relevant":["Ольга Миронова","Дарья Белова"]},
+    {"need":"миддл бэкенд Go PostgreSQL Redis","k":3,"relevant":["Александр Морозов","Андрей Новиков","София Смирнова"]},
+    {"need":"middle frontend React TypeScript CSS","k":2,"relevant":["Анна Соколова","Вера Павлова"]},
+    {"need":"middle аналитик SQL Python","k":2,"relevant":["Дарья Белова","Павел Фомин"]}
   ]
 }

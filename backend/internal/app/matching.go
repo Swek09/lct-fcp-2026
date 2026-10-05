@@ -12,9 +12,10 @@ import (
 
 type Candidate struct {
 	Profile
-	MatchScore int      `json:"match_score"`
-	Reasons    []string `json:"reasons"`
-	Email      string   `json:"email,omitempty"`
+	MatchScore int            `json:"match_score"`
+	Reasons    []string       `json:"reasons"`
+	Email      string         `json:"email,omitempty"`
+	Match      matching.Score `json:"match"`
 }
 type SearchResponse struct {
 	Candidates     []Candidate `json:"candidates"`
@@ -22,6 +23,7 @@ type SearchResponse struct {
 	Specialization string      `json:"specialization"`
 	Grade          string      `json:"grade"`
 	Skills         []string    `json:"skills"`
+	Warnings       []string    `json:"warnings"`
 }
 
 func (a *App) matchingRoutes(api huma.API) {
@@ -31,6 +33,7 @@ func (a *App) matchingRoutes(api huma.API) {
 		Grade          string `query:"grade"`
 		Skills         string `query:"skills" maxLength:"500"`
 		FSP            bool   `query:"fsp"`
+		Saved          bool   `query:"saved"`
 		Page           int    `query:"page" default:"1" minimum:"1" maximum:"1000"`
 	}
 	register(api, "GET", "/api/candidates", "Подбор по подтверждённой категории", func(ctx context.Context, in *Search) (*Response[SearchResponse], error) {
@@ -48,13 +51,15 @@ func (a *App) matchingRoutes(api huma.API) {
 		if in.Skills != "" {
 			skills = strings.Split(in.Skills, ",")
 		}
+		grant := strings.ReplaceAll(contactGrant, "$2", "$4")
 		rows, err := a.DB.Query(ctx, `SELECT row_to_json(t) FROM (
-    SELECT p.*,u.name,CASE WHEN EXISTS(SELECT 1 FROM invitations i WHERE i.candidate_id=p.user_id AND i.employer_id=$4 AND i.status='accepted') THEN u.email ELSE '' END AS email
+    SELECT p.*,u.name,CASE WHEN (`+grant+`) THEN u.email ELSE '' END AS email
     FROM profiles p JOIN users u ON u.id=p.user_id
-    WHERE p.published AND p.grade<>'' AND u.verified
+    WHERE ((p.published AND p.grade<>'' AND u.verified) OR ($5 AND (`+grant+`)))
     AND ($1='' OR p.specialization=$1) AND ($2='' OR p.grade=$2)
     AND (NOT $3 OR jsonb_array_length(p.achievements)>0)
-  ) t`, spec, grade, in.FSP, u.ID)
+    AND (NOT $5 OR EXISTS(SELECT 1 FROM shortlist s WHERE s.employer_id=$4 AND s.candidate_id=p.user_id))
+  ) t`, spec, grade, in.FSP, u.ID, in.Saved)
 		if err != nil {
 			return nil, internal(err)
 		}
@@ -89,6 +94,7 @@ func (a *App) matchingRoutes(api huma.API) {
 			rank := matching.Rank(matching.Evidence{TestScore: c.TestScore, Skills: c.Skills, Achievements: len(c.Achievements)}, skills)
 			c.MatchScore = rank.Total
 			c.Reasons = rank.Reasons
+			c.Match = rank
 			if c.LastPracticeAt != nil && time.Since(*c.LastPracticeAt) <= 30*24*time.Hour {
 				c.Reasons = append(c.Reasons, "Работодатель подтвердил решение короткой задачи за последние 30 дней")
 			}
@@ -112,10 +118,19 @@ func (a *App) matchingRoutes(api huma.API) {
 		total := len(result)
 		start := min((in.Page-1)*20, total)
 		end := min(start+20, total)
-		return ok(SearchResponse{result[start:end], total, spec, grade, skills}), nil
+		warnings := []string{}
+		if in.Need != "" && spec == "" {
+			warnings = append(warnings, "Направление не определено однозначно. Выберите его в фильтре.")
+		}
+		if in.Need != "" && grade == "" {
+			warnings = append(warnings, "Уровень не указан: показываем все подтверждённые грейды.")
+		}
+		return ok(SearchResponse{Candidates: result[start:end], Total: total, Specialization: spec, Grade: grade, Skills: skills, Warnings: warnings}), nil
 	})
 	type Detail struct {
-		ID string `path:"id"`
+		ID     string `path:"id"`
+		Need   string `query:"need" maxLength:"2000"`
+		Skills string `query:"skills" maxLength:"500"`
 	}
 	register(api, "GET", "/api/candidates/{id}", "Профиль с проверкой доступа к контактам", func(ctx context.Context, in *Detail) (*Response[Candidate], error) {
 		u, err := a.require(ctx, "employer")
@@ -123,9 +138,8 @@ func (a *App) matchingRoutes(api huma.API) {
 			return nil, err
 		}
 		c, err := readJSON[Candidate](ctx, a.DB, `SELECT row_to_json(t) FROM (
-   SELECT p.*,u.name,CASE WHEN EXISTS(SELECT 1 FROM invitations i WHERE i.candidate_id=p.user_id AND i.employer_id=$2 AND i.status='accepted') THEN u.email ELSE '' END AS email
-   FROM profiles p JOIN users u ON u.id=p.user_id WHERE p.user_id=$1 AND u.verified AND
-   ((p.published AND p.grade<>'') OR EXISTS(SELECT 1 FROM invitations i WHERE i.candidate_id=p.user_id AND i.employer_id=$2 AND i.status='accepted'))
+   SELECT p.*,u.name,CASE WHEN (`+contactGrant+`) THEN u.email ELSE '' END AS email
+   FROM profiles p JOIN users u ON u.id=p.user_id WHERE p.user_id=$1 AND (`+candidateAccess+`)
   ) t`, in.ID, u.ID)
 		if isMissing(err) {
 			return nil, huma.Error404NotFound("Профиль не найден")
@@ -133,9 +147,14 @@ func (a *App) matchingRoutes(api huma.API) {
 		if err != nil {
 			return nil, internal(err)
 		}
-		rank := matching.Rank(matching.Evidence{TestScore: c.TestScore, Skills: c.Skills, Achievements: len(c.Achievements)}, nil)
+		_, _, wanted := matching.ParseNeed(in.Need)
+		if in.Skills != "" {
+			wanted = strings.Split(in.Skills, ",")
+		}
+		rank := matching.Rank(matching.Evidence{TestScore: c.TestScore, Skills: c.Skills, Achievements: len(c.Achievements)}, wanted)
 		c.MatchScore = rank.Total
 		c.Reasons = rank.Reasons
+		c.Match = rank
 		return ok(c), nil
 	})
 }
