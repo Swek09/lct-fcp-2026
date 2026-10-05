@@ -61,6 +61,25 @@ def validate_archive(archive, revision):
                 raise ValueError('Image revision label does not match the tested commit')
         if actual != expected:
             raise ValueError('Both application images must be present')
+        # Docker's containerd store can prefer OCI names to manifest.json tags.
+        # Check both formats so a bundle cannot retag a neighboring service.
+        if 'index.json' in bundle.getnames():
+            info = bundle.getmember('index.json')
+            if not info.isfile() or info.size > 65536:
+                raise ValueError('Invalid OCI index')
+            index = json.load(bundle.extractfile(info))
+            descriptors = index.get('manifests', [])
+            if len(descriptors) != 2:
+                raise ValueError('Exactly two OCI application references are required')
+            names = set()
+            for descriptor in descriptors:
+                annotations = descriptor.get('annotations', {})
+                name = annotations.get('io.containerd.image.name', '').removeprefix('docker.io/library/')
+                if name not in expected or annotations.get('org.opencontainers.image.ref.name') != revision:
+                    raise ValueError('OCI references may only name this FSP release')
+                names.add(name)
+            if names != expected:
+                raise ValueError('Both OCI application references must be present')
 
 
 def health(revision):

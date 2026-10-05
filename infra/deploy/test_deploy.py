@@ -13,7 +13,7 @@ REVISION = 'a' * 40
 
 
 class ArchiveValidationTests(unittest.TestCase):
-    def validate(self, images):
+    def validate(self, images, oci_names=None):
         with tempfile.TemporaryDirectory() as directory:
             archive = Path(directory) / 'images.tar.gz'
             manifest = []
@@ -29,6 +29,12 @@ class ArchiveValidationTests(unittest.TestCase):
                 info = tarfile.TarInfo('manifest.json')
                 info.size = len(content)
                 bundle.addfile(info, io.BytesIO(content))
+                if oci_names is not None:
+                    content = json.dumps({'manifests': [{'annotations': {'io.containerd.image.name': name,
+                                                'org.opencontainers.image.ref.name': REVISION}} for name in oci_names]}).encode()
+                    info = tarfile.TarInfo('index.json')
+                    info.size = len(content)
+                    bundle.addfile(info, io.BytesIO(content))
             deploy.validate_archive(archive, REVISION)
 
     def expected(self):
@@ -62,6 +68,14 @@ class ArchiveValidationTests(unittest.TestCase):
     def test_rejects_duplicate_backend_images(self):
         with self.assertRaises(ValueError):
             self.validate([self.expected()[0], self.expected()[0]])
+
+    def test_accepts_the_containerd_archive_format(self):
+        self.validate(self.expected(), [f'docker.io/library/fsp-career-api:{REVISION}',
+                                       f'docker.io/library/fsp-career-web:{REVISION}'])
+
+    def test_rejects_a_foreign_oci_name_even_with_valid_docker_tags(self):
+        with self.assertRaises(ValueError):
+            self.validate(self.expected(), [f'docker.io/library/fsp-career-api:{REVISION}', 'docker.io/library/redis:8.2.1-alpine'])
 
 
 if __name__ == '__main__':
