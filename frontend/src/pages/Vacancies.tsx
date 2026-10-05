@@ -28,6 +28,7 @@ import {
 } from "../api";
 import { useUser } from "../App";
 import { Button } from "../components/ui/button";
+import { Select } from "../components/ui/select";
 import {
   Empty,
   ErrorBox,
@@ -99,45 +100,33 @@ export function Vacancies() {
         <div className="filters">
           <label>
             <span>Направление</span>
-            <select
+            <Select
+              label="Направление"
+              options={specs}
+              emptyLabel="Все направления"
               value={params.get("specialization") || ""}
-              onChange={(e) => update("specialization", e.target.value)}
-            >
-              <option value="">Все направления</option>
-              {Object.entries(specs).map(([k, v]) => (
-                <option key={k} value={k}>
-                  {v}
-                </option>
-              ))}
-            </select>
+              onValueChange={(value) => update("specialization", value)}
+            />
           </label>
           <label>
             <span>Уровень</span>
-            <select
+            <Select
+              label="Уровень"
+              options={grades}
+              emptyLabel="Все уровни"
               value={params.get("grade") || ""}
-              onChange={(e) => update("grade", e.target.value)}
-            >
-              <option value="">Все уровни</option>
-              {Object.entries(grades).map(([k, v]) => (
-                <option key={k} value={k}>
-                  {v}
-                </option>
-              ))}
-            </select>
+              onValueChange={(value) => update("grade", value)}
+            />
           </label>
           <label>
             <span>Формат</span>
-            <select
+            <Select
+              label="Формат"
+              options={workFormats}
+              emptyLabel="Любой формат"
               value={params.get("work_format") || ""}
-              onChange={(e) => update("work_format", e.target.value)}
-            >
-              <option value="">Любой формат</option>
-              {Object.entries(workFormats).map(([k, v]) => (
-                <option key={k} value={k}>
-                  {v}
-                </option>
-              ))}
-            </select>
+              onValueChange={(value) => update("work_format", value)}
+            />
           </label>
         </div>
       )}
@@ -336,41 +325,32 @@ export function VacancyEditor({ vacancy }: { vacancy?: Vacancy }) {
         <aside className="form-stack">
           <div className="salary-fields">
             <Field label="Направление">
-              <select
+              <Select
+                label="Направление"
+                options={specs}
                 name="specialization"
                 defaultValue={vacancy?.specialization || "backend"}
-              >
-                {Object.entries(specs).map(([k, v]) => (
-                  <option value={k} key={k}>
-                    {v}
-                  </option>
-                ))}
-              </select>
+              />
             </Field>
             <Field label="Уровень">
-              <select name="grade" defaultValue={vacancy?.grade || "middle"}>
-                {Object.entries(grades).map(([k, v]) => (
-                  <option value={k} key={k}>
-                    {v}
-                  </option>
-                ))}
-              </select>
+              <Select
+                label="Уровень"
+                options={grades}
+                name="grade"
+                defaultValue={vacancy?.grade || "middle"}
+              />
             </Field>
           </div>
           <Field label="Формат работы">
-            <select
+            <Select
+              label="Формат работы"
+              options={workFormats}
               name="work_format"
               value={format}
-              onChange={(e) =>
-                setFormat(e.target.value as Vacancy["work_format"])
+              onValueChange={(value) =>
+                setFormat(value as Vacancy["work_format"])
               }
-            >
-              {Object.entries(workFormats).map(([k, v]) => (
-                <option value={k} key={k}>
-                  {v}
-                </option>
-              ))}
-            </select>
+            />
           </Field>
           <Field
             label="Город"

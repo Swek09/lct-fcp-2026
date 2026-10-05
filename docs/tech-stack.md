@@ -10,7 +10,7 @@ package-lock.json и Dockerfile.
 | Область | Выбор |
 | --- | --- |
 | Фронтенд | React 19.3 + TypeScript 7 + Vite 8 |
-| Интерфейс | Tailwind CSS 4, кнопка shadcn/ui на Radix Slot, Lucide |
+| Интерфейс | Tailwind CSS 4, кнопка shadcn/ui на Radix Slot, списки на Radix Select 2.3.7, Lucide |
 | Работа фронтенда с API | TanStack Query 5, React Router 7 |
 | Бэкенд | Go 1.26.8 + chi 5 + Huma 2 |
 | API | HTTP/JSON, автоматически формируемая OpenAPI 3.1 |

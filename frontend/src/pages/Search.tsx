@@ -31,6 +31,7 @@ import {
   plural,
 } from "../api";
 import { Button } from "../components/ui/button";
+import { Select } from "../components/ui/select";
 import { EvidencePassport, MatchBreakdown } from "../components/Evidence";
 import { SaveCandidate } from "../components/SaveCandidate";
 import {
@@ -164,31 +165,23 @@ export function SearchPage({ saved = false }: { saved?: boolean }) {
       <div className="filters">
         <label>
           <span>Специализация</span>
-          <select
+          <Select
+            label="Специализация"
+            options={specs}
+            emptyLabel="Все направления"
             value={params.get("specialization") || ""}
-            onChange={(e) => update("specialization", e.target.value)}
-          >
-            <option value="">Все направления</option>
-            {Object.entries(specs).map(([k, v]) => (
-              <option key={k} value={k}>
-                {v}
-              </option>
-            ))}
-          </select>
+            onValueChange={(value) => update("specialization", value)}
+          />
         </label>
         <label>
           <span>Уровень</span>
-          <select
+          <Select
+            label="Уровень"
+            options={grades}
+            emptyLabel="Все уровни"
             value={params.get("grade") || ""}
-            onChange={(e) => update("grade", e.target.value)}
-          >
-            <option value="">Все уровни</option>
-            {Object.entries(grades).map(([k, v]) => (
-              <option key={k} value={k}>
-                {v}
-              </option>
-            ))}
-          </select>
+            onValueChange={(value) => update("grade", value)}
+          />
         </label>
         <label className="check fsp-filter">
           <input

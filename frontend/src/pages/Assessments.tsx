@@ -11,6 +11,7 @@ import {
   specs,
 } from "../api";
 import { Button } from "../components/ui/button";
+import { Select } from "../components/ui/select";
 import {
   Empty,
   ErrorBox,
@@ -259,28 +260,20 @@ export function Assessments() {
               </p>
               <div className="form-grid">
                 <Field label="Специализация">
-                  <select
+                  <Select
+                    label="Специализация"
+                    options={specs}
                     value={spec}
-                    onChange={(e) => setSpec(e.target.value)}
-                  >
-                    {Object.entries(specs).map(([k, v]) => (
-                      <option key={k} value={k}>
-                        {v}
-                      </option>
-                    ))}
-                  </select>
+                    onValueChange={setSpec}
+                  />
                 </Field>
                 <Field label="Предполагаемый грейд">
-                  <select
+                  <Select
+                    label="Предполагаемый грейд"
+                    options={grades}
                     value={grade}
-                    onChange={(e) => setGrade(e.target.value)}
-                  >
-                    {Object.entries(grades).map(([k, v]) => (
-                      <option key={k} value={k}>
-                        {v}
-                      </option>
-                    ))}
-                  </select>
+                    onValueChange={setGrade}
+                  />
                 </Field>
               </div>
               <div className="test-facts">

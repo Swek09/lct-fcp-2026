@@ -14,6 +14,7 @@ import {
 } from "../api";
 import { useUser } from "../App";
 import { Button } from "../components/ui/button";
+import { Select } from "../components/ui/select";
 import {
   Empty,
   ErrorBox,
@@ -129,22 +130,19 @@ export function Challenges() {
           </Field>
           <div className="form-grid">
             <Field label="Специализация">
-              <select name="specialization">
-                {Object.entries(specs).map(([key, label]) => (
-                  <option key={key} value={key}>
-                    {label}
-                  </option>
-                ))}
-              </select>
+              <Select
+                label="Специализация"
+                name="specialization"
+                options={specs}
+              />
             </Field>
             <Field label="Подтверждённый уровень">
-              <select name="grade" defaultValue="middle">
-                {Object.entries(grades).map(([key, label]) => (
-                  <option key={key} value={key}>
-                    {label}
-                  </option>
-                ))}
-              </select>
+              <Select
+                label="Подтверждённый уровень"
+                name="grade"
+                defaultValue="middle"
+                options={grades}
+              />
             </Field>
           </div>
           <Field
@@ -474,10 +472,14 @@ function Review({
       {s.status === "submitted" ? (
         <form className="form-stack" onSubmit={submit}>
           <Field label="Результат проверки">
-            <select name="status">
-              <option value="accepted">Подход подходит</option>
-              <option value="needs_work">Есть что улучшить</option>
-            </select>
+            <Select
+              label="Результат проверки"
+              name="status"
+              options={{
+                accepted: "Подход подходит",
+                needs_work: "Есть что улучшить",
+              }}
+            />
           </Field>
           <Field
             label="Обратная связь"

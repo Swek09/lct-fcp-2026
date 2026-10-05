@@ -1366,7 +1366,6 @@ main {
   color: var(--text);
 }
 input:not([type="checkbox"]):not([type="radio"]),
-select,
 textarea {
   min-width: 0;
   width: 100%;
@@ -1383,8 +1382,7 @@ textarea::placeholder {
   color: oklch(0.55 0.014 236);
 }
 input:focus,
-textarea:focus,
-select:focus {
+textarea:focus {
   border-color: var(--accent);
   outline: 2px solid color-mix(in oklch, var(--accent) 20%, transparent);
   outline-offset: 1px;
@@ -1392,8 +1390,133 @@ select:focus {
 textarea {
   resize: vertical;
 }
-select {
-  padding-right: 28px;
+.select-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  width: 100%;
+  min-width: 0;
+  min-height: 46px;
+  padding: 11px 14px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: oklch(0.19 0.012 237);
+  color: var(--text);
+  font: inherit;
+  line-height: 1.5;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.18s,
+    background-color 0.18s;
+}
+.select-trigger:hover:not([data-disabled]) {
+  border-color: color-mix(in oklch, var(--muted) 65%, var(--line));
+  background: oklch(0.22 0.014 237);
+}
+.select-trigger:focus-visible,
+.select-trigger[data-state="open"] {
+  border-color: var(--accent);
+  outline: 2px solid color-mix(in oklch, var(--accent) 20%, transparent);
+  outline-offset: 1px;
+}
+.select-trigger[data-disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.select-value {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.select-chevron {
+  flex-shrink: 0;
+  color: var(--muted);
+  transition: transform 0.16s;
+}
+.select-trigger[data-state="open"] .select-chevron {
+  transform: rotate(180deg);
+  color: var(--accent);
+}
+.select-content {
+  z-index: 1000;
+  width: max(220px, var(--radix-select-trigger-width));
+  max-width: calc(100vw - 24px);
+  max-height: min(320px, var(--radix-select-content-available-height));
+  overflow: hidden;
+  padding: 5px;
+  border: 1px solid oklch(0.39 0.02 242);
+  border-radius: 10px;
+  background: oklch(0.22 0.018 238);
+  color: var(--text);
+  box-shadow: 0 12px 32px oklch(0.1 0.012 238 / 0.38);
+  transform-origin: var(--radix-select-content-transform-origin);
+  animation: select-appear 0.14s ease-out;
+}
+.select-viewport {
+  padding: 0;
+}
+.select-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 42px;
+  padding: 10px 36px 10px 12px;
+  border-radius: 6px;
+  font-size: 0.94rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+}
+.select-item[data-state="checked"] {
+  color: oklch(0.86 0.065 289);
+  background: color-mix(in oklch, var(--accent) 13%, transparent);
+}
+.select-item[data-highlighted] {
+  background: oklch(0.31 0.026 254);
+}
+.select-item-check {
+  position: absolute;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  color: var(--accent);
+}
+.select-scroll-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+  color: var(--muted);
+}
+@keyframes select-appear {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .select-content {
+    animation: none;
+  }
+  .select-chevron,
+  .select-trigger {
+    transition: none;
+  }
+}
+@media (max-width: 600px) {
+  .filters > label:first-child:not(.check) {
+    flex-basis: 100%;
+  }
 }
 input[type="checkbox"],
 input[type="radio"] {
@@ -1419,10 +1542,10 @@ input[type="radio"] {
   font-size: 0.75rem;
   color: var(--muted);
 }
-.filters select {
+.filters .select-trigger {
   padding: 10px 12px;
   min-width: 150px;
-  font-size: 0.84rem;
+  font-size: 0.9rem;
 }
 .check {
   display: flex;
@@ -2676,10 +2799,10 @@ input[type="radio"] {
     flex: 1;
     min-width: 130px;
   }
-  .filters select {
+  .filters .select-trigger {
     min-width: 0;
     width: 100%;
-    font-size: 0.76rem;
+    font-size: 0.9rem;
   }
   .filters .fsp-filter {
     margin-left: 0;
