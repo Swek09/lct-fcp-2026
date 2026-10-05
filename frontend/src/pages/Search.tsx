@@ -33,6 +33,7 @@ import {
 import { Button } from "../components/ui/button";
 import { Select } from "../components/ui/select";
 import { EvidencePassport, MatchBreakdown } from "../components/Evidence";
+import { ProfessionalDetails } from "../components/ProfessionalProfile";
 import { SaveCandidate } from "../components/SaveCandidate";
 import {
   CompareCandidate,
@@ -157,9 +158,9 @@ export function SearchPage({ saved = false }: { saved?: boolean }) {
             {grades[preview.grade]}
           </summary>
           <p className="muted">
-            6 заданий по общему плану категории. В попытке кандидата будут
-            другие параметры. Стек из описания влияет на подбор; этот тест
-            подтверждает специализацию и грейд.
+            {preview.questions.length} заданий по общему плану категории. В
+            попытке кандидата будут другие параметры. Стек из описания влияет на
+            подбор; этот тест подтверждает специализацию и грейд.
           </p>
           <ol>
             {preview.questions.map((question) => (
@@ -562,6 +563,7 @@ export function CandidateDetail() {
                   {plural(q.data.experience_years, ["год", "года", "лет"])} ·
                   сведения из резюме
                 </p>
+                <ProfessionalDetails profile={q.data} />
                 <div className="section-heading">
                   <h2>Достижения ФСП</h2>
                 </div>

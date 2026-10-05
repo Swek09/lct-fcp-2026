@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Swek09/lct-fcp-2026/backend/internal/assessment"
 	"github.com/Swek09/lct-fcp-2026/backend/internal/db"
 	"github.com/danielgtaylor/huma/v2"
 	"github.com/danielgtaylor/huma/v2/adapters/humachi"
@@ -124,7 +125,7 @@ func (a *App) Router() http.Handler {
 		return ok(map[string]string{"status": "ok"}), nil
 	})
 	huma.Get(api, "/api/config", func(ctx context.Context, in *struct{}) (*Response[map[string]any], error) {
-		return ok(map[string]any{"demo": a.Config.Demo, "grade_cooldown_days": 90, "retry_hours": 24, "test_minutes": 20, "salary_period": "month", "salary_tax": "gross"}), nil
+		return ok(map[string]any{"demo": a.Config.Demo, "grade_cooldown_days": 90, "retry_hours": 24, "test_minutes": 20, "test_questions": assessment.QuestionCount, "test_pass_score": assessment.PassScore, "test_version": assessment.Version, "salary_period": "month", "salary_tax": "gross"}), nil
 	})
 	a.authRoutes(api)
 	a.profileRoutes(api)

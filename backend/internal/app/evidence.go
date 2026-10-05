@@ -70,8 +70,12 @@ func (a *App) evidence(ctx context.Context, id string) (QualificationEvidence, e
 	_, topics := assessment.Score(qs, as)
 	e.Source = "assessment"
 	e.ConfirmedAt = &at
+	seen := map[string]bool{}
 	for _, q := range qs {
-		e.Topics = append(e.Topics, TopicEvidence{q.Topic, topics[q.Topic]})
+		if !seen[q.Topic] {
+			e.Topics = append(e.Topics, TopicEvidence{q.Topic, topics[q.Topic]})
+			seen[q.Topic] = true
+		}
 	}
 	return e, nil
 }

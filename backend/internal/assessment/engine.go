@@ -10,7 +10,8 @@ import (
 	"strings"
 )
 
-const Version = "2026.10-v3"
+const Version = "2026.10-v4"
+const QuestionCount = 12
 const PassScore = 70
 
 type Question struct {
@@ -22,7 +23,8 @@ type Question struct {
 }
 type PrivateQuestion struct {
 	Question
-	Expected string `json:"expected"`
+	Expected   string `json:"expected"`
+	TemplateID string `json:"template_id,omitempty"`
 }
 type template struct {
 	topic, prompt string
@@ -33,24 +35,54 @@ func Valid(spec, grade string) bool {
 	return (spec == "backend" || spec == "frontend" || spec == "analytics") && (grade == "junior" || grade == "middle" || grade == "senior")
 }
 func Generate(spec, grade string, seed uint64) []PrivateQuestion {
+	if !Valid(spec, grade) {
+		return []PrivateQuestion{}
+	}
 	r := rand.New(rand.NewPCG(seed, seed^0x9e3779b97f4a7c15))
 	bank := banks[spec+"-"+grade]
-	result := make([]PrivateQuestion, 0, 6)
-	// Equal topic blueprint and scoring for all variants in the same category.
-	for i, t := range bank {
+	result := make([]PrivateQuestion, 0, QuestionCount)
+	// Two distinct families per topic. Half of the tasks require new numeric facts.
+	for i, base := range bank {
 		if i == 1 || i == 3 {
-			result = append(result, scenario(spec, grade, i, r, t.topic))
+			for _, family := range r.Perm(3)[:2] {
+				var q PrivateQuestion
+				if family == 0 {
+					q = scenario(spec, grade, i, r, base.topic)
+				} else {
+					q = expandedScenario(spec, grade, i, family, r, base.topic)
+				}
+				q.ID = fmt.Sprintf("q%d", len(result)+1)
+				q.TemplateID = fmt.Sprintf("%s-%s-topic%d-number%d", spec, grade, i, family)
+				result = append(result, q)
+			}
 			continue
 		}
-		if alternatives, ok := caseVariants[spec+"-"+grade]; ok && r.IntN(2) == 1 {
-			variant := alternatives[i/2]
-			t = template{topic: t.topic, prompt: variant.prompt, choices: variant.choices}
+		pool := []template{base, caseVariants[spec+"-"+grade][i/2], newCases[spec+"-"+grade][i/2]}
+		for _, family := range r.Perm(len(pool))[:2] {
+			t := pool[family]
+			opts := append([]string{}, t.choices...)
+			expected := opts[0]
+			r.Shuffle(len(opts), func(i, j int) { opts[i], opts[j] = opts[j], opts[i] })
+			result = append(result, PrivateQuestion{Question: Question{ID: fmt.Sprintf("q%d", len(result)+1), Prompt: t.prompt, Topic: base.topic, Kind: "choice", Options: opts}, Expected: expected, TemplateID: fmt.Sprintf("%s-%s-topic%d-choice%d", spec, grade, i, family)})
 		}
-		opts := append([]string{}, t.choices...)
-		expected := opts[0]
-		r.Shuffle(len(opts), func(i, j int) { opts[i], opts[j] = opts[j], opts[i] })
-		result = append(result, PrivateQuestion{Question: Question{ID: fmt.Sprintf("q%d", i+1), Prompt: t.prompt, Topic: t.topic, Kind: "choice", Options: opts}, Expected: expected})
 	}
+	for _, family := range r.Perm(3)[:2] {
+		var q PrivateQuestion
+		if family == 0 {
+			q = numericScenario(spec, grade, r)
+		} else {
+			q = expandedScenario(spec, grade, 5, family, r, numericTopic(spec))
+		}
+		q.ID = fmt.Sprintf("q%d", len(result)+1)
+		q.TemplateID = fmt.Sprintf("%s-%s-topic5-number%d", spec, grade, family)
+		result = append(result, q)
+	}
+	return result
+}
+func numericTopic(spec string) string {
+	return map[string]string{"backend": "Расчёт нагрузки", "frontend": "Расчёт интерфейса", "analytics": "Расчёт метрики"}[spec]
+}
+func numericScenario(spec, grade string, r *rand.Rand) PrivateQuestion {
 	n := r.IntN(9) + 2
 	var prompt, answer, topic string
 	switch spec {
@@ -94,8 +126,7 @@ func Generate(spec, grade string, seed uint64) []PrivateQuestion {
 		}
 		topic = "Расчёт метрики"
 	}
-	result = append(result, PrivateQuestion{Question: Question{ID: "q6", Prompt: prompt, Topic: topic, Kind: "number", Options: []string{}}, Expected: answer})
-	return result
+	return PrivateQuestion{Question: Question{Prompt: prompt, Topic: topic, Kind: "number", Options: []string{}}, Expected: answer}
 }
 func Public(qs []PrivateQuestion) []Question {
 	out := make([]Question, 0, len(qs))
@@ -118,7 +149,8 @@ func Score(qs []PrivateQuestion, answers map[string]string) (int, map[string]boo
 		if pass {
 			correct++
 		}
-		topics[q.Topic] = pass
+		previous, exists := topics[q.Topic]
+		topics[q.Topic] = pass && (!exists || previous)
 	}
 	if len(qs) == 0 {
 		return 0, topics

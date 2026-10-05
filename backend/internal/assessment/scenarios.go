@@ -6,7 +6,7 @@ import (
 )
 
 // The same operations and bounded parameter ranges are used for each family.
-// Three of six tasks have answers that depend on freshly generated facts;
+// Numeric tasks have answers that depend on freshly generated facts;
 // copying the static multiple-choice key alone cannot meet the pass threshold.
 func scenario(spec, grade string, slot int, r *rand.Rand, topic string) PrivateQuestion {
 	n, m := r.IntN(12)+4, r.IntN(7)+2
@@ -64,7 +64,7 @@ func scenario(spec, grade string, slot int, r *rand.Rand, topic string) PrivateQ
 				prompt = fmt.Sprintf("У кандидата %d приглашений от разных компаний, принято ровно %d. Каждая компания имеет только своё приглашение. Сколько компаний вправе получить email кандидата? Доступ открывается только после принятия.", n+m, n)
 				answer = fmt.Sprint(n)
 			} else if grade == "middle" {
-				prompt = fmt.Sprintf("У компании %d отправленных приглашений и %d принятых. Приглашения адресованы разным кандидатам. Серверный endpoint отдаёт email только по принятым приглашениям этой компании. Сколько email должно быть в ответе?", n, m)
+				prompt = fmt.Sprintf("У компании %d отправленных приглашений и %d принятых. Приглашения адресованы разным кандидатам. Серверный endpoint отдаёт email только по принятым приглашениям этой компании. Сколько email должно быть в ответе?", n+m, m)
 				answer = fmt.Sprint(m)
 			} else {
 				revoked := r.IntN(m)

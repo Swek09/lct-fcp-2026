@@ -332,6 +332,9 @@
               "null"
             ]
           },
+          "professional": {
+            "$ref": "#/components/schemas/Data"
+          },
           "published": {
             "type": "boolean"
           },
@@ -382,7 +385,8 @@
           "fsp_id",
           "achievements",
           "next_grade_change_at",
-          "last_practice_at"
+          "last_practice_at",
+          "professional"
         ],
         "type": "object"
       },
@@ -678,6 +682,118 @@
         ],
         "type": "object"
       },
+      "Data": {
+        "additionalProperties": false,
+        "properties": {
+          "availability": {
+            "enum": [
+              "",
+              "immediately",
+              "two_weeks",
+              "month",
+              "negotiable"
+            ],
+            "type": "string"
+          },
+          "employment": {
+            "enum": [
+              "",
+              "full_time",
+              "part_time",
+              "contract",
+              "internship"
+            ],
+            "type": "string"
+          },
+          "experience": {
+            "items": {
+              "$ref": "#/components/schemas/Experience"
+            },
+            "maxItems": 8,
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "github": {
+            "maxLength": 500,
+            "type": "string"
+          },
+          "languages": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 8,
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "portfolio": {
+            "maxLength": 500,
+            "type": "string"
+          },
+          "projects": {
+            "items": {
+              "$ref": "#/components/schemas/Project"
+            },
+            "maxItems": 8,
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "relocation": {
+            "type": "boolean"
+          },
+          "salary_max": {
+            "format": "int64",
+            "maximum": 10000000,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "salary_min": {
+            "format": "int64",
+            "maximum": 10000000,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "search_status": {
+            "enum": [
+              "",
+              "active",
+              "open",
+              "paused"
+            ],
+            "type": "string"
+          },
+          "work_formats": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 3,
+            "type": [
+              "array",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "github",
+          "portfolio",
+          "salary_min",
+          "salary_max",
+          "work_formats",
+          "employment",
+          "availability",
+          "search_status",
+          "relocation",
+          "languages",
+          "experience",
+          "projects"
+        ],
+        "type": "object"
+      },
       "ErrorDetail": {
         "additionalProperties": false,
         "properties": {
@@ -757,6 +873,48 @@
             "type": "string"
           }
         },
+        "type": "object"
+      },
+      "Experience": {
+        "additionalProperties": false,
+        "properties": {
+          "company": {
+            "maxLength": 150,
+            "type": "string"
+          },
+          "current": {
+            "type": "boolean"
+          },
+          "description": {
+            "maxLength": 3000,
+            "type": "string"
+          },
+          "end": {
+            "maxLength": 7,
+            "type": "string"
+          },
+          "results": {
+            "maxLength": 2000,
+            "type": "string"
+          },
+          "role": {
+            "maxLength": 150,
+            "type": "string"
+          },
+          "start": {
+            "maxLength": 7,
+            "type": "string"
+          }
+        },
+        "required": [
+          "company",
+          "role",
+          "start",
+          "end",
+          "current",
+          "description",
+          "results"
+        ],
         "type": "object"
       },
       "FSPInputBody": {
@@ -1132,6 +1290,9 @@
               "null"
             ]
           },
+          "professional": {
+            "$ref": "#/components/schemas/Data"
+          },
           "published": {
             "type": "boolean"
           },
@@ -1170,7 +1331,57 @@
           "fsp_id",
           "achievements",
           "next_grade_change_at",
-          "last_practice_at"
+          "last_practice_at",
+          "professional"
+        ],
+        "type": "object"
+      },
+      "Project": {
+        "additionalProperties": false,
+        "properties": {
+          "demo": {
+            "maxLength": 500,
+            "type": "string"
+          },
+          "description": {
+            "maxLength": 3000,
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 150,
+            "type": "string"
+          },
+          "repository": {
+            "maxLength": 500,
+            "type": "string"
+          },
+          "results": {
+            "maxLength": 2000,
+            "type": "string"
+          },
+          "role": {
+            "maxLength": 150,
+            "type": "string"
+          },
+          "stack": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20,
+            "type": [
+              "array",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "name",
+          "role",
+          "description",
+          "results",
+          "stack",
+          "repository",
+          "demo"
         ],
         "type": "object"
       },
@@ -1753,6 +1964,9 @@
             "maxLength": 100,
             "minLength": 2,
             "type": "string"
+          },
+          "professional": {
+            "$ref": "#/components/schemas/Data"
           },
           "published": {
             "type": "boolean"

@@ -21,7 +21,15 @@ import {
   initials,
   plural,
   specs,
+  workFormats,
+  employmentTypes,
+  availabilityTypes,
+  searchStatuses,
 } from "../api";
+import {
+  professionalData,
+  salaryExpectation,
+} from "../components/ProfessionalProfile";
 import {
   comparisonQuery,
   comparisonReturnTo,
@@ -222,37 +230,96 @@ export function Compare() {
         },
       ],
     },
+    {
+      label: "Условия работы",
+      rows: [
+        {
+          id: "salary",
+          label: "Зарплатные ожидания",
+          hint: "В месяц, до налогов",
+          value: (c) => salaryExpectation(c.professional),
+          render: (c) => salaryExpectation(c.professional),
+        },
+        {
+          id: "formats",
+          label: "Формат работы",
+          value: (c) =>
+            professionalData(c.professional)
+              .work_formats.slice()
+              .sort()
+              .join(","),
+          render: (c) =>
+            professionalData(c.professional)
+              .work_formats.map((v) => workFormats[v])
+              .join(", ") || "Не указан",
+        },
+        {
+          id: "employment",
+          label: "Занятость",
+          value: (c) => c.professional.employment || "",
+          render: (c) =>
+            employmentTypes[c.professional.employment] || "Не указана",
+        },
+        {
+          id: "availability",
+          label: "Готовность выйти",
+          value: (c) => c.professional.availability || "",
+          render: (c) =>
+            availabilityTypes[c.professional.availability] || "Не указана",
+        },
+        {
+          id: "search-status",
+          label: "Поиск работы",
+          value: (c) => c.professional.search_status || "",
+          render: (c) =>
+            searchStatuses[c.professional.search_status] || "Не указан",
+        },
+        {
+          id: "relocation",
+          label: "Переезд",
+          value: (c) => String(c.professional.relocation),
+          render: (c) =>
+            c.professional.relocation ? "Готов к переезду" : "Не указан",
+        },
+        {
+          id: "languages",
+          label: "Языки",
+          value: (c) => professionalData(c.professional).languages.join(","),
+          render: (c) =>
+            professionalData(c.professional).languages.join(", ") ||
+            "Не указаны",
+        },
+      ],
+    },
     ...(requestedSkills.length
       ? [
           {
             label: "Нужные технологии",
-            rows: requestedSkills.map(
-              (skill): Criterion => ({
-                id: `skill-${normalize(skill)}`,
-                label: skill,
-                hint: "Из текущего запроса",
-                value: (c) =>
-                  String(
-                    c.match.matched.some(
-                      (item) => normalize(item) === normalize(skill),
-                    ),
-                  ),
-                render: (c) =>
+            rows: requestedSkills.map((skill): Criterion => ({
+              id: `skill-${normalize(skill)}`,
+              label: skill,
+              hint: "Из текущего запроса",
+              value: (c) =>
+                String(
                   c.match.matched.some(
                     (item) => normalize(item) === normalize(skill),
-                  ) ? (
-                    <span className="comparison-skill present">
-                      <Check size={16} />
-                      Есть в резюме
-                    </span>
-                  ) : (
-                    <span className="comparison-skill missing">
-                      <Minus size={16} />
-                      Не указан
-                    </span>
                   ),
-              }),
-            ),
+                ),
+              render: (c) =>
+                c.match.matched.some(
+                  (item) => normalize(item) === normalize(skill),
+                ) ? (
+                  <span className="comparison-skill present">
+                    <Check size={16} />
+                    Есть в резюме
+                  </span>
+                ) : (
+                  <span className="comparison-skill missing">
+                    <Minus size={16} />
+                    Не указан
+                  </span>
+                ),
+            })),
           },
         ]
       : []),

@@ -6,8 +6,8 @@
 :root {
   color-scheme: dark;
   --font-ui: "JetBrains Mono", monospace;
-  --brand-gray: #C8C9CA;
-  --brand-dark: #1B1C21;
+  --brand-gray: #c8c9ca;
+  --brand-dark: #1b1c21;
   --bg: var(--brand-dark);
   --surface: var(--brand-dark);
   --raised: color-mix(in srgb, var(--brand-gray) 7%, var(--brand-dark));
@@ -15,13 +15,13 @@
   --line: color-mix(in srgb, var(--brand-gray) 20%, transparent);
   --text: var(--brand-gray);
   --muted: color-mix(in srgb, var(--brand-gray) 78%, transparent);
-  --accent: #402FFF;
+  --accent: #402fff;
   --blue: var(--accent);
   --accent-readable: var(--brand-gray);
   --success: var(--brand-gray);
   --success-bg: color-mix(in srgb, var(--accent) 12%, var(--surface));
   --success-line: color-mix(in srgb, var(--accent) 50%, var(--line));
-  --red: #EC1D35;
+  --red: #ec1d35;
   --space-sm: 8px;
   --space-md: 16px;
   --space-lg: 24px;
@@ -2697,7 +2697,8 @@ input[type="radio"] {
   }
   .sidebar.is-open {
     transform: translateX(0);
-    box-shadow: 12px 0 40px color-mix(in srgb, var(--brand-dark) 60%, transparent);
+    box-shadow: 12px 0 40px
+      color-mix(in srgb, var(--brand-dark) 60%, transparent);
   }
   .workspace {
     margin-left: 0;
@@ -3147,5 +3148,126 @@ input[type="radio"] {
   }
   .salary {
     overflow-wrap: anywhere;
+  }
+}
+.resume-formats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+}
+.resume-editor-hint {
+  font-size: 0.86rem;
+}
+.resume-entry {
+  position: relative;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 24px;
+}
+.resume-entry legend {
+  padding: 0 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.resume-delete {
+  align-self: flex-end;
+}
+.resume-add {
+  align-self: flex-start;
+  white-space: normal;
+}
+.resume-preferences {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 24px;
+}
+.resume-preferences > div {
+  min-width: 0;
+}
+.resume-preferences dt {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.resume-preferences dd {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.resume-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 24px;
+  margin-top: 16px;
+}
+.resume-timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 28px;
+}
+.resume-timeline li {
+  min-width: 0;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--line);
+}
+.resume-timeline h3 {
+  margin-bottom: 10px;
+}
+.resume-position {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  font-size: 0.85rem;
+}
+.resume-position span {
+  color: var(--muted);
+}
+.resume-timeline p {
+  margin-top: 16px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 0.9rem;
+}
+.resume-results > strong {
+  display: block;
+  margin-bottom: 6px;
+}
+@media (max-width: 760px) {
+  .resume-entry {
+    padding: 16px;
+  }
+}
+.profile-save {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 16px 0;
+  border-top: 1px solid var(--line);
+  background: var(--bg);
+}
+.profile-save > span {
+  font-size: 11px;
+  color: var(--muted);
+}
+.profile-save button {
+  flex-shrink: 0;
+}
+@media (max-width: 600px) {
+  .profile-save {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
   }
 }

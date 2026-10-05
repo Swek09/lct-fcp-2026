@@ -16,11 +16,16 @@ import {
   grades,
   initials,
   type Profile,
+  type ProfessionalProfile,
   queryClient,
   specs,
 } from "../api";
 import { Button } from "../components/ui/button";
 import { EvidencePassport } from "../components/Evidence";
+import {
+  ProfessionalEditor,
+  professionalData,
+} from "../components/ProfessionalProfile";
 import {
   ErrorBox,
   Field,
@@ -40,6 +45,7 @@ export function CandidateProfile() {
   const [error, setError] = useState<unknown>();
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  const [professional, setProfessional] = useState<ProfessionalProfile>();
   const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setBusy(true);
@@ -55,12 +61,14 @@ export function CandidateProfile() {
           .filter(Boolean),
         experience_years: Number(f.experience_years),
         published: f.published === "on",
+        professional: professionalData(professional || q.data?.professional),
       });
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ["profile"] }),
         queryClient.invalidateQueries({ queryKey: ["me"] }),
       ]);
       setMessage("Изменения сохранены");
+      setProfessional(undefined);
     } catch (e) {
       setError(e);
     } finally {
@@ -122,7 +130,11 @@ export function CandidateProfile() {
                 </div>
               </div>
               <EvidencePassport />
-              <form className="form-stack" onSubmit={submit}>
+              <form
+                className="form-stack"
+                onSubmit={submit}
+                onChange={() => setMessage("")}
+              >
                 <div className="section-heading">
                   <h2>О вас</h2>
                   <span>01 / Профиль</span>
@@ -183,9 +195,16 @@ export function CandidateProfile() {
                     placeholder="Над чем работали и какие задачи интересны сейчас?"
                   />
                 </Field>
+                <ProfessionalEditor
+                  value={professionalData(professional || q.data.professional)}
+                  onChange={(value) => {
+                    setMessage("");
+                    setProfessional(value);
+                  }}
+                />
                 <div className="section-heading">
                   <h2>Видимость</h2>
-                  <span>02 / Приватность</span>
+                  <span>06 / Приватность</span>
                 </div>
                 <label className="check publication">
                   <input
@@ -203,9 +222,14 @@ export function CandidateProfile() {
                     </small>
                   </span>
                 </label>
-                <Button disabled={busy}>
-                  {busy ? "Сохраняем…" : "Сохранить профиль"}
-                </Button>
+                <div className="profile-save">
+                  <span>
+                    {message || "Сохраните изменения перед уходом со страницы"}
+                  </span>
+                  <Button disabled={busy}>
+                    {busy ? "Сохраняем…" : "Сохранить профиль"}
+                  </Button>
+                </div>
               </form>
             </section>
             <aside className="profile-aside">

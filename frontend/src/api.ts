@@ -152,7 +152,57 @@ export interface Profile {
   achievements: Achievement[];
   next_grade_change_at: string | null;
   last_practice_at: string | null;
+  professional: ProfessionalProfile;
 }
+export interface WorkExperience {
+  company: string;
+  role: string;
+  start: string;
+  end: string;
+  current: boolean;
+  description: string;
+  results: string;
+}
+export interface PortfolioProject {
+  name: string;
+  role: string;
+  description: string;
+  results: string;
+  stack: string[];
+  repository: string;
+  demo: string;
+}
+export interface ProfessionalProfile {
+  github: string;
+  portfolio: string;
+  salary_min: number;
+  salary_max: number;
+  work_formats: string[];
+  employment: string;
+  availability: string;
+  search_status: string;
+  relocation: boolean;
+  languages: string[];
+  experience: WorkExperience[];
+  projects: PortfolioProject[];
+}
+export const employmentTypes: Record<string, string> = {
+  full_time: "Полная занятость",
+  part_time: "Частичная занятость",
+  contract: "Проектная работа",
+  internship: "Стажировка",
+};
+export const availabilityTypes: Record<string, string> = {
+  immediately: "Готов выйти сейчас",
+  two_weeks: "Через две недели",
+  month: "Через месяц",
+  negotiable: "По договорённости",
+};
+export const searchStatuses: Record<string, string> = {
+  active: "Активно ищу работу",
+  open: "Рассматриваю предложения",
+  paused: "Пока не ищу работу",
+};
 export interface Candidate extends Profile {
   match_score: number;
   reasons: string[];
@@ -269,6 +319,9 @@ export interface Config {
   demo: boolean;
   grade_cooldown_days: number;
   test_minutes: number;
+  test_questions: number;
+  test_pass_score: number;
+  test_version: string;
 }
 
 export interface ChallengeSubmission {

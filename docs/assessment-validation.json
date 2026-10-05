@@ -1,14 +1,17 @@
 {
   "experiment": "100 new variants per category; copy the answer key of seed=1 without solving new facts",
   "limitations": "Synthetic mechanical validation. Not evidence of real candidate grade accuracy or resistance to LLM assistance.",
+  "pass_score": 70,
+  "questions_per_attempt": 12,
   "results": [
     {
       "category": "backend/junior",
       "variants": 100,
       "unique_facts": 100,
-      "copied_key_passes": 1,
+      "copied_key_passes": 0,
       "correct_key_passes": 100,
-      "copied_key_pass_rate": 0.01
+      "copied_key_pass_rate": 0,
+      "task_families": 18
     },
     {
       "category": "backend/middle",
@@ -16,7 +19,8 @@
       "unique_facts": 100,
       "copied_key_passes": 0,
       "correct_key_passes": 100,
-      "copied_key_pass_rate": 0
+      "copied_key_pass_rate": 0,
+      "task_families": 18
     },
     {
       "category": "backend/senior",
@@ -24,7 +28,8 @@
       "unique_facts": 100,
       "copied_key_passes": 0,
       "correct_key_passes": 100,
-      "copied_key_pass_rate": 0
+      "copied_key_pass_rate": 0,
+      "task_families": 18
     },
     {
       "category": "frontend/junior",
@@ -32,7 +37,8 @@
       "unique_facts": 100,
       "copied_key_passes": 0,
       "correct_key_passes": 100,
-      "copied_key_pass_rate": 0
+      "copied_key_pass_rate": 0,
+      "task_families": 18
     },
     {
       "category": "frontend/middle",
@@ -40,23 +46,26 @@
       "unique_facts": 100,
       "copied_key_passes": 0,
       "correct_key_passes": 100,
-      "copied_key_pass_rate": 0
+      "copied_key_pass_rate": 0,
+      "task_families": 18
     },
     {
       "category": "frontend/senior",
       "variants": 100,
       "unique_facts": 100,
-      "copied_key_passes": 1,
+      "copied_key_passes": 0,
       "correct_key_passes": 100,
-      "copied_key_pass_rate": 0.01
+      "copied_key_pass_rate": 0,
+      "task_families": 18
     },
     {
       "category": "analytics/junior",
       "variants": 100,
       "unique_facts": 100,
-      "copied_key_passes": 1,
+      "copied_key_passes": 0,
       "correct_key_passes": 100,
-      "copied_key_pass_rate": 0.01
+      "copied_key_pass_rate": 0,
+      "task_families": 18
     },
     {
       "category": "analytics/middle",
@@ -64,7 +73,8 @@
       "unique_facts": 100,
       "copied_key_passes": 0,
       "correct_key_passes": 100,
-      "copied_key_pass_rate": 0
+      "copied_key_pass_rate": 0,
+      "task_families": 18
     },
     {
       "category": "analytics/senior",
@@ -72,8 +82,9 @@
       "unique_facts": 100,
       "copied_key_passes": 0,
       "correct_key_passes": 100,
-      "copied_key_pass_rate": 0
+      "copied_key_pass_rate": 0,
+      "task_families": 18
     }
   ],
-  "template_version": "2026.10-v3"
+  "template_version": "2026.10-v4"
 }

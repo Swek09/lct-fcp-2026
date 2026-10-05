@@ -8,6 +8,17 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type Application struct {
+	ID          string             `json:"id"`
+	VacancyID   string             `json:"vacancy_id"`
+	CandidateID string             `json:"candidate_id"`
+	CoverLetter string             `json:"cover_letter"`
+	Status      string             `json:"status"`
+	ConsentAt   pgtype.Timestamptz `json:"consent_at"`
+	CreatedAt   pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
+}
+
 type Assessment struct {
 	ID              string             `json:"id"`
 	UserID          string             `json:"user_id"`
@@ -21,6 +32,29 @@ type Assessment struct {
 	StartedAt       pgtype.Timestamptz `json:"started_at"`
 	ExpiresAt       pgtype.Timestamptz `json:"expires_at"`
 	SubmittedAt     pgtype.Timestamptz `json:"submitted_at"`
+}
+
+type Challenge struct {
+	ID               string             `json:"id"`
+	EmployerID       string             `json:"employer_id"`
+	Title            string             `json:"title"`
+	Body             string             `json:"body"`
+	Specialization   string             `json:"specialization"`
+	Grade            string             `json:"grade"`
+	EstimatedMinutes int32              `json:"estimated_minutes"`
+	CreatedAt        pgtype.Timestamptz `json:"created_at"`
+	ClosesAt         pgtype.Timestamptz `json:"closes_at"`
+}
+
+type ChallengeSubmission struct {
+	ID          string             `json:"id"`
+	ChallengeID string             `json:"challenge_id"`
+	CandidateID string             `json:"candidate_id"`
+	Answer      string             `json:"answer"`
+	Status      string             `json:"status"`
+	Feedback    string             `json:"feedback"`
+	SubmittedAt pgtype.Timestamptz `json:"submitted_at"`
+	ReviewedAt  pgtype.Timestamptz `json:"reviewed_at"`
 }
 
 type Company struct {
@@ -76,6 +110,14 @@ type Profile struct {
 	GradeChangedAt    pgtype.Timestamptz `json:"grade_changed_at"`
 	NextGradeChangeAt pgtype.Timestamptz `json:"next_grade_change_at"`
 	UpdatedAt         pgtype.Timestamptz `json:"updated_at"`
+	LastPracticeAt    pgtype.Timestamptz `json:"last_practice_at"`
+	Professional      []byte             `json:"professional"`
+}
+
+type Shortlist struct {
+	EmployerID  string             `json:"employer_id"`
+	CandidateID string             `json:"candidate_id"`
+	CreatedAt   pgtype.Timestamptz `json:"created_at"`
 }
 
 type User struct {
@@ -88,4 +130,21 @@ type User struct {
 	AuthVersion  int32              `json:"auth_version"`
 	ConsentAt    pgtype.Timestamptz `json:"consent_at"`
 	CreatedAt    pgtype.Timestamptz `json:"created_at"`
+}
+
+type Vacancy struct {
+	ID             string             `json:"id"`
+	EmployerID     string             `json:"employer_id"`
+	Title          string             `json:"title"`
+	Description    string             `json:"description"`
+	Specialization string             `json:"specialization"`
+	Grade          string             `json:"grade"`
+	Skills         []string           `json:"skills"`
+	WorkFormat     string             `json:"work_format"`
+	City           string             `json:"city"`
+	SalaryMin      int32              `json:"salary_min"`
+	SalaryMax      int32              `json:"salary_max"`
+	Status         string             `json:"status"`
+	CreatedAt      pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt      pgtype.Timestamptz `json:"updated_at"`
 }

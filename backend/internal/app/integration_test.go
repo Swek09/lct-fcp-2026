@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/Swek09/lct-fcp-2026/backend/internal/assessment"
+	"github.com/Swek09/lct-fcp-2026/backend/internal/resume"
 	"github.com/Swek09/lct-fcp-2026/backend/migrations"
 	"github.com/google/uuid"
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -164,6 +165,70 @@ func TestIntegration(t *testing.T) {
 			t.Fatal("answer key leaked in preview")
 		}
 		expect(t, candidate, "POST", "/api/assessments/preview", map[string]string{"need": "middle backend Go PostgreSQL"}, 403)
+	})
+	t.Run("professional_profile_roundtrip_validation_and_visibility", func(t *testing.T) {
+		var old Profile
+		_ = json.Unmarshal(expect(t, candidate, "GET", "/api/profile", nil, 200), &old)
+		d := resume.Data{SalaryMin: 190000, SalaryMax: 250000, WorkFormats: []string{"remote"}, Employment: "full_time", Availability: "month", SearchStatus: "active", Languages: []string{"Русский", "English B2"}, GitHub: "https://example.org/code", Experience: []resume.Experience{{Company: "Тестовая компания", Role: "Разработчик", Start: "2024-01", Current: true, Results: "Интеграционные тесты API"}}, Projects: []resume.Project{{Name: "Тестовый сервис", Role: "Автор", Description: "Проверка сохранения", Stack: []string{"Go", "Redis"}, Repository: "https://example.org/project"}}}
+		body := map[string]any{"name": old.Name, "headline": old.Headline, "city": old.City, "about": old.About, "skills": old.Skills, "experience_years": old.ExperienceYears, "published": true, "professional": d}
+		expect(t, candidate, "PUT", "/api/profile", body, 200)
+		read := func() *Profile {
+			var p Profile
+			_ = json.Unmarshal(expect(t, candidate, "GET", "/api/profile", nil, 200), &p)
+			return &p
+		}
+		got := read()
+		if got.Professional.SalaryMin != 190000 || got.Professional.Projects[0].Repository != d.Projects[0].Repository || got.Professional.Experience[0].Results != d.Experience[0].Results {
+			t.Fatal("professional data lost on roundtrip")
+		}
+		if err := a.Seed(ctx); err != nil {
+			t.Fatal(err)
+		}
+		if read().Professional.SalaryMin != 190000 {
+			t.Fatal("restart seed overwrote saved resume")
+		}
+		public := expect(t, employer, "GET", "/api/candidates/"+old.UserID, nil, 200)
+		if !bytes.Contains(public, []byte("Тестовый сервис")) || bytes.Contains(public, []byte("candidate@demo.fsp")) {
+			t.Fatal("professional data absent or contact leaked")
+		}
+		delete(body, "professional")
+		expect(t, candidate, "PUT", "/api/profile", body, 200)
+		if read().Professional.SalaryMin != 190000 {
+			t.Fatal("legacy client erased new fields")
+		}
+		bad := d
+		bad.Portfolio = "javascript:alert(1)"
+		body["professional"] = bad
+		body["name"] = "Нельзя сохранить"
+		expect(t, candidate, "PUT", "/api/profile", body, 400)
+		if read().Name != old.Name {
+			t.Fatal("invalid profile partially committed")
+		}
+		bad = d
+		bad.SalaryMax = 100
+		body["professional"] = bad
+		expect(t, candidate, "PUT", "/api/profile", body, 400)
+		bad = d
+		bad.Projects = make([]resume.Project, 9)
+		body["professional"] = bad
+		expect(t, candidate, "PUT", "/api/profile", body, 422)
+		body["name"] = old.Name
+		empty, _ := resume.Normalize(resume.Data{})
+		body["professional"] = empty
+		expect(t, candidate, "PUT", "/api/profile", body, 200)
+		if err := a.Seed(ctx); err != nil {
+			t.Fatal(err)
+		}
+		if len(read().Professional.Projects) != 0 {
+			t.Fatal("seed refilled a deliberately cleared profile")
+		}
+		body["professional"] = d
+		body["published"] = false
+		expect(t, candidate, "PUT", "/api/profile", body, 200)
+		expect(t, employer, "GET", "/api/candidates/"+old.UserID, nil, 404)
+		body["published"] = true
+		body["professional"] = old.Professional
+		expect(t, candidate, "PUT", "/api/profile", body, 200)
 	})
 	t.Run("CSRF_rejected", func(t *testing.T) {
 		r := httptest.NewRequest("POST", "/api/auth/logout", bytes.NewReader([]byte("{}")))

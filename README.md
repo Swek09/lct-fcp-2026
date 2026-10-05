@@ -58,6 +58,8 @@ docker compose up --build -d
 - [Результаты эксперимента с вариантами тестов](docs/assessment-validation.json)
 - [Датасет и результаты проверки подбора](docs/matching-validation.json)
 - [Сохранённая спецификация OpenAPI](docs/openapi.json)
+- [Состав банка: 162 семейства, 12 заданий в варианте](docs/assessment-bank.md)
+- [Проверки платформы в CI/CD](docs/ci.md)
 - [Сопроводительный PDF](docs/delivery/fsp-career-documentation.pdf)
 - [Презентация прототипа](docs/delivery/fsp-career.pptx)
 - [Видео: приглашение, согласие и вакансии](docs/delivery/fsp-demo.mp4)

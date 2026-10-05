@@ -4,6 +4,7 @@ import { ArrowRight, CheckCircle2, Clock3, ShieldCheck } from "lucide-react";
 import {
   api,
   type Attempt,
+  type Config,
   date,
   grades,
   type Profile,
@@ -21,6 +22,10 @@ import {
   Success,
 } from "../components/shared";
 export function Assessments() {
+  const cfg = useQuery({
+    queryKey: ["config"],
+    queryFn: () => api<Config>("/config"),
+  });
   const q = useQuery({
     queryKey: ["assessments"],
     queryFn: () => api<Attempt[]>("/assessments"),
@@ -217,7 +222,7 @@ export function Assessments() {
             </p>
             <ul>
               <li>20 минут на весь тест</li>
-              <li>6 заданий, одинаковый вес</li>
+              <li>{active.questions.length} заданий, одинаковый вес</li>
               <li>Для прохождения — от 70%</li>
               <li>Ответы проверяет сервер</li>
             </ul>
@@ -282,9 +287,10 @@ export function Assessments() {
                   20 минут
                 </span>
                 <span>
-                  <CheckCircle2 size={17} />6 заданий
+                  <CheckCircle2 size={17} />
+                  {cfg.data?.test_questions || 12} заданий
                 </span>
-                <span>Проходной балл — 70%</span>
+                <span>Проходной балл — {cfg.data?.test_pass_score || 70}%</span>
               </div>
               {locked ? (
                 <Success>
@@ -312,6 +318,11 @@ export function Assessments() {
               <p>
                 После успешного теста новая смена категории доступна через 90
                 дней.
+              </p>
+              <p>
+                Шесть тем, по два задания на каждую. Тема засчитывается, когда
+                верны оба ответа. Успешный тест требует не менее девяти
+                правильных ответов из двенадцати.
               </p>
             </div>
           </div>

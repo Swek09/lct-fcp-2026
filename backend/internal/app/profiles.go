@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/Swek09/lct-fcp-2026/backend/internal/pdfprofile"
+	"github.com/Swek09/lct-fcp-2026/backend/internal/resume"
 	"github.com/danielgtaylor/huma/v2"
 	"strings"
 	"time"
@@ -32,6 +33,7 @@ type Profile struct {
 	Achievements      []Achievement `json:"achievements"`
 	NextGradeChangeAt *time.Time    `json:"next_grade_change_at"`
 	LastPracticeAt    *time.Time    `json:"last_practice_at"`
+	Professional      resume.Data   `json:"professional"`
 }
 
 const profileSQL = "SELECT row_to_json(t) FROM (SELECT p.*,u.name FROM profiles p JOIN users u ON u.id=p.user_id WHERE p.user_id=$1) t"
@@ -57,7 +59,12 @@ func (a *App) profileRoutes(api huma.API) {
 		if err != nil {
 			return nil, internal(err)
 		}
-		d := pdfprofile.Data{Name: p.Name, Email: u.Email, Headline: p.Headline, City: p.City, Specialization: p.Specialization, Grade: p.Grade, Score: p.TestScore, Skills: p.Skills, About: p.About, Experience: p.ExperienceYears}
+		d := pdfprofile.Data{Name: p.Name, Email: u.Email, Headline: p.Headline, City: p.City, Specialization: p.Specialization, Grade: p.Grade, Score: p.TestScore, Skills: p.Skills, About: p.About, Experience: p.ExperienceYears, Professional: p.Professional}
+		e, err := a.evidence(ctx, u.ID)
+		if err != nil {
+			return nil, internal(err)
+		}
+		d.QualificationSource, d.QualificationVersion = e.Source, e.Version
 		for _, item := range p.Achievements {
 			d.Achievements = append(d.Achievements, fmt.Sprintf("%s / %d / %d-е место", item.Title, item.Year, item.Place))
 		}
@@ -84,13 +91,14 @@ func (a *App) profileRoutes(api huma.API) {
 	})
 	type Update struct {
 		Body struct {
-			Name            string   `json:"name" minLength:"2" maxLength:"100"`
-			Headline        string   `json:"headline" maxLength:"150"`
-			City            string   `json:"city" maxLength:"100"`
-			About           string   `json:"about" maxLength:"4000"`
-			Skills          []string `json:"skills" maxItems:"20"`
-			ExperienceYears int      `json:"experience_years" minimum:"0" maximum:"60"`
-			Published       bool     `json:"published"`
+			Name            string       `json:"name" minLength:"2" maxLength:"100"`
+			Headline        string       `json:"headline" maxLength:"150"`
+			City            string       `json:"city" maxLength:"100"`
+			About           string       `json:"about" maxLength:"4000"`
+			Skills          []string     `json:"skills" maxItems:"20"`
+			ExperienceYears int          `json:"experience_years" minimum:"0" maximum:"60"`
+			Published       bool         `json:"published"`
+			Professional    *resume.Data `json:"professional,omitempty"`
 		}
 	}
 	register(api, "PUT", "/api/profile", "Обновить резюме и видимость", func(ctx context.Context, in *Update) (*Response[Message], error) {
@@ -99,6 +107,17 @@ func (a *App) profileRoutes(api huma.API) {
 			return nil, err
 		}
 		b := in.Body
+		var professional []byte
+		if b.Professional != nil {
+			normalized, validationErr := resume.Normalize(*b.Professional)
+			if validationErr != nil {
+				return nil, huma.Error400BadRequest(validationErr.Error())
+			}
+			professional, err = json.Marshal(normalized)
+			if err != nil {
+				return nil, internal(err)
+			}
+		}
 		skills := []string{}
 		seen := map[string]bool{}
 		for _, s := range b.Skills {
@@ -123,7 +142,7 @@ func (a *App) profileRoutes(api huma.API) {
 		if err != nil {
 			return nil, internal(err)
 		}
-		_, err = tx.Exec(ctx, "UPDATE profiles SET headline=$2,city=$3,about=$4,skills=$5,experience_years=$6,published=$7,updated_at=now() WHERE user_id=$1", u.ID, b.Headline, b.City, b.About, skills, b.ExperienceYears, b.Published)
+		_, err = tx.Exec(ctx, "UPDATE profiles SET headline=$2,city=$3,about=$4,skills=$5,experience_years=$6,published=$7,professional=COALESCE($8::jsonb,professional),updated_at=now() WHERE user_id=$1", u.ID, b.Headline, b.City, b.About, skills, b.ExperienceYears, b.Published, professional)
 		if err != nil {
 			return nil, internal(err)
 		}

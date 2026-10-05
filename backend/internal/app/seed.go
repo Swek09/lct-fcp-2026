@@ -3,6 +3,8 @@ package app
 import (
 	"context"
 	"encoding/json"
+	"fmt"
+	"github.com/Swek09/lct-fcp-2026/backend/internal/resume"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -58,6 +60,16 @@ func (a *App) Seed(ctx context.Context) error {
 		if err != nil {
 			return err
 		}
+		// Only enrich untouched demo records. Real edits and deliberately cleared
+		// normalized profiles must survive subsequent restarts.
+		professional, err := json.Marshal(demoProfessional(p.email, p.spec, p.grade, p.skills, p.years))
+		if err != nil {
+			return err
+		}
+		_, err = tx.Exec(ctx, "UPDATE profiles SET professional=$2 WHERE user_id=$1 AND professional='{}'::jsonb", id, professional)
+		if err != nil {
+			return err
+		}
 	}
 	email := "employer@demo.fsp"
 	id := DemoID(email)
@@ -94,4 +106,35 @@ func (a *App) Seed(ctx context.Context) error {
 		}
 	}
 	return tx.Commit(ctx)
+}
+
+func demoProfessional(email, spec, grade string, skills []string, years int) resume.Data {
+	type sample struct{ name, role, description, results string }
+	projects := map[string]sample{
+		"candidate@demo.fsp": {"API обработки заказов", "Backend-разработчик", "Демонстрационный проект: REST API заказов, идемпотентные платежи и обработка событий через outbox.", "Спроектировал транзакции, добавил интеграционные тесты и метрики задержек. Повторная доставка не создаёт второй заказ."},
+		"elena@demo.fsp":     {"Платформа событий", "Технический лидер", "Демонстрационный проект: доставка событий между сервисами, обработка повторов и восстановление после отказа.", "Описала SLO, провела нагрузочные испытания и подготовила план миграции без остановки сервиса."},
+		"maxim@demo.fsp":     {"Сервис обработки документов", "Python-разработчик", "Демонстрационный проект: асинхронная обработка документов и поиск результатов через API.", "Добавил повторяемые задания, валидацию входных данных и журнал ошибок."},
+		"anna@demo.fsp":      {"Кабинет команды", "Frontend-разработчик", "Демонстрационный проект: управление задачами, фильтры, формы и согласование доступа в кабинете команды.", "Собрала доступные компоненты форм, обработку ошибок и отмену устаревших поисковых запросов."},
+		"ivan@demo.fsp":      {"Каталог мероприятий", "Автор учебного проекта", "Демонстрационный учебный проект: каталог, регистрация участников и API на Go.", "Реализовал CRUD, миграции PostgreSQL и тесты основных обработчиков."},
+		"daria@demo.fsp":     {"Аналитика воронки", "Продуктовый аналитик", "Демонстрационный проект: расчёт конверсий, когортного удержания и проверка продуктовой гипотезы.", "Зафиксировала определения метрик, проверила дубликаты событий и подготовила рекомендации по эксперименту."},
+		"nikita@demo.fsp":    {"Интерфейс регистрации", "Автор учебного проекта", "Демонстрационный учебный проект: адаптивная регистрация и личный кабинет участника.", "Добавил валидацию полей, управление фокусом и сообщения об ошибках."},
+		"olga@demo.fsp":      {"Система экспериментов", "Ведущий аналитик", "Демонстрационный проект: анализ A/B-тестов с сегментацией и контролем качества распределения.", "Подготовила критерии остановки, контроль множественных проверок и отчёты с доверительными интервалами."},
+		"sofia@demo.fsp":     {"Платёжный шлюз", "Go-разработчик", "Демонстрационный проект: приём платежей и согласование статусов внешних провайдеров.", "Реализовала ключи идемпотентности, ограниченные повторы и сверку состояний."},
+		"andrey@demo.fsp":    {"Очередь фоновых задач", "Backend-разработчик", "Демонстрационный проект: планирование фоновых задач, блокировки и восстановление после сбоев.", "Добавил дедлайны, дедупликацию и метрики очереди."},
+		"vera@demo.fsp":      {"Интерфейс отчётности", "Frontend-разработчик", "Демонстрационный проект: таблицы, сравнение показателей и экспорт бизнес-отчётов.", "Реализовала виртуализацию строк, состояния загрузки и клавиатурную навигацию."},
+		"pavel@demo.fsp":     {"Продуктовые метрики", "Аналитик данных", "Демонстрационный проект: витрины заказов, выручки и удержания для продуктовой команды.", "Проверил согласованность источников, исключил незрелые когорты и описал расчёты в SQL."},
+	}
+	s := projects[email]
+	min := map[string]int{"junior": 80000, "middle": 180000, "senior": 300000}[grade]
+	d := resume.Data{SalaryMin: min, SalaryMax: min + 60000, WorkFormats: []string{"remote", "hybrid"}, Employment: "full_time", Availability: "two_weeks", SearchStatus: "open", Languages: []string{"Русский — родной", "Английский — B2"}, Experience: []resume.Experience{{Company: "Продуктовая команда · демо", Role: s.role, Start: fmt.Sprintf("%d-01", 2026-years), Current: true, Description: s.description, Results: s.results}}, Projects: []resume.Project{{Name: s.name, Role: s.role, Description: s.description, Results: s.results, Stack: skills}}}
+	if grade == "junior" {
+		d.Employment = "internship"
+		d.Availability = "immediately"
+		d.Languages = []string{"Русский — родной", "Английский — B1"}
+	}
+	if spec == "analytics" {
+		d.WorkFormats = []string{"remote"}
+		d.Relocation = true
+	}
+	return d
 }
