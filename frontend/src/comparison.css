@@ -62,11 +62,11 @@
   gap: 16px;
   max-width: 1390px;
   margin-inline: auto;
-  padding: 16px;
-  border: 1px solid color-mix(in srgb, var(--accent) 32%, var(--line));
+  padding: 16px 20px;
+  border: 1px solid var(--line-strong);
   border-radius: 12px;
   background: var(--raised);
-  box-shadow: 0 12px 36px color-mix(in srgb, var(--brand-dark) 80%, transparent);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6);
 }
 .comparison-slots {
   list-style: none;

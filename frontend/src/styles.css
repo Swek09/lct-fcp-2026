@@ -1,33 +1,79 @@
 @import "tailwindcss";
 @theme {
-  --font-sans: "JetBrains Mono", monospace;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: "JetBrains Mono", monospace;
 }
 :root {
   color-scheme: dark;
-  --font-ui: "JetBrains Mono", monospace;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  --font-ui: var(--font-sans);
+
+  /* Глубокие технологичные фоны и слои (Elevation) */
+  --brand-dark: #0c0d12;
+  --bg: #0c0d12;
+  --surface: #13151f;
+  --raised: #1a1d2b;
+  --overlay: #222638;
+  --hover: #262b3e;
+
+  /* Тонкие выразительные границы */
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.16);
+
+  /* Текстовая шкала высокой контрастности */
+  --text-bright: #ffffff;
+  --text: #cbd5e1;
+  --muted: #94a3b8;
+  --subtle: #64748b;
   --brand-gray: #c8c9ca;
-  --brand-dark: #1b1c21;
-  --bg: var(--brand-dark);
-  --surface: var(--brand-dark);
-  --raised: color-mix(in srgb, var(--brand-gray) 7%, var(--brand-dark));
-  --hover: color-mix(in srgb, var(--brand-gray) 11%, var(--brand-dark));
-  --line: color-mix(in srgb, var(--brand-gray) 20%, transparent);
-  --text: var(--brand-gray);
-  --muted: color-mix(in srgb, var(--brand-gray) 78%, transparent);
-  --accent: #402fff;
-  --blue: var(--accent);
-  --accent-readable: var(--brand-gray);
-  --success: var(--brand-gray);
-  --success-bg: color-mix(in srgb, var(--accent) 12%, var(--surface));
-  --success-line: color-mix(in srgb, var(--accent) 50%, var(--line));
+
+  /* Фирменный кибер-синий и семейство индиго */
+  --brand-blue: #402fff;
+  --accent: var(--brand-blue);
+  --blue: var(--brand-blue);
+  --accent-hover: #5040ff;
+  --accent-readable: #93a5ff;
+  --accent-glow: rgba(64, 47, 255, 0.38);
+  --accent-subtle: rgba(64, 47, 255, 0.12);
+  --accent-border: rgba(64, 47, 255, 0.32);
+
+  /* Семантика: Успех и верификация (Изумруд) */
+  --success: #10b981;
+  --success-bright: #34d399;
+  --success-bg: rgba(16, 185, 129, 0.12);
+  --success-line: rgba(16, 185, 129, 0.3);
+  --success-border: rgba(16, 185, 129, 0.3);
+  --success-glow: rgba(16, 185, 129, 0.25);
+
+  /* Семантика: Внимание и ожидание (Янтарь) */
+  --warning: #f59e0b;
+  --warning-bright: #fbbf24;
+  --warning-bg: rgba(245, 158, 11, 0.12);
+  --warning-line: rgba(245, 158, 11, 0.3);
+  --warning-border: rgba(245, 158, 11, 0.3);
+
+  /* Семантика: Ошибка и отклонение (Алый) */
   --red: #ec1d35;
+  --danger: var(--red);
+  --danger-bg: rgba(236, 29, 53, 0.12);
+  --danger-line: rgba(236, 29, 53, 0.3);
+  --danger-border: rgba(236, 29, 53, 0.3);
+
+  /* Грейды и специализации */
+  --grade-junior: #38bdf8;
+  --grade-middle: #818cf8;
+  --grade-senior: #c084fc;
+
   --space-sm: 8px;
   --space-md: 16px;
   --space-lg: 24px;
   --space-xl: 40px;
+
   font-family: var(--font-ui);
   font-size: 14px;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
   color: var(--text);
   background: var(--bg);
   font-synthesis: none;
@@ -93,6 +139,7 @@
   border: 1px solid var(--line);
   border-radius: 12px;
   overflow: hidden;
+  background: var(--surface);
 }
 .hiring-start {
   padding: 36px;
@@ -100,14 +147,16 @@
 }
 .section-index {
   color: var(--accent-readable);
-  font-size: 0.79rem;
-  letter-spacing: 0.025em;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
 }
 .hiring-start h2 {
-  font-size: 2rem;
-  line-height: 1.35;
-  margin: 20px 0 28px;
-  letter-spacing: -0.025em;
+  font-size: 2.1rem;
+  line-height: 1.3;
+  margin: 18px 0 28px;
+  letter-spacing: 0.01em;
+  color: var(--text-bright);
 }
 .hiring-start form label {
   display: block;
@@ -139,15 +188,19 @@
 .need-examples button {
   background: var(--raised);
   border: 1px solid var(--line);
-  border-radius: 5px;
-  padding: 9px 10px;
+  border-radius: 6px;
+  padding: 8px 12px;
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.79rem;
+  font-size: 0.82rem;
+  color: var(--text);
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 .need-examples button:hover {
-  border-color: var(--accent);
+  border-color: var(--accent-readable);
+  color: var(--text-bright);
+  background: var(--hover);
 }
 .hiring-pulse {
   padding: 36px;
@@ -158,6 +211,7 @@
   margin: 18px 0 24px;
   font-size: 1.8rem;
   line-height: 1.4;
+  color: var(--text-bright);
 }
 .hiring-stages {
   list-style: none;
@@ -169,37 +223,49 @@
 }
 .hiring-stages a {
   display: flex;
-  gap: 12px;
+  gap: 14px;
   align-items: center;
   padding: 17px 0;
-  font-size: 0.84rem;
+  font-size: 0.88rem;
   color: var(--text);
-  transition: color 0.15s ease;
+  transition: all 0.15s ease;
+}
+.hiring-stages a > svg:first-child {
+  color: var(--accent-readable);
+  transition: transform 0.15s ease;
 }
 .hiring-stages a > span {
   flex: 1;
   color: var(--text);
+  transition: color 0.15s ease;
 }
 .hiring-stages a > strong {
-  font-family: var(--font-ui);
-  font-size: 1.4rem;
-  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-bright);
+  transition: color 0.15s ease;
 }
 .hiring-stages a > svg:last-child {
-  color: var(--muted);
+  color: var(--subtle);
   transition: transform 0.15s ease, color 0.15s ease;
 }
 .hiring-stages a:hover {
-  color: #ffffff;
+  color: var(--text-bright);
 }
-.hiring-stages a:hover > span,
-.hiring-stages a:hover > strong,
 .hiring-stages a:hover > svg:first-child {
-  color: #ffffff;
+  transform: scale(1.1);
+  color: var(--text-bright);
+}
+.hiring-stages a:hover > span {
+  color: var(--text-bright);
+}
+.hiring-stages a:hover > strong {
+  color: var(--accent-readable);
 }
 .hiring-stages a:hover > svg:last-child {
-  color: #ffffff;
-  transform: translateX(2px);
+  color: var(--text-bright);
+  transform: translateX(3px);
 }
 .overview-section {
   margin-top: 48px;
@@ -430,74 +496,122 @@
   font-size: 0.79rem;
 }
 .score-component strong {
+  font-family: var(--font-mono);
+  font-weight: 600;
   text-align: right;
+  color: var(--text-bright);
   font-variant-numeric: tabular-nums;
 }
 .score-track {
-  height: 4px;
-  border-radius: 4px;
+  height: 5px;
+  border-radius: 3px;
   overflow: hidden;
-  background: var(--line);
+  background: var(--hover);
 }
 .score-track > span {
   display: block;
   height: 100%;
   background: var(--accent);
-  border-radius: 4px;
+  border-radius: 3px;
 }
 .missing-skills {
   color: var(--muted);
 }
 .evidence-passport {
-  margin-top: 32px;
-  padding: 24px 0;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
+  margin-top: 36px;
+  padding: 32px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
 }
 .evidence-passport .section-heading {
   margin-top: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 .evidence-passport .section-heading h2 {
-  font-size: 1.125rem;
-  line-height: 1.5;
+  font-size: 1.25rem;
+  line-height: 1.4;
+  font-weight: 600;
+  color: var(--text-bright);
+}
+.evidence-passport .section-heading svg {
+  color: var(--success);
 }
 .passport-stamp {
-  display: flex;
-  gap: 16px;
+  display: inline-flex;
+  gap: 14px;
   align-items: center;
-  margin-bottom: 16px;
+  margin: 16px 0 20px;
+  padding: 8px 16px;
+  background: var(--raised);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.passport-stamp span {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text);
 }
 .passport-stamp strong {
   color: var(--success);
-  font-size: 1.14rem;
+  font-size: 1.15rem;
+  font-weight: 600;
 }
 .competency-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0 24px;
-  margin-top: 20px;
+  gap: 8px 24px;
+  margin-top: 24px;
 }
 .competency-grid > div {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   align-items: center;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--line);
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+.competency-grid > div:hover {
+  background: var(--raised);
+  border-color: var(--line-strong);
 }
 .competency-grid span {
   flex: 1;
+  font-size: 0.88rem;
+  color: var(--text);
 }
 .competency-grid svg {
-  color: var(--muted);
+  color: var(--subtle);
+}
+.competency-grid .is-passed {
+  border-color: rgba(16, 185, 129, 0.25);
+  background: rgba(16, 185, 129, 0.05);
 }
 .competency-grid .is-passed svg {
   color: var(--success);
+}
+.competency-grid .is-passed span {
+  color: var(--text-bright);
+}
+.competency-grid small {
+  font-size: 0.72rem;
+  color: var(--subtle);
+}
+.competency-grid .is-passed small {
+  color: var(--success);
+  font-weight: 500;
 }
 .passport-footer {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
   gap: 16px 24px;
-  margin: 20px 0 16px;
+  margin: 28px 0 16px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
   max-width: 600px;
 }
 .passport-footer > div {
@@ -513,7 +627,16 @@
   color: var(--text);
   font-size: 0.9rem;
   line-height: 1.6;
-  overflow-wrap: anywhere;
+}
+.passport-score {
+  font-family: var(--font-mono);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-bright);
+}
+.passport-score span {
+  font-size: 1rem;
+  color: var(--muted);
 }
 .passport-footer .passport-score {
   font-size: 1.25rem;
@@ -568,9 +691,14 @@
 }
 .vacancy-row-heading h2 {
   font-size: 1.6rem;
+  color: var(--text-bright);
+}
+.vacancy-row-heading a {
+  color: var(--text-bright);
+  transition: color 0.15s ease;
 }
 .vacancy-row-heading a:hover {
-  color: var(--accent);
+  color: var(--accent-readable);
 }
 .vacancy-row-heading p {
   color: var(--muted);
@@ -585,8 +713,10 @@
   align-self: flex-start;
 }
 .vacancy-salary strong {
-  font-family: var(--font-ui);
+  font-family: var(--font-mono);
   font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-bright);
   font-variant-numeric: tabular-nums;
 }
 .vacancy-excerpt {
@@ -632,8 +762,8 @@
 }
 .vacancy-pay > strong {
   font-size: 2rem;
-  font-family: var(--font-ui);
-  letter-spacing: -0.04em;
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
   font-variant-numeric: tabular-nums;
 }
 .long-copy {
@@ -694,20 +824,43 @@
 .application-bottom > small {
   margin-right: auto;
 }
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.025em;
+  white-space: nowrap;
+}
 .status.published,
-.status.shortlisted {
+.status.shortlisted,
+.status.accepted {
   color: var(--success);
-  background: color-mix(in srgb, var(--success) 9%, var(--surface));
+  background: var(--success-bg);
+  border: 1px solid var(--success-border);
+}
+.status.sent,
+.status.viewed {
+  color: var(--warning);
+  background: var(--warning-bg);
+  border: 1px solid var(--warning-border);
 }
 .status.draft,
 .status.withdrawn,
 .status.closed {
   color: var(--muted);
   background: var(--raised);
+  border: 1px solid var(--line);
 }
-.status.rejected {
-  color: var(--red);
-  background: color-mix(in srgb, var(--red) 8%, var(--surface));
+.status.rejected,
+.status.declined {
+  color: var(--danger);
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
 }
 .sidebar {
   overflow-y: auto;
@@ -918,6 +1071,7 @@ input,
 select,
 textarea {
   font: inherit;
+  letter-spacing: inherit;
 }
 button,
 a,
@@ -960,44 +1114,50 @@ h2,
 h3 {
   font-family: var(--font-ui);
   overflow-wrap: anywhere;
+  color: var(--text-bright);
 }
 h1 {
   font-size: 2.5rem;
-  letter-spacing: -0.03em;
-  line-height: 1.2;
-  font-weight: 600;
+  letter-spacing: 0.005em;
+  line-height: 1.25;
+  font-weight: 700;
 }
 h2 {
-  font-size: 1.43rem;
-  letter-spacing: -0.025em;
+  font-size: 1.45rem;
+  letter-spacing: 0.015em;
+  line-height: 1.35;
   font-weight: 600;
 }
 h3 {
   font-size: 1.14rem;
+  letter-spacing: 0.02em;
   font-weight: 600;
 }
 p {
   line-height: 1.7;
+  letter-spacing: 0.02em;
   max-width: 72ch;
 }
 small {
   font-size: 0.79rem;
   line-height: 1.6;
+  letter-spacing: 0.02em;
   color: var(--muted);
 }
 strong {
   font-weight: 600;
+  color: var(--text-bright);
 }
 svg {
   flex-shrink: 0;
 }
 ::selection {
   background: var(--blue);
-  color: var(--text);
+  color: var(--text-bright);
 }
 :focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 4px;
+  outline: 2px solid var(--accent-readable);
+  outline-offset: 3px;
 }
 main:focus {
   outline: none;
@@ -1007,15 +1167,16 @@ main:focus {
 }
 .eyebrow {
   font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.13em;
+  font-weight: 600;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: var(--accent-readable);
 }
 .subtitle {
   margin-top: 14px;
   color: var(--muted);
   font-size: 1rem;
+  letter-spacing: 0.02em;
 }
 .button {
   display: inline-flex;
@@ -1023,77 +1184,104 @@ main:focus {
   justify-content: center;
   gap: 10px;
   border: 1px solid transparent;
-  border-radius: 7px;
-  padding: 12px 18px;
-  min-height: 44px;
+  border-radius: 6px;
+  padding: 10px 18px;
+  min-height: 40px;
+  font-family: var(--font-ui);
   font-weight: 500;
+  font-size: 0.88rem;
   line-height: 1.4;
-  transition:
-    background 0.18s,
-    color 0.18s,
-    border-color 0.18s;
+  letter-spacing: 0.025em;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
   text-decoration: none;
   white-space: nowrap;
 }
 .button-primary {
-  background: var(--blue);
-  color: var(--text);
-  border-color: var(--accent);
+  background: var(--accent);
+  color: #ffffff;
+  border: 1px solid transparent;
+  font-weight: 500;
 }
 .button-primary:hover {
-  background: color-mix(in srgb, var(--accent) 88%, var(--bg));
+  background: #3422e6;
+  color: #ffffff;
+}
+.button-primary:active {
+  background: #2a1ac2;
 }
 .button-secondary {
   background: var(--raised);
-  border-color: var(--line);
+  border: 1px solid var(--line);
   color: var(--text);
 }
 .button-secondary:hover {
   background: var(--hover);
+  border-color: var(--line-strong);
+  color: var(--text-bright);
+}
+.button-secondary:active {
+  background: var(--overlay);
 }
 .button-ghost {
   background: transparent;
   color: var(--muted);
 }
 .button-ghost:hover {
-  color: var(--text);
-  background: var(--raised);
+  color: var(--text-bright);
+  background: var(--hover);
 }
 .button-danger {
-  color: var(--red);
-  background: color-mix(in srgb, var(--red) 10%, var(--surface));
+  color: #ffffff;
+  background: var(--red);
+  border: 1px solid transparent;
+}
+.button-danger:hover {
+  background: #d4152a;
+}
+.button-danger:active {
+  background: #b50f21;
 }
 .button-sm {
-  padding: 8px 12px;
+  padding: 8px 14px;
   min-height: 36px;
-  font-size: 0.86rem;
+  font-size: 0.84rem;
 }
 .icon-button {
-  border: 0;
+  border: 1px solid transparent;
   background: transparent;
   padding: 8px;
   display: grid;
   place-items: center;
   color: var(--muted);
-  border-radius: 5px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
 }
 .icon-button:hover {
-  background: var(--raised);
-  color: var(--text);
+  background: var(--hover);
+  border-color: var(--line);
+  color: var(--text-bright);
 }
 .text-link {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  color: var(--accent);
+  color: var(--accent-readable);
   font-size: 0.9rem;
   background: none;
   border: 0;
   padding: 0;
   line-height: 1.6;
+  font-weight: 500;
+  transition: color 0.15s ease;
 }
 .text-link:hover {
-  color: var(--accent);
+  color: var(--text-bright);
+}
+.text-link > svg {
+  transition: transform 0.15s ease;
+}
+.text-link:hover > svg {
+  transform: translateX(3px);
 }
 .text-link.center {
   align-self: center;
@@ -1148,7 +1336,7 @@ main:focus {
   font-size: 1.5rem;
   font-weight: 700;
   line-height: 1.25;
-  letter-spacing: -0.03em;
+  letter-spacing: 0.01em;
 }
 .brand span {
   display: block;
@@ -1156,7 +1344,7 @@ main:focus {
   font-size: 0.6rem;
   color: var(--muted);
   font-weight: 400;
-  letter-spacing: 0;
+  letter-spacing: 0.02em;
   line-height: 1.5;
   max-width: 150px;
   margin-top: 4px;
@@ -1166,7 +1354,7 @@ main:focus {
   margin-bottom: 16px;
   padding-left: 12px;
   font-size: 0.67rem;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--muted);
 }
@@ -1179,29 +1367,41 @@ nav > a {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 13px 12px;
-  border-radius: 7px;
-  font-size: 0.86rem;
+  padding: 11px 14px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
   color: var(--muted);
-  transition: background 0.2s;
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
 }
 nav > a > svg:last-child {
   margin-left: auto;
   opacity: 0;
+  transform: translateX(-4px);
+  transition: all 0.15s ease;
 }
 nav > a:hover {
-  background: var(--raised);
-  color: var(--text);
+  background: var(--hover);
+  color: var(--text-bright);
+}
+nav > a:hover > svg:last-child {
+  opacity: 0.5;
+  transform: translateX(0);
 }
 nav > a.active {
-  background: color-mix(in srgb, var(--accent) 23%, var(--surface));
-  color: var(--text);
+  background: rgba(64, 47, 255, 0.14);
+  border-color: rgba(64, 47, 255, 0.35);
+  color: #ffffff;
+}
+nav > a.active > svg:first-child {
+  color: #93a5ff;
 }
 nav > a.active > svg:last-child {
   opacity: 1;
-}
-nav > a.active > svg:first-child {
-  color: var(--text);
+  color: #93a5ff;
+  transform: translateX(0);
 }
 .sidebar-note {
   margin-top: auto;
@@ -1215,7 +1415,7 @@ nav > a.active > svg:first-child {
   font-family: var(--font-ui);
   font-size: 1.25rem;
   line-height: 1.5;
-  letter-spacing: -0.03em;
+  letter-spacing: 0.015em;
   color: var(--muted);
 }
 .sidebar-note strong {
@@ -1290,9 +1490,14 @@ nav > a.active > svg:first-child {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 0.76rem;
+  font-size: 0.8rem;
   color: var(--muted);
   gap: 16px;
+  background: rgba(19, 21, 31, 0.75);
+  backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 .separator {
   margin: 0 12px;
@@ -1306,13 +1511,20 @@ nav > a.active > svg:first-child {
 .topbar a {
   display: grid;
   place-items: center;
-  padding: 4px;
+  padding: 6px;
+  border-radius: 6px;
+  color: var(--muted);
+  transition: all 0.15s ease;
+}
+.topbar a:hover {
+  color: var(--text-bright);
+  background: var(--hover);
 }
 .live-dot {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--success);
 }
 main {
   width: 100%;
@@ -1653,6 +1865,7 @@ input[type="radio"] {
   background: var(--surface);
   padding: 26px 28px;
   border-bottom: 1px solid var(--line);
+  transition: background-color 0.15s ease;
 }
 .candidate-row:last-child {
   border: 0;
@@ -1678,10 +1891,12 @@ input[type="radio"] {
   font-family: var(--font-ui);
   font-size: 1.18rem;
   font-weight: 600;
-  letter-spacing: -0.02em;
+  letter-spacing: 0.015em;
+  color: var(--text-bright);
+  transition: color 0.15s ease;
 }
 .candidate-name > a:hover {
-  color: var(--accent);
+  color: var(--accent-readable);
 }
 .candidate-info > p {
   font-size: 0.85rem;
@@ -1707,38 +1922,53 @@ input[type="radio"] {
 .tag {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  padding: 4px 9px;
+  gap: 6px;
+  padding: 4px 10px;
   border: 1px solid var(--line);
-  border-radius: 5px;
-  font-size: 0.68rem;
+  border-radius: 6px;
+  font-size: 0.72rem;
   line-height: 1.4;
+  letter-spacing: 0.025em;
   color: var(--muted);
+  font-weight: 500;
+  transition: all 0.15s ease;
 }
 .tag.grade {
-  color: var(--text);
-  border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
-  background: color-mix(in srgb, var(--accent) 15%, var(--surface));
+  color: #a5b4fc;
+  border-color: rgba(99, 102, 241, 0.35);
+  background: rgba(99, 102, 241, 0.12);
 }
 .tag.verified,
 .tag.status-accepted {
   color: var(--success);
   background: var(--success-bg);
-  border-color: var(--success-line);
+  border-color: var(--success-border);
 }
 .tag.status-sent {
-  color: var(--text);
-  background: color-mix(in srgb, var(--accent) 15%, var(--surface));
+  color: var(--warning);
+  background: var(--warning-bg);
+  border-color: var(--warning-border);
 }
 .tag.status-declined {
-  color: var(--red);
+  color: var(--danger);
+  background: var(--danger-bg);
+  border-color: var(--danger-border);
 }
 .skill {
+  font-family: var(--font-mono);
   font-size: 0.72rem;
-  padding: 5px 9px;
-  border-radius: 4px;
-  background: var(--raised);
+  padding: 4px 10px;
+  border-radius: 6px;
+  letter-spacing: 0.02em;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   color: var(--text);
+  transition: all 0.15s ease;
+}
+.skill:hover {
+  background: var(--accent-subtle);
+  border-color: var(--accent-border);
+  color: var(--text-bright);
 }
 .candidate-evidence {
   display: flex;
@@ -2195,7 +2425,7 @@ input[type="radio"] {
 .setup-note h3 {
   font-size: 1.5rem;
   line-height: 1.5;
-  letter-spacing: -0.035em;
+  letter-spacing: 0.01em;
   margin: 14px 0 20px;
 }
 .setup-note p {
@@ -2442,9 +2672,11 @@ input[type="radio"] {
   align-self: flex-start;
 }
 .salary {
-  font-family: var(--font-ui);
+  font-family: var(--font-mono);
   font-size: 1.7rem;
-  letter-spacing: -0.025em;
+  font-weight: 700;
+  color: var(--text-bright);
+  letter-spacing: 0.02em;
   margin: 26px 0 24px;
 }
 .salary > span {
@@ -2452,7 +2684,7 @@ input[type="radio"] {
   display: block;
   color: var(--muted);
   font-size: 0.73rem;
-  letter-spacing: 0;
+  letter-spacing: 0.02em;
   margin-top: 8px;
 }
 .invitation-bottom {
@@ -2520,7 +2752,7 @@ input[type="radio"] {
 .auth-statement h1 {
   font-size: clamp(2.5rem, 4vw, 4.5rem);
   line-height: 1.17;
-  letter-spacing: -0.065em;
+  letter-spacing: 0.005em;
   margin: 24px 0 28px;
 }
 .auth-statement h1 > span {
@@ -2545,7 +2777,7 @@ input[type="radio"] {
   color: var(--accent-readable);
   font-size: 0.7rem;
   margin-bottom: 10px;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.14em;
 }
 .journey > svg {
   color: var(--line);
@@ -3112,6 +3344,7 @@ input[type="radio"] {
 .challenge-item h2 {
   font-family: var(--font-ui);
   font-size: 1.35rem;
+  color: var(--text-bright);
   margin: 0 0 12px;
 }
 .challenge-facts {
