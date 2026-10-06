@@ -525,6 +525,7 @@ export function Compare() {
               <div
                 id="candidate-comparison"
                 className="compare-scroll"
+                data-columns={ids.length}
                 role="region"
                 aria-label="Сравнение кандидатов по критериям"
                 tabIndex={0}
