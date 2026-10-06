@@ -274,8 +274,7 @@
   white-space: nowrap;
 }
 .compare-scroll {
-  overflow: auto;
-  max-height: min(960px, calc(100dvh - 210px));
+  overflow-x: auto;
   max-width: 100%;
   padding: 0;
   border: 1px solid var(--line);
@@ -405,16 +404,6 @@
 }
 .compare-table tr[data-different="true"] > td {
   background: color-mix(in srgb, var(--accent) 4%, var(--bg));
-}
-.compare-table tr[data-different="true"] > th > span::after {
-  content: "";
-  display: inline-block;
-  vertical-align: middle;
-  width: 4px;
-  height: 4px;
-  margin-left: 8px;
-  border-radius: 50%;
-  background: var(--accent-readable);
 }
 .compare-cell {
   display: flex;
@@ -720,9 +709,6 @@
     font-size: 0.76rem;
     margin-bottom: 12px;
     line-height: 1.6;
-  }
-  .compare-scroll {
-    max-height: calc(100dvh - 150px);
   }
   .compare-table {
     min-width: calc(116px + var(--comparison-columns) * 212px);

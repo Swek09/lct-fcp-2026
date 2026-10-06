@@ -433,9 +433,7 @@ export function Compare() {
         <ArrowLeft size={16} />
         {returnTo.startsWith("/shortlist") ? "К избранному" : "К подборке"}
       </Link>
-      <PageTitle eyebrow="Выбор специалиста" title="Сравнение кандидатов">
-        Сопоставьте квалификацию, нужный стек и опыт по одним критериям.
-      </PageTitle>
+      <PageTitle eyebrow="Выбор специалиста" title="Сравнение кандидатов" />
       {!ids.length ? (
         <section className="comparison-empty">
           <Columns2 size={28} />
@@ -551,7 +549,6 @@ export function Compare() {
                     <tr>
                       <th scope="col">
                         <span className="comparison-corner">Критерии</span>
-                        <small>Читайте по строкам</small>
                       </th>
                       {queries.map((query, index) => (
                         <th scope="col" key={ids[index]}>
@@ -687,22 +684,6 @@ export function Compare() {
                     </button>
                   </div>
                 )}
-              </div>
-              <div className="comparison-notes">
-                <p>
-                  <ShieldCheck size={16} />
-                  Источник категории указан отдельно. Стек и стаж — сведения из
-                  резюме.
-                </p>
-                <details>
-                  <summary>Как читать индекс подбора?</summary>
-                  <p>
-                    Индекс складывается из результата теста, совпадений нужного
-                    стека и истории ФСП. Доли показаны рядом с баллом. Это
-                    основание для выбора, а не вероятность успешного найма.
-                    Отсутствующий в резюме навык стоит уточнить на встрече.
-                  </p>
-                </details>
               </div>
             </>
           )}

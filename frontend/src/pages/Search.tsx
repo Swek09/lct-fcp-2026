@@ -112,10 +112,7 @@ export function SearchPage({ saved = false }: { saved?: boolean }) {
       <PageTitle
         eyebrow={saved ? "Ваш список для знакомства" : "Банк кандидатов"}
         title={saved ? "Избранные специалисты" : "Найдите тех, кто умеет."}
-      >
-        Специалисты с подтверждённым уровнем. Вы выбираете, с кем начать
-        разговор.
-      </PageTitle>
+      />
       <form className="need-search" onSubmit={submit}>
         <label htmlFor="need">
           <Search size={20} />

@@ -1152,6 +1152,7 @@ nav > a.active > svg:first-child {
   margin-top: 16px;
 }
 .sidebar-bottom {
+  margin-top: auto;
   border-top: 1px solid var(--line);
   padding-top: 20px;
 }
@@ -1330,6 +1331,27 @@ textarea:focus {
 }
 textarea {
   resize: vertical;
+}
+.phone-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+.field-error {
+  display: block;
+  font-size: 0.76rem;
+  color: var(--red);
+  line-height: 1.4;
+}
+input.has-error,
+textarea.has-error {
+  border-color: var(--red) !important;
+}
+input.has-error:focus,
+textarea.has-error:focus {
+  border-color: var(--red) !important;
+  outline-color: color-mix(in srgb, var(--red) 30%, transparent) !important;
 }
 .select-trigger {
   display: flex;
@@ -2031,6 +2053,10 @@ input[type="radio"] {
   margin-top: 20px;
   border-bottom: 1px solid var(--line);
   border-top: 1px solid var(--line);
+}
+.proof-strip + .evidence-passport {
+  margin-top: 0;
+  border-top: none;
 }
 .proof-strip > svg {
   color: var(--success);

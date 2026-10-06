@@ -39,6 +39,7 @@ import {
   PageTitle,
   Success,
 } from "../components/shared";
+import { PhoneInput, validatePhone } from "../components/PhoneInput";
 export function CandidateProfile() {
   const q = useQuery({
     queryKey: ["profile"],
@@ -58,6 +59,13 @@ export function CandidateProfile() {
     setMessage("");
     setError(undefined);
     const f = Object.fromEntries(new FormData(e.currentTarget));
+    const phone = String(f.phone || "").trim();
+    const phoneCheck = validatePhone(phone);
+    if (!phoneCheck.valid) {
+      setError(new Error(phoneCheck.error));
+      setBusy(false);
+      return;
+    }
     try {
       await api("/profile", "PUT", {
         name: String(f.name || ""),
@@ -72,7 +80,7 @@ export function CandidateProfile() {
         published: f.published === "on",
         professional: professionalData(professional || q.data?.professional),
         contacts: {
-          phone: String(f.phone || ""),
+          phone,
           telegram: String(f.telegram || ""),
         },
       });
@@ -267,12 +275,10 @@ export function CandidateProfile() {
                 </p>
                 <div className="form-grid">
                   <Field label="Телефон">
-                    <input
+                    <PhoneInput
                       name="phone"
-                      type="tel"
                       defaultValue={q.data.contacts?.phone || ""}
-                      maxLength={40}
-                      placeholder="+7 900 000-00-00"
+                      placeholder="+7 (900) 000-00-00"
                     />
                   </Field>
                   <Field label="Telegram" hint="Имя пользователя, без ссылки.">

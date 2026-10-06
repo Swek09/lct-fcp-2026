@@ -21,6 +21,7 @@ import {
   PageTitle,
   Success,
 } from "../components/shared";
+import { PhoneInput, validatePhone } from "../components/PhoneInput";
 
 const teamSizes: Record<string, string> = {
   "1-10": "1–10 человек",
@@ -130,6 +131,11 @@ export function Company() {
   const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!c) return;
+    const phoneCheck = validatePhone(d.phone || "");
+    if (!phoneCheck.valid) {
+      setError(new Error(phoneCheck.error));
+      return;
+    }
     setBusy(true);
     setSaved(false);
     setError(undefined);
@@ -418,12 +424,10 @@ export function Company() {
                     />
                   </Field>
                   <Field label="Телефон">
-                    <input
-                      type="tel"
-                      maxLength={40}
+                    <PhoneInput
                       value={d.phone}
-                      onChange={(e) => detail("phone", e.target.value)}
-                      placeholder="+7 900 000-00-00"
+                      onChange={(val) => detail("phone", val)}
+                      placeholder="+7 (900) 000-00-00"
                     />
                   </Field>
                 </div>

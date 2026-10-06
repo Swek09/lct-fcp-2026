@@ -10,7 +10,6 @@ import {
   useNavigate,
 } from "react-router-dom";
 import {
-  ArrowUpRight,
   Building2,
   Bookmark,
   BriefcaseBusiness,
@@ -24,14 +23,12 @@ import {
   LogOut,
   Menu,
   Search,
-  ShieldCheck,
   X,
 } from "lucide-react";
 import {
   api,
   APIError,
   type Invitation,
-  type Config,
   queryClient,
   setCSRF,
   type User,
@@ -76,10 +73,6 @@ function Layout() {
   const location = useLocation();
   const [menu, setMenu] = useState(false);
   const [error, setError] = useState<unknown>();
-  const config = useQuery({
-    queryKey: ["config"],
-    queryFn: () => api<Config>("/config"),
-  });
   const invitations = useQuery({
     queryKey: ["invitations"],
     queryFn: () => api<Invitation[]>("/invitations"),
@@ -248,15 +241,6 @@ function Layout() {
               </NavLink>
             ))}
           </nav>
-          <div className="sidebar-note">
-            <ShieldCheck size={22} />
-            <p>
-              Навыки говорят
-              <br />
-              <strong>громче резюме.</strong>
-            </p>
-            <span>От достижений — к возможностям</span>
-          </div>
           <div className="sidebar-bottom">
             <div className="account">
               <Avatar
@@ -296,15 +280,6 @@ function Layout() {
                     ? "Компания"
                     : "Карьера")}
             </span>
-            <div>
-              <span className="live-dot" />
-              {config.data?.demo
-                ? "Демонстрационный стенд"
-                : "Рабочее пространство"}
-              <NavLink to="/invitations" aria-label="Открыть приглашения">
-                <ArrowUpRight size={16} />
-              </NavLink>
-            </div>
           </header>
           <main id="main" tabIndex={-1}>
             <ErrorBox error={error} />
