@@ -66,6 +66,22 @@ export async function api<T>(
           skills: "Навыки",
           city: "Город",
           consent: "Согласие на контакт",
+          phone: "Телефон",
+          telegram: "Telegram",
+          image: "Изображение",
+          institution: "Учебное заведение",
+          degree: "Квалификация",
+          field: "Направление обучения",
+          start_year: "Год начала",
+          end_year: "Год окончания",
+          issuer: "Организация",
+          year: "Год",
+          timezone: "Часовой пояс",
+          domains: "Отраслевой опыт",
+          interests: "Интересующие задачи",
+          contact_email: "Рабочая почта",
+          founded_year: "Год основания",
+          inn: "ИНН",
           estimated_minutes: "Время решения",
         };
         const fields = [
@@ -106,11 +122,11 @@ export const grades: Record<string, string> = {
 export const date = (v: string) => new Date(v).toLocaleDateString("ru-RU");
 export const money = (v: number) => new Intl.NumberFormat("ru-RU").format(v);
 export const initials = (v: string) =>
-  v
-    .split(" ")
+  (v.match(/[\p{L}\p{N}]+/gu) || [])
     .slice(0, 2)
     .map((v) => v[0])
-    .join("");
+    .join("")
+    .toUpperCase();
 export function plural(n: number, words: [string, string, string]) {
   const last = n % 10,
     hundred = n % 100;
@@ -137,6 +153,8 @@ export interface Achievement {
   source: string;
 }
 export interface Profile {
+  avatar_version: number;
+  contacts?: Contacts;
   user_id: string;
   name: string;
   headline: string;
@@ -173,6 +191,11 @@ export interface PortfolioProject {
   demo: string;
 }
 export interface ProfessionalProfile {
+  timezone: string;
+  domains: string[];
+  interests: string;
+  education: Education[];
+  certificates: Certificate[];
   github: string;
   portfolio: string;
   salary_min: number;
@@ -185,6 +208,54 @@ export interface ProfessionalProfile {
   languages: string[];
   experience: WorkExperience[];
   projects: PortfolioProject[];
+}
+export interface Contacts {
+  phone: string;
+  telegram: string;
+}
+export interface Education {
+  institution: string;
+  degree: string;
+  field: string;
+  start_year: number;
+  end_year: number;
+  current: boolean;
+}
+export interface Certificate {
+  title: string;
+  issuer: string;
+  year: number;
+  url: string;
+}
+export interface CompanyDetails {
+  tagline: string;
+  industry: string;
+  legal_name: string;
+  inn: string;
+  city: string;
+  address: string;
+  founded_year: number;
+  team_size: string;
+  products: string;
+  culture: string;
+  hiring_process: string;
+  technologies: string[];
+  benefits: string[];
+  work_formats: string[];
+  careers_url: string;
+  contact_name: string;
+  contact_role: string;
+  contact_email: string;
+  phone: string;
+  telegram: string;
+}
+export interface CompanyProfile {
+  user_id: string;
+  name: string;
+  description: string;
+  website: string;
+  avatar_version: number;
+  details: CompanyDetails;
 }
 export const employmentTypes: Record<string, string> = {
   full_time: "Полная занятость",
@@ -233,6 +304,8 @@ export interface QualificationEvidence {
   last_practice_at: string | null;
 }
 export interface Vacancy {
+  company_id: string;
+  company_avatar_version: number;
   id: string;
   title: string;
   description: string;
@@ -302,6 +375,8 @@ export interface Attempt {
   topics: Record<string, boolean>;
 }
 export interface Invitation {
+  company_id: string;
+  company_avatar_version: number;
   id: string;
   candidate_id: string;
   candidate_name: string;

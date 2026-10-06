@@ -129,6 +129,7 @@ func (a *App) Router() http.Handler {
 	})
 	a.authRoutes(api)
 	a.profileRoutes(api)
+	a.avatarRoutes(api)
 	a.assessmentRoutes(api)
 	a.matchingRoutes(api)
 	a.invitationRoutes(api)

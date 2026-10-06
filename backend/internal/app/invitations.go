@@ -10,19 +10,21 @@ import (
 )
 
 type Invitation struct {
-	ID             string    `json:"id"`
-	EmployerID     string    `json:"employer_id"`
-	CandidateID    string    `json:"candidate_id"`
-	CandidateName  string    `json:"candidate_name"`
-	CompanyName    string    `json:"company_name"`
-	CompanyEmail   string    `json:"company_email"`
-	CandidateEmail string    `json:"candidate_email,omitempty"`
-	Title          string    `json:"title"`
-	Message        string    `json:"message"`
-	SalaryMin      int       `json:"salary_min"`
-	SalaryMax      int       `json:"salary_max"`
-	Status         string    `json:"status"`
-	CreatedAt      time.Time `json:"created_at"`
+	ID                   string    `json:"id"`
+	EmployerID           string    `json:"employer_id"`
+	CandidateID          string    `json:"candidate_id"`
+	CandidateName        string    `json:"candidate_name"`
+	CompanyName          string    `json:"company_name"`
+	CompanyID            string    `json:"company_id"`
+	CompanyAvatarVersion int64     `json:"company_avatar_version"`
+	CompanyEmail         string    `json:"company_email"`
+	CandidateEmail       string    `json:"candidate_email,omitempty"`
+	Title                string    `json:"title"`
+	Message              string    `json:"message"`
+	SalaryMin            int       `json:"salary_min"`
+	SalaryMax            int       `json:"salary_max"`
+	Status               string    `json:"status"`
+	CreatedAt            time.Time `json:"created_at"`
 }
 
 func (a *App) invitationRoutes(api huma.API) {
@@ -32,7 +34,7 @@ func (a *App) invitationRoutes(api huma.API) {
 			return nil, err
 		}
 		rows, err := a.DB.Query(ctx, `SELECT row_to_json(t) FROM (
-   SELECT i.*,c.name AS company_name,e.email AS company_email,u.name AS candidate_name,
+   SELECT i.*,c.name AS company_name,c.user_id AS company_id,c.avatar_version AS company_avatar_version,e.email AS company_email,u.name AS candidate_name,
     CASE WHEN i.status='accepted' AND i.employer_id=$1 THEN u.email ELSE '' END AS candidate_email
    FROM invitations i JOIN companies c ON c.user_id=i.employer_id
    JOIN users e ON e.id=i.employer_id JOIN users u ON u.id=i.candidate_id

@@ -30,18 +30,39 @@ type Project struct {
 }
 
 type Data struct {
-	GitHub       string       `json:"github" maxLength:"500"`
-	Portfolio    string       `json:"portfolio" maxLength:"500"`
-	SalaryMin    int          `json:"salary_min" minimum:"0" maximum:"10000000"`
-	SalaryMax    int          `json:"salary_max" minimum:"0" maximum:"10000000"`
-	WorkFormats  []string     `json:"work_formats" maxItems:"3"`
-	Employment   string       `json:"employment" enum:",full_time,part_time,contract,internship"`
-	Availability string       `json:"availability" enum:",immediately,two_weeks,month,negotiable"`
-	SearchStatus string       `json:"search_status" enum:",active,open,paused"`
-	Relocation   bool         `json:"relocation"`
-	Languages    []string     `json:"languages" maxItems:"8"`
-	Experience   []Experience `json:"experience" maxItems:"8"`
-	Projects     []Project    `json:"projects" maxItems:"8"`
+	Timezone     string        `json:"timezone" maxLength:"80" required:"false"`
+	Domains      []string      `json:"domains" maxItems:"12" required:"false"`
+	Interests    string        `json:"interests" maxLength:"2000" required:"false"`
+	Education    []Education   `json:"education" maxItems:"8" required:"false"`
+	Certificates []Certificate `json:"certificates" maxItems:"12" required:"false"`
+	GitHub       string        `json:"github" maxLength:"500"`
+	Portfolio    string        `json:"portfolio" maxLength:"500"`
+	SalaryMin    int           `json:"salary_min" minimum:"0" maximum:"10000000"`
+	SalaryMax    int           `json:"salary_max" minimum:"0" maximum:"10000000"`
+	WorkFormats  []string      `json:"work_formats" maxItems:"3"`
+	Employment   string        `json:"employment" enum:",full_time,part_time,contract,internship"`
+	Availability string        `json:"availability" enum:",immediately,two_weeks,month,negotiable"`
+	SearchStatus string        `json:"search_status" enum:",active,open,paused"`
+	Relocation   bool          `json:"relocation"`
+	Languages    []string      `json:"languages" maxItems:"8"`
+	Experience   []Experience  `json:"experience" maxItems:"8"`
+	Projects     []Project     `json:"projects" maxItems:"8"`
+}
+
+type Education struct {
+	Institution string `json:"institution" maxLength:"200"`
+	Degree      string `json:"degree" maxLength:"100"`
+	Field       string `json:"field" maxLength:"150"`
+	StartYear   int    `json:"start_year" minimum:"0" maximum:"2100"`
+	EndYear     int    `json:"end_year" minimum:"0" maximum:"2100"`
+	Current     bool   `json:"current"`
+}
+
+type Certificate struct {
+	Title  string `json:"title" maxLength:"200"`
+	Issuer string `json:"issuer" maxLength:"150"`
+	Year   int    `json:"year" minimum:"0" maximum:"2100"`
+	URL    string `json:"url" maxLength:"500"`
 }
 
 func webURL(value string) (string, error) {
@@ -89,6 +110,42 @@ func month(value string) bool { _, err := time.Parse("2006-01", value); return e
 // Normalize validates semantic relationships in addition to API length constraints.
 func Normalize(d Data) (Data, error) {
 	var err error
+	d.Timezone = strings.TrimSpace(d.Timezone)
+	if d.Timezone != "" {
+		if _, err = time.LoadLocation(d.Timezone); err != nil {
+			return d, fmt.Errorf("Укажите часовой пояс, например Europe/Moscow")
+		}
+	}
+	if d.Domains, err = cleanList(d.Domains, 12); err != nil {
+		return d, err
+	}
+	d.Interests = strings.TrimSpace(d.Interests)
+	if len(d.Education) > 8 || len(d.Certificates) > 12 {
+		return d, fmt.Errorf("Можно добавить до 8 записей об образовании и до 12 сертификатов")
+	}
+	for i := range d.Education {
+		e := &d.Education[i]
+		e.Institution = strings.TrimSpace(e.Institution)
+		e.Degree = strings.TrimSpace(e.Degree)
+		e.Field = strings.TrimSpace(e.Field)
+		if e.Institution == "" {
+			return d, fmt.Errorf("Укажите учебное заведение")
+		}
+		if (e.StartYear != 0 && (e.StartYear < 1950 || e.StartYear > time.Now().Year())) || (e.EndYear != 0 && (e.EndYear < 1950 || e.EndYear > time.Now().Year()+10 || (e.StartYear != 0 && e.EndYear < e.StartYear))) || (e.Current && e.EndYear != 0) {
+			return d, fmt.Errorf("Проверьте годы обучения")
+		}
+	}
+	for i := range d.Certificates {
+		c := &d.Certificates[i]
+		c.Title = strings.TrimSpace(c.Title)
+		c.Issuer = strings.TrimSpace(c.Issuer)
+		if c.Title == "" || (c.Year != 0 && (c.Year < 1950 || c.Year > time.Now().Year())) {
+			return d, fmt.Errorf("Укажите название сертификата и проверьте год получения")
+		}
+		if c.URL, err = webURL(c.URL); err != nil {
+			return d, err
+		}
+	}
 	if d.GitHub, err = webURL(d.GitHub); err != nil {
 		return d, err
 	}

@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight, Building2, Check, Clock3, Mail, X } from "lucide-react";
 import { api, date, type Invitation, money, queryClient } from "../api";
 import { useUser } from "../App";
+import { Avatar } from "../components/Avatar";
 import { Button } from "../components/ui/button";
 import { Empty, ErrorBox, Loading, PageTitle } from "../components/shared";
 const statuses: Record<string, string> = {
@@ -93,12 +94,27 @@ export function Invitations() {
           {list.map((i) => (
             <article className="invitation" key={i.id}>
               <div className="invitation-top">
-                <div className="company-mark">
-                  <Building2 size={22} />
-                </div>
+                {candidate ? (
+                  <Avatar
+                    name={i.company_name}
+                    userId={i.company_id}
+                    version={i.company_avatar_version}
+                    company
+                  />
+                ) : (
+                  <div className="company-mark">
+                    <Building2 size={22} />
+                  </div>
+                )}
                 <div>
                   <span className="eyebrow">
-                    {candidate ? i.company_name : i.candidate_name}
+                    {candidate ? (
+                      <Link to={`/companies/${i.company_id}`}>
+                        {i.company_name}
+                      </Link>
+                    ) : (
+                      i.candidate_name
+                    )}
                   </span>
                   <h2>{i.title}</h2>
                 </div>

@@ -16,6 +16,11 @@ import { Button } from "./ui/button";
 import { Select } from "./ui/select";
 
 const empty: ProfessionalProfile = {
+  timezone: "",
+  domains: [],
+  interests: "",
+  education: [],
+  certificates: [],
   github: "",
   portfolio: "",
   salary_min: 0,
@@ -38,6 +43,9 @@ export const professionalData = (
   languages: value?.languages || [],
   experience: value?.experience || [],
   projects: value?.projects || [],
+  domains: value?.domains || [],
+  education: value?.education || [],
+  certificates: value?.certificates || [],
 });
 const list = (value: string) =>
   value
@@ -61,7 +69,7 @@ const monthLabel = (value: string) =>
         year: "numeric",
       })
     : "";
-function CommaInput({
+export function CommaInput({
   value,
   onChange,
   maxLength = 500,
@@ -114,7 +122,7 @@ export function ProfessionalEditor({
     );
   return (
     <>
-      <div className="section-heading">
+      <div className="section-heading" id="preferences">
         <h2>Пожелания к работе</h2>
         <span>02 / Условия</span>
       </div>
@@ -210,7 +218,7 @@ export function ProfessionalEditor({
         Готов к переезду
       </label>
       <div className="section-heading">
-        <h2>Ссылки на работы</h2>
+        <h2 id="portfolio">Ссылки на работы</h2>
         <span>03 / Портфолио</span>
       </div>
       <div className="form-grid">
@@ -238,7 +246,7 @@ export function ProfessionalEditor({
         добавляйте ссылки, если хотите скрыть указанные на них контакты.
       </small>
       <div className="section-heading">
-        <h2>Опыт работы</h2>
+        <h2 id="experience">Опыт работы</h2>
         <span>04 / Роли и результаты</span>
       </div>
       <p className="muted resume-editor-hint">
@@ -495,6 +503,8 @@ export function ProfessionalDetails({ profile }: { profile: Profile }) {
     ["Готовность выйти", availabilityTypes[d.availability]],
     ["Переезд", d.relocation ? "Готов к переезду" : ""],
     ["Языки", d.languages.join(", ")],
+    ["Часовой пояс", d.timezone],
+    ["Отраслевой опыт", d.domains.join(", ")],
   ].filter(([, value]) => value);
   return (
     <div className="resume-details">
@@ -512,6 +522,12 @@ export function ProfessionalDetails({ profile }: { profile: Profile }) {
             ))}
           </dl>
         </>
+      )}
+      {d.interests && (
+        <section className="resume-interests">
+          <h2>Интересующие задачи</h2>
+          <p>{d.interests}</p>
+        </section>
       )}
       {(d.github || d.portfolio) && (
         <>
@@ -586,6 +602,44 @@ export function ProfessionalDetails({ profile }: { profile: Profile }) {
             ))}
           </ol>
         </>
+      )}
+      {d.education.length > 0 && (
+        <section>
+          <div className="section-heading">
+            <h2>Образование</h2>
+            <span>Со слов кандидата</span>
+          </div>
+          <ol className="resume-timeline">
+            {d.education.map((e, i) => (
+              <li key={i}>
+                <h3>{e.institution}</h3>
+                <p>{[e.degree, e.field].filter(Boolean).join(" · ")}</p>
+                <small>
+                  {e.start_year || ""}
+                  {e.start_year ? " — " : ""}
+                  {e.current ? "по настоящее время" : e.end_year || ""}
+                </small>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )}
+      {d.certificates.length > 0 && (
+        <section>
+          <div className="section-heading">
+            <h2>Сертификаты и курсы</h2>
+            <span>Со слов кандидата</span>
+          </div>
+          <ol className="resume-timeline">
+            {d.certificates.map((c, i) => (
+              <li key={i}>
+                <h3>{c.title}</h3>
+                <p>{[c.issuer, c.year || ""].filter(Boolean).join(" · ")}</p>
+                {c.url && external(c.url, "Документ")}
+              </li>
+            ))}
+          </ol>
+        </section>
       )}
     </div>
   );

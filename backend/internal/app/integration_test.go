@@ -166,6 +166,7 @@ func TestIntegration(t *testing.T) {
 		}
 		expect(t, candidate, "POST", "/api/assessments/preview", map[string]string{"need": "middle backend Go PostgreSQL"}, 403)
 	})
+	t.Run("account_details_avatars_and_contact_revocation", func(t *testing.T) { checkAccounts(t, a, h) })
 	t.Run("professional_profile_roundtrip_validation_and_visibility", func(t *testing.T) {
 		var old Profile
 		_ = json.Unmarshal(expect(t, candidate, "GET", "/api/profile", nil, 200), &old)

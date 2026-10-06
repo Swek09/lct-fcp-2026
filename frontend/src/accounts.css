@@ -1,0 +1,366 @@
+.avatar {
+  overflow: hidden;
+}
+.avatar > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.avatar.portrait {
+  width: 96px;
+  height: 96px;
+  font-size: 1.8rem;
+}
+.avatar.company-avatar {
+  border-radius: 16px;
+  background: var(--raised);
+}
+.avatar.company-avatar.small {
+  border-radius: 6px;
+}
+.avatar-editor {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  padding: 20px 24px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+}
+.avatar-editor-body {
+  min-width: 0;
+  flex: 1;
+}
+.avatar-editor-body > strong {
+  font-size: 0.85rem;
+}
+.avatar-editor-body > p {
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.7;
+  margin: 6px 0 14px;
+  max-width: 65ch;
+}
+.avatar-editor-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.avatar-editor .error,
+.avatar-editor .success {
+  margin-top: 12px;
+}
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+.account-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+}
+.account-sections > .eyebrow {
+  margin: 4px 0 12px;
+}
+.account-sections > button {
+  display: flex;
+  gap: 12px;
+  text-align: left;
+  align-items: center;
+  padding: 10px 8px;
+  color: var(--text);
+  font-size: 0.76rem;
+  background: none;
+  border: 0;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.account-sections > button:hover {
+  background: var(--hover);
+}
+.account-sections > button > span {
+  font-size: 0.65rem;
+  color: var(--muted);
+}
+.profile-progress {
+  padding: 24px 0;
+  border-bottom: 1px solid var(--line);
+}
+.profile-progress h3 {
+  font-size: 0.9rem;
+}
+.profile-progress .inline-heading {
+  justify-content: space-between;
+}
+.profile-progress .inline-heading > span {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.profile-progress progress {
+  display: block;
+  width: 100%;
+  height: 4px;
+  margin: 20px 0;
+  appearance: none;
+  border: none;
+  background: var(--raised);
+  accent-color: var(--accent);
+}
+.profile-progress progress::-webkit-progress-bar {
+  background: var(--raised);
+}
+.profile-progress progress::-webkit-progress-value {
+  background: var(--accent);
+}
+.profile-progress progress::-moz-progress-bar {
+  background: var(--accent);
+}
+.profile-progress ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.profile-progress li {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 0.7rem;
+}
+.profile-progress li small {
+  margin-left: auto;
+  font-size: 0.62rem;
+  color: var(--muted);
+}
+.completion-dot {
+  width: 7px;
+  height: 7px;
+  border: 1px solid var(--muted);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.completion-dot.done {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.profile-progress > p {
+  font-size: 0.68rem;
+  line-height: 1.7;
+  color: var(--muted);
+  margin-top: 20px;
+}
+.section-heading[id],
+h2[id] {
+  scroll-margin-top: 100px;
+}
+.company-identity {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--line);
+}
+.company-identity > div {
+  min-width: 0;
+}
+.company-identity h2 {
+  margin: 6px 0 10px;
+  font-size: 1.5rem;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.company-identity p {
+  font-size: 0.82rem;
+  line-height: 1.7;
+  max-width: 65ch;
+  color: var(--muted);
+}
+.identity-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin-top: 14px;
+  font-size: 0.68rem;
+  color: var(--muted);
+}
+.identity-meta > span {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+.company-profile-note {
+  font-size: 0.76rem;
+  line-height: 1.8;
+}
+.company-profile-note h3 {
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+}
+.company-profile-note p {
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+.profile-save-bar {
+  position: sticky;
+  bottom: 16px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg);
+  box-shadow: 0 6px 30px color-mix(in srgb, var(--brand-dark) 70%, transparent);
+}
+.profile-save-bar .muted {
+  font-size: 0.68rem;
+}
+.company-copy {
+  border-bottom: 1px solid var(--line);
+  padding: 8px 0 28px;
+}
+.company-copy > h2 {
+  font-size: 1.1rem;
+  margin-bottom: 16px;
+}
+.company-copy .resume-links {
+  margin-top: 18px;
+}
+.company-copy small {
+  display: block;
+  color: var(--muted);
+  font-size: 0.7rem;
+  margin-top: 16px;
+}
+.company-benefits {
+  padding-left: 20px;
+  display: grid;
+  gap: 10px;
+  font-size: 0.82rem;
+  line-height: 1.7;
+}
+.company-facts {
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.8rem;
+}
+.company-facts h3 {
+  font-size: 0.95rem;
+  margin-bottom: 20px;
+}
+.company-facts .resume-preferences {
+  grid-template-columns: 1fr;
+}
+.company-contact-links {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+  align-items: flex-start;
+}
+.company-contact-links a {
+  overflow-wrap: anywhere;
+  max-width: 100%;
+  font-size: 0.8rem;
+}
+.candidate-identity-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+}
+.candidate-identity-heading > .avatar {
+  margin-top: 8px;
+}
+.candidate-identity-heading > .page-heading {
+  flex: 1;
+  min-width: 0;
+}
+.resume-interests {
+  margin-top: 24px;
+}
+.resume-interests h2 {
+  font-size: 1rem;
+  margin-bottom: 12px;
+}
+.resume-interests p {
+  white-space: pre-line;
+  font-size: 0.85rem;
+  line-height: 1.8;
+  max-width: 70ch;
+}
+.account-mobile-navigation {
+  display: none;
+}
+@media (max-width: 960px) {
+  .account-mobile-navigation {
+    display: block;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    margin: -8px 0 28px;
+  }
+  .account-mobile-navigation > summary {
+    padding: 14px 0;
+    cursor: pointer;
+    font-size: 0.75rem;
+  }
+  .account-mobile-navigation > .account-sections {
+    border: 0;
+    padding: 8px 0 16px;
+  }
+  .profile-aside > .account-sections {
+    display: none;
+  }
+}
+@media (max-width: 640px) {
+  .avatar.portrait {
+    width: 72px;
+    height: 72px;
+    font-size: 1.4rem;
+  }
+  .avatar-editor {
+    padding: 16px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .company-identity {
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .company-identity h2 {
+    font-size: 1.2rem;
+  }
+  .candidate-identity-heading {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .profile-save-bar {
+    bottom: 8px;
+    padding: 12px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .account-sections {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+  }
+  .account-sections > .eyebrow {
+    grid-column: 1 / -1;
+  }
+  .account-sections > button {
+    font-size: 0.68rem;
+    padding: 8px 0;
+    gap: 7px;
+  }
+}

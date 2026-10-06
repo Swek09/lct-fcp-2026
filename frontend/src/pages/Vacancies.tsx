@@ -28,6 +28,7 @@ import {
 } from "../api";
 import { useUser } from "../App";
 import { Button } from "../components/ui/button";
+import { Avatar } from "../components/Avatar";
 import { Select } from "../components/ui/select";
 import {
   Empty,
@@ -141,7 +142,14 @@ export function Vacancies() {
             <article className="vacancy-row" key={v.id}>
               <div className="vacancy-company">
                 <BriefcaseBusiness size={18} />
-                <span>{v.company_name}</span>
+                <Avatar
+                  name={v.company_name}
+                  userId={v.company_id}
+                  version={v.company_avatar_version}
+                  size="small"
+                  company
+                />
+                <Link to={`/companies/${v.company_id}`}>{v.company_name}</Link>
                 <small>{date(v.created_at)}</small>
               </div>
               <div className="vacancy-row-heading">
@@ -512,6 +520,10 @@ export function VacancyDetail({ edit = false }: { edit?: boolean }) {
           <p className="long-copy">
             {v.company_description || "Компания пока не добавила описание."}
           </p>
+          <Link className="text-link" to={`/companies/${v.company_id}`}>
+            Команда, условия и контакты
+            <ArrowRight size={16} />
+          </Link>
           {/^https?:\/\//i.test(v.company_website) && (
             <a
               className="text-link"

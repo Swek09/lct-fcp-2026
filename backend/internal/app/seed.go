@@ -81,6 +81,13 @@ func (a *App) Seed(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+	details, err := json.Marshal(CompanyDetails{Tagline: "Демонстрационная продуктовая команда: сервисы для бизнеса", Industry: "Информационные технологии", City: "Москва", FoundedYear: 2018, TeamSize: "51-200", Products: "Демонстрационные направления: платформа API, инструменты документооборота и аналитика для продуктовых команд. Примеры задач — надёжная доставка событий, развитие кабинетов и работа с данными.", Culture: "Демонстрационный пример: небольшие продуктовые команды, ревью кода, обсуждение технических решений и наставничество.", HiringProcess: "Демонстрационный процесс: знакомство с рекрутером, обсуждение опыта с командой и финальная встреча. Результаты теста помогают подготовить вопросы к технической беседе.", Technologies: []string{"Go", "PostgreSQL", "Redis", "React", "TypeScript"}, Benefits: []string{"Наставничество · демо", "Бюджет на обучение · демо", "Гибкий график · демо"}, WorkFormats: []string{"remote", "hybrid"}, ContactName: "Мария · демо", ContactRole: "Рекрутер продуктовой команды"})
+	if err != nil {
+		return err
+	}
+	if _, err = tx.Exec(ctx, "UPDATE companies SET details=$2 WHERE user_id=$1 AND details='{}'::jsonb", id, details); err != nil {
+		return err
+	}
 	_, err = tx.Exec(ctx, `INSERT INTO invitations(id,employer_id,candidate_id,title,message,salary_min,salary_max)
  VALUES($1,$2,$3,'Go-разработчик в продуктовую команду','Привет! Нам понравились ваши результаты и опыт с Go. Предлагаем познакомиться с командой платформы: развиваем API и сервисы для бизнеса. Можно работать удалённо.',180000,250000) ON CONFLICT DO NOTHING`, DemoID("invitation"), id, DemoID("candidate@demo.fsp"))
 	if err != nil {

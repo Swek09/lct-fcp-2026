@@ -23,14 +23,16 @@ type VacancyBody struct {
 }
 type Vacancy struct {
 	VacancyBody
-	ID                 string       `json:"id"`
-	CompanyName        string       `json:"company_name"`
-	CompanyDescription string       `json:"company_description"`
-	CompanyWebsite     string       `json:"company_website"`
-	Status             string       `json:"status"`
-	CreatedAt          time.Time    `json:"created_at"`
-	ApplicationCount   int          `json:"application_count"`
-	MyApplication      *Application `json:"my_application"`
+	ID                   string       `json:"id"`
+	CompanyName          string       `json:"company_name"`
+	CompanyID            string       `json:"company_id"`
+	CompanyAvatarVersion int64        `json:"company_avatar_version"`
+	CompanyDescription   string       `json:"company_description"`
+	CompanyWebsite       string       `json:"company_website"`
+	Status               string       `json:"status"`
+	CreatedAt            time.Time    `json:"created_at"`
+	ApplicationCount     int          `json:"application_count"`
+	MyApplication        *Application `json:"my_application"`
 }
 type Application struct {
 	ID             string    `json:"id"`
@@ -72,7 +74,7 @@ func jsonRows[T any](ctx context.Context, a *App, query string, args ...any) ([]
 	return out, rows.Err()
 }
 
-const vacancyFields = `SELECT v.*,c.name AS company_name,c.description AS company_description,c.website AS company_website,
+const vacancyFields = `SELECT v.*,c.name AS company_name,c.user_id AS company_id,c.avatar_version AS company_avatar_version,c.description AS company_description,c.website AS company_website,
  (SELECT count(*) FROM applications x WHERE x.vacancy_id=v.id AND x.status<>'withdrawn') AS application_count,
  (SELECT row_to_json(x) FROM applications x WHERE x.vacancy_id=v.id AND x.candidate_id=$1) AS my_application
  FROM vacancies v JOIN companies c ON c.user_id=v.employer_id`

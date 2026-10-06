@@ -138,7 +138,8 @@ func (a *App) matchingRoutes(api huma.API) {
 			return nil, err
 		}
 		c, err := readJSON[Candidate](ctx, a.DB, `SELECT row_to_json(t) FROM (
-   SELECT p.*,u.name,CASE WHEN (`+contactGrant+`) THEN u.email ELSE '' END AS email
+   SELECT p.*,u.name,CASE WHEN (`+contactGrant+`) THEN u.email ELSE '' END AS email,
+   CASE WHEN (`+contactGrant+`) THEN (SELECT row_to_json(c) FROM (SELECT phone,telegram FROM account_contacts WHERE user_id=p.user_id) c) END AS contacts
    FROM profiles p JOIN users u ON u.id=p.user_id WHERE p.user_id=$1 AND (`+candidateAccess+`)
   ) t`, in.ID, u.ID)
 		if isMissing(err) {

@@ -14,13 +14,19 @@ import {
   type Config,
   date,
   grades,
-  initials,
   type Profile,
   type ProfessionalProfile,
   queryClient,
   specs,
 } from "../api";
 import { Button } from "../components/ui/button";
+import { Avatar, AvatarEditor } from "../components/Avatar";
+import {
+  AccountSections,
+  EducationEditor,
+  PersonalDetailsEditor,
+  ProfileProgress,
+} from "../components/AccountDetails";
 import { EvidencePassport } from "../components/Evidence";
 import {
   ProfessionalEditor,
@@ -54,7 +60,10 @@ export function CandidateProfile() {
     const f = Object.fromEntries(new FormData(e.currentTarget));
     try {
       await api("/profile", "PUT", {
-        ...f,
+        name: String(f.name || ""),
+        headline: String(f.headline || ""),
+        city: String(f.city || ""),
+        about: String(f.about || ""),
         skills: String(f.skills)
           .split(",")
           .map((s) => s.trim())
@@ -62,6 +71,10 @@ export function CandidateProfile() {
         experience_years: Number(f.experience_years),
         published: f.published === "on",
         professional: professionalData(professional || q.data?.professional),
+        contacts: {
+          phone: String(f.phone || ""),
+          telegram: String(f.telegram || ""),
+        },
       });
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ["profile"] }),
@@ -97,7 +110,7 @@ export function CandidateProfile() {
     <>
       <PageTitle
         eyebrow="Личный кабинет"
-        title="Ваш профессиональный профиль"
+        title="Ваш профиль"
         action={
           <Button asChild variant="secondary">
             <a href="/api/profile/pdf" download>
@@ -109,6 +122,23 @@ export function CandidateProfile() {
       >
         Покажите, что вы умеете. Следующий шаг сделает работодатель.
       </PageTitle>
+      {q.data && (
+        <details className="account-mobile-navigation">
+          <summary>Перейти к разделу профиля</summary>
+          <AccountSections
+            items={[
+              ["about", "О вас"],
+              ["preferences", "Пожелания к работе"],
+              ["portfolio", "Портфолио"],
+              ["experience", "Опыт и проекты"],
+              ["education", "Образование"],
+              ["certificates", "Сертификаты"],
+              ["contacts", "Контакты"],
+              ["visibility", "Видимость"],
+            ]}
+          />
+        </details>
+      )}
       <ErrorBox error={q.error || error} />
       {message && <Success>{message}</Success>}
       {q.isPending ? (
@@ -118,7 +148,12 @@ export function CandidateProfile() {
           <div className="profile-layout">
             <section className="profile-main">
               <div className="profile-summary">
-                <span className="avatar large">{initials(q.data.name)}</span>
+                <Avatar
+                  name={q.data.name}
+                  userId={q.data.user_id}
+                  version={q.data.avatar_version}
+                  size="portrait"
+                />
                 <div>
                   <h2>{q.data.name}</h2>
                   <p>
@@ -129,13 +164,18 @@ export function CandidateProfile() {
                   </span>
                 </div>
               </div>
+              <AvatarEditor
+                name={q.data.name}
+                userId={q.data.user_id}
+                version={q.data.avatar_version}
+              />
               <EvidencePassport />
               <form
                 className="form-stack"
                 onSubmit={submit}
                 onChange={() => setMessage("")}
               >
-                <div className="section-heading">
+                <div className="section-heading" id="about">
                   <h2>О вас</h2>
                   <span>01 / Профиль</span>
                 </div>
@@ -195,6 +235,13 @@ export function CandidateProfile() {
                     placeholder="Над чем работали и какие задачи интересны сейчас?"
                   />
                 </Field>
+                <PersonalDetailsEditor
+                  value={professionalData(professional || q.data.professional)}
+                  onChange={(value) => {
+                    setMessage("");
+                    setProfessional(value);
+                  }}
+                />
                 <ProfessionalEditor
                   value={professionalData(professional || q.data.professional)}
                   onChange={(value) => {
@@ -202,9 +249,44 @@ export function CandidateProfile() {
                     setProfessional(value);
                   }}
                 />
-                <div className="section-heading">
+                <EducationEditor
+                  value={professionalData(professional || q.data.professional)}
+                  onChange={(value) => {
+                    setMessage("");
+                    setProfessional(value);
+                  }}
+                />
+                <div className="section-heading" id="contacts">
+                  <h2>Контакты</h2>
+                  <span>08 / Связь</span>
+                </div>
+                <p className="muted resume-editor-hint">
+                  Телефон и Telegram откроются только компании, чьё приглашение
+                  вы примете или на чью вакансию откликнетесь с согласием на
+                  контакт.
+                </p>
+                <div className="form-grid">
+                  <Field label="Телефон">
+                    <input
+                      name="phone"
+                      type="tel"
+                      defaultValue={q.data.contacts?.phone || ""}
+                      maxLength={40}
+                      placeholder="+7 900 000-00-00"
+                    />
+                  </Field>
+                  <Field label="Telegram" hint="Имя пользователя, без ссылки.">
+                    <input
+                      name="telegram"
+                      defaultValue={q.data.contacts?.telegram || ""}
+                      maxLength={32}
+                      placeholder="@username"
+                    />
+                  </Field>
+                </div>
+                <div className="section-heading" id="visibility">
                   <h2>Видимость</h2>
-                  <span>06 / Приватность</span>
+                  <span>09 / Приватность</span>
                 </div>
                 <label className="check publication">
                   <input
@@ -233,6 +315,48 @@ export function CandidateProfile() {
               </form>
             </section>
             <aside className="profile-aside">
+              <AccountSections
+                items={[
+                  ["about", "О вас"],
+                  ["preferences", "Пожелания к работе"],
+                  ["portfolio", "Портфолио"],
+                  ["experience", "Опыт и проекты"],
+                  ["education", "Образование"],
+                  ["certificates", "Сертификаты"],
+                  ["contacts", "Контакты"],
+                  ["visibility", "Видимость"],
+                ]}
+              />
+              <ProfileProgress
+                items={[
+                  { label: "Фото профиля", done: q.data.avatar_version > 0 },
+                  {
+                    label: "О себе",
+                    done: !!q.data.about && !!q.data.headline,
+                  },
+                  {
+                    label: "Опыт или проекты",
+                    done:
+                      !!q.data.professional?.experience?.length ||
+                      !!q.data.professional?.projects?.length,
+                  },
+                  {
+                    label: "Условия работы",
+                    done: !!q.data.professional?.work_formats?.length,
+                  },
+                  {
+                    label: "Образование или курсы",
+                    done:
+                      !!q.data.professional?.education?.length ||
+                      !!q.data.professional?.certificates?.length,
+                  },
+                  {
+                    label: "Контакты",
+                    done:
+                      !!q.data.contacts?.phone || !!q.data.contacts?.telegram,
+                  },
+                ]}
+              />
               <div className="panel verification">
                 <ShieldCheck size={26} />
                 <span className="eyebrow">Подтверждённый уровень</span>

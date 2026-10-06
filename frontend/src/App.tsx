@@ -32,7 +32,6 @@ import {
   APIError,
   type Invitation,
   type Config,
-  initials,
   queryClient,
   setCSRF,
   type User,
@@ -42,7 +41,8 @@ import { CandidateProfile } from "./pages/Profile";
 import { Assessments } from "./pages/Assessments";
 import { SearchPage, CandidateDetail } from "./pages/Search";
 import { Invitations } from "./pages/Invitations";
-import { Company } from "./pages/Company";
+import { Company, PublicCompany } from "./pages/Company";
+import { Avatar } from "./components/Avatar";
 import { Challenges } from "./pages/Challenges";
 import { Overview } from "./pages/Overview";
 import { Vacancies, VacancyDetail, VacancyEditor } from "./pages/Vacancies";
@@ -67,6 +67,11 @@ export function useUser() {
 }
 function Layout() {
   const me = useUser();
+  const avatar = useQuery({
+    queryKey: ["avatar"],
+    queryFn: () => api<{ version: number }>("/avatar"),
+    enabled: !!me.data,
+  });
   const navigate = useNavigate();
   const location = useLocation();
   const [menu, setMenu] = useState(false);
@@ -254,7 +259,13 @@ function Layout() {
           </div>
           <div className="sidebar-bottom">
             <div className="account">
-              <span className="avatar small">{initials(user.name)}</span>
+              <Avatar
+                name={user.name}
+                userId={user.id}
+                version={avatar.data?.version}
+                size="small"
+                company={user.role === "employer"}
+              />
               <div>
                 <strong>{user.name}</strong>
                 <span>
@@ -281,7 +292,9 @@ function Layout() {
               {links.find((l) => location.pathname.startsWith(l.to))?.label ||
                 (location.pathname === "/compare"
                   ? "Сравнение кандидатов"
-                  : "Карьера")}
+                  : location.pathname.startsWith("/companies/")
+                    ? "Компания"
+                    : "Карьера")}
             </span>
             <div>
               <span className="live-dot" />
@@ -334,6 +347,7 @@ export function App() {
         <Route index element={<Home />} />
         <Route path="/overview" element={<Overview />} />
         <Route path="/vacancies" element={<Vacancies />} />
+        <Route path="/companies/:id" element={<PublicCompany />} />
         <Route
           path="/vacancies/new"
           element={

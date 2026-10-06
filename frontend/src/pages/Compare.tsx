@@ -1,5 +1,6 @@
 import { useEffect, type CSSProperties, type ReactNode } from "react";
 import { useQueries } from "@tanstack/react-query";
+import { Avatar } from "../components/Avatar";
 import { Link, useSearchParams } from "react-router-dom";
 import {
   ArrowLeft,
@@ -18,7 +19,6 @@ import {
   type QualificationEvidence,
   date,
   grades,
-  initials,
   plural,
   specs,
   workFormats,
@@ -564,11 +564,11 @@ export function Compare() {
                             >
                               <X size={17} />
                             </button>
-                            <span className="avatar">
-                              {initials(
-                                query.data?.name || summaries[index].name,
-                              )}
-                            </span>
+                            <Avatar
+                              name={query.data?.name || summaries[index].name}
+                              userId={ids[index]}
+                              version={query.data?.avatar_version}
+                            />
                             {query.data ? (
                               <>
                                 <Link

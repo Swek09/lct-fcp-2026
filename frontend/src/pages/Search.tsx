@@ -25,7 +25,6 @@ import {
   date,
   type Question,
   grades,
-  initials,
   queryClient,
   specs,
   plural,
@@ -34,6 +33,7 @@ import { Button } from "../components/ui/button";
 import { Select } from "../components/ui/select";
 import { EvidencePassport, MatchBreakdown } from "../components/Evidence";
 import { ProfessionalDetails } from "../components/ProfessionalProfile";
+import { Avatar } from "../components/Avatar";
 import { SaveCandidate } from "../components/SaveCandidate";
 import {
   CompareCandidate,
@@ -307,7 +307,11 @@ export function SearchPage({ saved = false }: { saved?: boolean }) {
               key={c.user_id}
             >
               <div className="candidate-main">
-                <span className="avatar">{initials(c.name)}</span>
+                <Avatar
+                  name={c.name}
+                  userId={c.user_id}
+                  version={c.avatar_version}
+                />
                 <div className="candidate-info">
                   <div className="candidate-name">
                     <Link
@@ -501,18 +505,26 @@ export function CandidateDetail() {
       ) : (
         q.data && (
           <>
-            <PageTitle
-              eyebrow="Профиль кандидата"
-              title={q.data.name}
-              action={
-                <div className="candidate-actions">
-                  <CompareCandidate candidate={q.data} />
-                  <SaveCandidate id={q.data.user_id} />
-                </div>
-              }
-            >
-              {q.data.headline}
-            </PageTitle>
+            <div className="candidate-identity-heading">
+              <Avatar
+                name={q.data.name}
+                userId={q.data.user_id}
+                version={q.data.avatar_version}
+                size="portrait"
+              />
+              <PageTitle
+                eyebrow="Профиль кандидата"
+                title={q.data.name}
+                action={
+                  <div className="candidate-actions">
+                    <CompareCandidate candidate={q.data} />
+                    <SaveCandidate id={q.data.user_id} />
+                  </div>
+                }
+              >
+                {q.data.headline}
+              </PageTitle>
+            </div>
             <div className="profile-layout">
               <section>
                 <div className="candidate-detail-meta">
@@ -589,9 +601,29 @@ export function CandidateDetail() {
                   <h2>Контакты</h2>
                 </div>
                 {q.data.email ? (
-                  <a className="text-link" href={"mailto:" + q.data.email}>
-                    {q.data.email}
-                  </a>
+                  <div className="company-contact-links">
+                    <a className="text-link" href={"mailto:" + q.data.email}>
+                      {q.data.email}
+                    </a>
+                    {q.data.contacts?.phone && (
+                      <a
+                        className="text-link"
+                        href={`tel:${q.data.contacts.phone.replace(/[^+0-9]/g, "")}`}
+                      >
+                        {q.data.contacts.phone}
+                      </a>
+                    )}
+                    {q.data.contacts?.telegram && (
+                      <a
+                        className="text-link"
+                        href={`https://t.me/${q.data.contacts.telegram}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        @{q.data.contacts.telegram}
+                      </a>
+                    )}
+                  </div>
                 ) : (
                   <div className="notice">
                     <LockKeyhole size={19} />

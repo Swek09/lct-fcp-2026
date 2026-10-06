@@ -116,6 +116,12 @@ func Generate(d Data) ([]byte, error) {
 	if len(r.Languages) > 0 {
 		preferences = append(preferences, "Языки: "+strings.Join(r.Languages, ", "))
 	}
+	if r.Timezone != "" {
+		preferences = append(preferences, "Часовой пояс: "+r.Timezone)
+	}
+	if len(r.Domains) > 0 {
+		preferences = append(preferences, "Отраслевой опыт: "+strings.Join(r.Domains, ", "))
+	}
 	if len(preferences) > 0 {
 		block("ПОЖЕЛАНИЯ К РАБОТЕ", strings.Join(preferences, "\n"))
 	}
@@ -128,6 +134,9 @@ func Generate(d Data) ([]byte, error) {
 	}
 	if len(links) > 0 {
 		block("ССЫЛКИ НА РАБОТЫ", strings.Join(links, "\n"))
+	}
+	if r.Interests != "" {
+		block("ИНТЕРЕСУЮЩИЕ ЗАДАЧИ", r.Interests)
 	}
 	for _, item := range r.Experience {
 		end := item.End
@@ -155,6 +164,28 @@ func Generate(d Data) ([]byte, error) {
 			body += "\nДемонстрация: " + item.Demo
 		}
 		block("ПРОЕКТ / "+item.Name, body)
+	}
+	for _, e := range r.Education {
+		period := ""
+		if e.StartYear > 0 {
+			period = fmt.Sprintf("%d", e.StartYear)
+		}
+		if e.Current {
+			period += " — по настоящее время"
+		} else if e.EndYear > 0 {
+			period += fmt.Sprintf(" — %d", e.EndYear)
+		}
+		block("ОБРАЗОВАНИЕ / "+e.Institution, strings.Join([]string{e.Degree, e.Field, period}, "\n"))
+	}
+	for _, c := range r.Certificates {
+		body := c.Issuer
+		if c.Year > 0 {
+			body += fmt.Sprintf(" | %d", c.Year)
+		}
+		if c.URL != "" {
+			body += "\n" + c.URL
+		}
+		block("СЕРТИФИКАТ / "+c.Title, body)
 	}
 	if len(d.Achievements) > 0 {
 		block("ДОСТИЖЕНИЯ ФСП (ДЕМО)", strings.Join(d.Achievements, "\n"))

@@ -8,7 +8,8 @@ import {
 } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ArrowRight, Check, Columns2, Plus, X } from "lucide-react";
-import { type Candidate, grades, initials } from "../api";
+import { type Candidate, grades } from "../api";
+import { Avatar } from "./Avatar";
 import { Button } from "./ui/button";
 
 export const COMPARISON_LIMIT = 3;
@@ -22,7 +23,7 @@ export const comparisonContextKeys = [
 type SelectedCandidate = Pick<
   Candidate,
   "user_id" | "name" | "grade" | "specialization"
->;
+> & { avatar_version?: number };
 type Selection = {
   candidates: SelectedCandidate[];
   query: string;
@@ -52,6 +53,7 @@ const summary = (candidate: SelectedCandidate): SelectedCandidate => ({
   name: candidate.name,
   grade: candidate.grade,
   specialization: candidate.specialization,
+  avatar_version: candidate.avatar_version,
 });
 export function clearComparisonSession(userId: string) {
   try {
@@ -279,7 +281,12 @@ export function ComparisonDock() {
           <ul className="comparison-slots">
             {comparison.candidates.map((candidate) => (
               <li key={candidate.user_id}>
-                <span className="avatar small">{initials(candidate.name)}</span>
+                <Avatar
+                  name={candidate.name}
+                  userId={candidate.user_id}
+                  version={candidate.avatar_version}
+                  size="small"
+                />
                 <span className="comparison-slot-name">
                   <strong title={candidate.name}>{candidate.name}</strong>
                   <small>{grades[candidate.grade] || "Профиль"}</small>

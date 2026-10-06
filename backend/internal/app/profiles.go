@@ -34,14 +34,19 @@ type Profile struct {
 	NextGradeChangeAt *time.Time    `json:"next_grade_change_at"`
 	LastPracticeAt    *time.Time    `json:"last_practice_at"`
 	Professional      resume.Data   `json:"professional"`
+	AvatarVersion     int64         `json:"avatar_version"`
+	Contacts          *Contacts     `json:"contacts,omitempty"`
 }
 
-const profileSQL = "SELECT row_to_json(t) FROM (SELECT p.*,u.name FROM profiles p JOIN users u ON u.id=p.user_id WHERE p.user_id=$1) t"
+const profileSQL = "SELECT row_to_json(t) FROM (SELECT p.*,u.name,(SELECT row_to_json(c) FROM (SELECT phone,telegram FROM account_contacts WHERE user_id=p.user_id) c) AS contacts FROM profiles p JOIN users u ON u.id=p.user_id WHERE p.user_id=$1) t"
 
 type Company struct {
-	Name        string `json:"name" minLength:"2" maxLength:"150"`
-	Description string `json:"description" maxLength:"4000"`
-	Website     string `json:"website" maxLength:"250"`
+	UserID        string         `json:"user_id"`
+	Name          string         `json:"name" minLength:"2" maxLength:"150"`
+	Description   string         `json:"description" maxLength:"4000"`
+	Website       string         `json:"website" maxLength:"250"`
+	AvatarVersion int64          `json:"avatar_version"`
+	Details       CompanyDetails `json:"details"`
 }
 
 func (a *App) profileRoutes(api huma.API) {
@@ -99,6 +104,7 @@ func (a *App) profileRoutes(api huma.API) {
 			ExperienceYears int          `json:"experience_years" minimum:"0" maximum:"60"`
 			Published       bool         `json:"published"`
 			Professional    *resume.Data `json:"professional,omitempty"`
+			Contacts        *Contacts    `json:"contacts,omitempty"`
 		}
 	}
 	register(api, "PUT", "/api/profile", "Обновить резюме и видимость", func(ctx context.Context, in *Update) (*Response[Message], error) {
@@ -107,6 +113,11 @@ func (a *App) profileRoutes(api huma.API) {
 			return nil, err
 		}
 		b := in.Body
+		if b.Contacts != nil {
+			if validationErr := b.Contacts.clean(); validationErr != nil {
+				return nil, huma.Error400BadRequest(validationErr.Error())
+			}
+		}
 		var professional []byte
 		if b.Professional != nil {
 			normalized, validationErr := resume.Normalize(*b.Professional)
@@ -146,6 +157,12 @@ func (a *App) profileRoutes(api huma.API) {
 		if err != nil {
 			return nil, internal(err)
 		}
+		if b.Contacts != nil {
+			_, err = tx.Exec(ctx, "INSERT INTO account_contacts(user_id,phone,telegram) VALUES($1,$2,$3) ON CONFLICT(user_id) DO UPDATE SET phone=EXCLUDED.phone,telegram=EXCLUDED.telegram", u.ID, b.Contacts.Phone, b.Contacts.Telegram)
+			if err != nil {
+				return nil, internal(err)
+			}
+		}
 		if err = tx.Commit(ctx); err != nil {
 			return nil, internal(err)
 		}
@@ -156,27 +173,63 @@ func (a *App) profileRoutes(api huma.API) {
 		if err != nil {
 			return nil, err
 		}
-		v, err := readJSON[Company](ctx, a.DB, "SELECT row_to_json(t) FROM (SELECT name,description,website FROM companies WHERE user_id=$1) t", u.ID)
+		v, err := readJSON[Company](ctx, a.DB, "SELECT row_to_json(t) FROM (SELECT * FROM companies WHERE user_id=$1) t", u.ID)
 		if err != nil {
 			return nil, internal(err)
 		}
 		return ok(v), nil
 	})
-	type CompanyInput struct{ Body Company }
+	type CompanyInput struct {
+		Body struct {
+			Name        string          `json:"name" minLength:"2" maxLength:"150"`
+			Description string          `json:"description" maxLength:"4000"`
+			Website     string          `json:"website" maxLength:"250"`
+			Details     *CompanyDetails `json:"details,omitempty"`
+		}
+	}
 	register(api, "PUT", "/api/company", "Изменить профиль компании", func(ctx context.Context, in *CompanyInput) (*Response[Message], error) {
 		u, err := a.require(ctx, "employer")
 		if err != nil {
 			return nil, err
 		}
 		b := in.Body
-		if strings.TrimSpace(b.Name) == "" {
+		if len([]rune(strings.TrimSpace(b.Name))) < 2 {
 			return nil, huma.Error400BadRequest("Укажите название компании")
 		}
-		_, err = a.DB.Exec(ctx, "UPDATE companies SET name=$2,description=$3,website=$4 WHERE user_id=$1", u.ID, b.Name, b.Description, b.Website)
+		if b.Website, err = cleanWebURL(b.Website); err != nil {
+			return nil, huma.Error400BadRequest(err.Error())
+		}
+		var details []byte
+		if b.Details != nil {
+			if err = b.Details.clean(); err != nil {
+				return nil, huma.Error400BadRequest(err.Error())
+			}
+			details, err = json.Marshal(b.Details)
+			if err != nil {
+				return nil, internal(err)
+			}
+		}
+		_, err = a.DB.Exec(ctx, "UPDATE companies SET name=$2,description=$3,website=$4,details=COALESCE($5::jsonb,details) WHERE user_id=$1", u.ID, strings.TrimSpace(b.Name), b.Description, b.Website, details)
 		if err != nil {
 			return nil, internal(err)
 		}
 		return msg("Компания сохранена"), nil
+	})
+	type PublicCompany struct {
+		ID string `path:"id"`
+	}
+	register(api, "GET", "/api/companies/{id}", "Информация о компании для кандидатов", func(ctx context.Context, in *PublicCompany) (*Response[Company], error) {
+		if _, err := a.require(ctx, ""); err != nil {
+			return nil, err
+		}
+		v, err := readJSON[Company](ctx, a.DB, "SELECT row_to_json(t) FROM (SELECT c.* FROM companies c JOIN users u ON u.id=c.user_id WHERE c.user_id=$1 AND u.verified AND length(trim(c.name))>=2) t", in.ID)
+		if isMissing(err) {
+			return nil, huma.Error404NotFound("Компания не найдена")
+		}
+		if err != nil {
+			return nil, internal(err)
+		}
+		return ok(v), nil
 	})
 	type FSPInput struct {
 		Body struct {
