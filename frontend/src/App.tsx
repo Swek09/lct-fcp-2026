@@ -28,6 +28,7 @@ import {
 import {
   api,
   APIError,
+  type CompanyProfile,
   type Invitation,
   queryClient,
   setCSRF,
@@ -68,6 +69,11 @@ function Layout() {
     queryKey: ["avatar"],
     queryFn: () => api<{ version: number }>("/avatar"),
     enabled: !!me.data,
+  });
+  const company = useQuery({
+    queryKey: ["company"],
+    queryFn: () => api<CompanyProfile>("/company"),
+    enabled: me.data?.role === "employer",
   });
   const navigate = useNavigate();
   const location = useLocation();
@@ -150,8 +156,12 @@ function Layout() {
     );
   if (!me.data) return <Navigate to="/login" replace />;
   const user = me.data;
+  const isEmployer = user.role === "employer";
+  const displayName = isEmployer
+    ? company.data?.name?.trim() || user.name
+    : user.name;
   const links =
-    user.role === "employer"
+    isEmployer
       ? [
           { to: "/overview", icon: LayoutDashboard, label: "Обзор" },
           { to: "/candidates", icon: Search, label: "Поиск кандидатов" },
@@ -242,18 +252,25 @@ function Layout() {
             ))}
           </nav>
           <div className="sidebar-bottom">
-            <div className="account">
+            <div
+              className="account"
+              title={
+                isEmployer && company.data?.details?.contact_name
+                  ? `Контактное лицо: ${company.data.details.contact_name}`
+                  : undefined
+              }
+            >
               <Avatar
-                name={user.name}
+                name={displayName}
                 userId={user.id}
-                version={avatar.data?.version}
+                version={company.data?.avatar_version ?? avatar.data?.version}
                 size="small"
-                company={user.role === "employer"}
+                company={isEmployer}
               />
               <div>
-                <strong>{user.name}</strong>
+                <strong>{displayName}</strong>
                 <span>
-                  {user.role === "employer"
+                  {isEmployer
                     ? "Кабинет работодателя"
                     : "Кабинет кандидата"}
                 </span>

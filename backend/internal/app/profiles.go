@@ -209,8 +209,20 @@ func (a *App) profileRoutes(api huma.API) {
 				return nil, internal(err)
 			}
 		}
-		_, err = a.DB.Exec(ctx, "UPDATE companies SET name=$2,description=$3,website=$4,details=COALESCE($5::jsonb,details) WHERE user_id=$1", u.ID, strings.TrimSpace(b.Name), b.Description, b.Website, details)
+		tx, err := a.DB.Begin(ctx)
 		if err != nil {
+			return nil, internal(err)
+		}
+		defer tx.Rollback(ctx)
+		_, err = tx.Exec(ctx, "UPDATE companies SET name=$2,description=$3,website=$4,details=COALESCE($5::jsonb,details) WHERE user_id=$1", u.ID, strings.TrimSpace(b.Name), b.Description, b.Website, details)
+		if err != nil {
+			return nil, internal(err)
+		}
+		_, err = tx.Exec(ctx, "UPDATE users SET name=$2 WHERE id=$1", u.ID, strings.TrimSpace(b.Name))
+		if err != nil {
+			return nil, internal(err)
+		}
+		if err = tx.Commit(ctx); err != nil {
 			return nil, internal(err)
 		}
 		return msg("Компания сохранена"), nil
