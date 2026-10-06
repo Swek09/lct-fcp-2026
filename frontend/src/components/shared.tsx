@@ -45,12 +45,11 @@ export function Loading() {
   );
 }
 export function PageTitle({
-  eyebrow,
   title,
   children,
   action,
 }: {
-  eyebrow: string;
+  eyebrow?: string;
   title: string;
   children?: ReactNode;
   action?: ReactNode;
@@ -58,7 +57,6 @@ export function PageTitle({
   return (
     <header className="page-heading">
       <div>
-        <p className="eyebrow">{eyebrow}</p>
         <h1>{title}</h1>
         {children && <p className="subtitle">{children}</p>}
       </div>

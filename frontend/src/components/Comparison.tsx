@@ -7,7 +7,7 @@ import {
   type ReactNode,
 } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ArrowRight, Check, Columns2, Plus, X } from "lucide-react";
+import { ArrowRight, Check, Plus, X } from "lucide-react";
 import { type Candidate, grades } from "../api";
 import { Avatar } from "./Avatar";
 import { Button } from "./ui/button";
@@ -263,21 +263,6 @@ export function ComparisonDock() {
           className="comparison-dock"
           aria-label="Выбранные кандидаты"
         >
-          <div className="comparison-dock-title">
-            <Columns2 size={19} />
-            <div>
-              <strong>
-                Сравнение <span>{count}/3</span>
-              </strong>
-              <small>
-                {count === 1
-                  ? "Выберите ещё одного"
-                  : count === 3
-                    ? "Все места заняты"
-                    : "Можно добавить третьего"}
-              </small>
-            </div>
-          </div>
           <ul className="comparison-slots">
             {comparison.candidates.map((candidate) => (
               <li key={candidate.user_id}>
@@ -317,15 +302,6 @@ export function ComparisonDock() {
               Сравнить {count}
               <ArrowRight size={16} />
             </Button>
-            <button
-              type="button"
-              className="comparison-clear"
-              aria-label="Очистить выбор для сравнения"
-              onClick={comparison.clear}
-            >
-              <X size={16} />
-              <span>Очистить</span>
-            </button>
           </div>
         </section>
       )}

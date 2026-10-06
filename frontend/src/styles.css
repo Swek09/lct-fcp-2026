@@ -73,7 +73,7 @@
   margin-bottom: 40px;
 }
 .overview-heading h1 {
-  margin-top: 12px;
+  margin-top: 0;
   font-size: 2.6rem;
   max-width: 24ch;
 }
@@ -151,7 +151,7 @@
 }
 .hiring-pulse {
   padding: 36px;
-  background: color-mix(in srgb, var(--blue) 7%, var(--bg));
+  background: var(--raised);
   border-left: 1px solid var(--line);
 }
 .hiring-pulse h2 {
@@ -173,16 +173,33 @@
   align-items: center;
   padding: 17px 0;
   font-size: 0.84rem;
+  color: var(--text);
+  transition: color 0.15s ease;
 }
 .hiring-stages a > span {
   flex: 1;
+  color: var(--text);
 }
 .hiring-stages a > strong {
   font-family: var(--font-ui);
   font-size: 1.4rem;
+  color: var(--text);
+}
+.hiring-stages a > svg:last-child {
+  color: var(--muted);
+  transition: transform 0.15s ease, color 0.15s ease;
 }
 .hiring-stages a:hover {
-  color: var(--accent);
+  color: #ffffff;
+}
+.hiring-stages a:hover > span,
+.hiring-stages a:hover > strong,
+.hiring-stages a:hover > svg:first-child {
+  color: #ffffff;
+}
+.hiring-stages a:hover > svg:last-child {
+  color: #ffffff;
+  transform: translateX(2px);
 }
 .overview-section {
   margin-top: 48px;
@@ -215,17 +232,30 @@
   align-items: center;
   gap: 12px;
   padding: 10px 0;
-  color: var(--accent);
+  color: var(--text);
+  transition: color 0.15s ease;
 }
 .category-browser a > span {
   flex: 1;
+  color: var(--muted);
 }
 .category-browser a > strong {
-  color: var(--accent);
+  color: var(--text);
+}
+.category-browser a > svg {
+  color: var(--muted);
+  transition: transform 0.15s ease, color 0.15s ease;
 }
 .category-browser a:hover,
 .category-browser a:hover > strong {
-  color: var(--accent);
+  color: #ffffff;
+}
+.category-browser a:hover > span,
+.category-browser a:hover > svg {
+  color: #ffffff;
+}
+.category-browser a:hover > svg {
+  transform: translateX(2px);
 }
 .overview-action-line {
   display: flex;
@@ -251,17 +281,31 @@
   align-items: center;
   padding: 20px 0;
   border-bottom: 1px solid var(--line);
+  color: var(--text);
+  transition: color 0.15s ease;
 }
 .overview-invitations > a > div {
   display: grid;
   gap: 8px;
   flex: 1;
 }
+.overview-invitations > a small {
+  color: var(--muted);
+}
 .overview-invitations strong {
   font-size: 1.1rem;
+  color: var(--text);
 }
 .overview-invitations > a:hover strong {
-  color: var(--accent);
+  color: #ffffff;
+}
+.overview-invitations > a > svg {
+  color: var(--muted);
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+.overview-invitations > a:hover > svg {
+  color: #ffffff;
+  transform: translateX(2px);
 }
 .overview-invitations > a > div > span {
   color: var(--text);
@@ -299,6 +343,8 @@
   gap: 16px;
   align-items: center;
   padding: 20px 0;
+  color: var(--text);
+  transition: color 0.15s ease;
 }
 .onboarding-route a > span {
   display: grid;
@@ -318,6 +364,23 @@
   display: grid;
   gap: 6px;
   flex: 1;
+}
+.onboarding-route a > div > strong {
+  color: var(--text);
+}
+.onboarding-route a > div > small {
+  color: var(--muted);
+}
+.onboarding-route a > svg {
+  color: var(--muted);
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+.onboarding-route a:hover > div > strong,
+.onboarding-route a:hover > svg {
+  color: #ffffff;
+}
+.onboarding-route a:hover > svg {
+  transform: translateX(2px);
 }
 .candidate-overview-meta {
   display: flex;
@@ -474,10 +537,18 @@
 .application-list {
   border-top: 1px solid var(--line);
 }
+.tabs ~ .vacancy-list,
+.tabs ~ .application-list {
+  border-top: none;
+}
 .vacancy-row,
 .application-row {
   padding: 28px 0;
   border-bottom: 1px solid var(--line);
+}
+.tabs ~ .vacancy-list > .vacancy-row:first-child,
+.tabs ~ .application-list > .application-row:first-child {
+  padding-top: 0;
 }
 .vacancy-company {
   display: flex;
@@ -867,8 +938,13 @@ button:disabled {
   opacity: 0.5;
 }
 a {
-  color: var(--accent);
+  color: inherit;
   text-decoration: none;
+}
+p a,
+small a,
+a[href^="mailto:"] {
+  color: var(--accent);
 }
 button {
   color: inherit;
@@ -1256,7 +1332,7 @@ main {
   margin-bottom: 12px;
 }
 .page-heading > .button {
-  margin-top: 30px;
+  margin-top: 0;
 }
 .footer {
   display: flex;
@@ -3019,12 +3095,12 @@ input[type="radio"] {
   margin-bottom: 28px;
   max-width: 840px;
 }
-.challenge-list {
-  border-top: 1px solid var(--line);
-}
 .challenge-item {
-  padding: 28px 0;
+  padding: 24px 0;
   border-bottom: 1px solid var(--line);
+}
+.challenge-item:first-child {
+  padding-top: 0;
 }
 .challenge-meta {
   display: flex;

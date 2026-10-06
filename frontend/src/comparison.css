@@ -38,7 +38,7 @@
   min-height: 40px;
 }
 .page-heading > .candidate-actions {
-  padding-top: 24px;
+  padding-top: 0;
 }
 .results-heading > div {
   flex-wrap: wrap;
@@ -48,7 +48,7 @@
   color: var(--text);
 }
 .app-shell:has(.comparison-dock) .workspace {
-  padding-bottom: 132px;
+  padding-bottom: 128px;
 }
 .comparison-dock {
   position: fixed;
@@ -57,7 +57,7 @@
   left: calc(var(--comparison-sidebar, 248px) + 24px);
   right: 24px;
   display: grid;
-  grid-template-columns: 154px minmax(0, 1fr) 152px;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 16px;
   max-width: 1390px;
@@ -67,31 +67,6 @@
   border-radius: 12px;
   background: var(--raised);
   box-shadow: 0 12px 36px color-mix(in srgb, var(--brand-dark) 80%, transparent);
-}
-.comparison-dock-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.comparison-dock-title > svg {
-  color: var(--accent-readable);
-}
-.comparison-dock-title strong {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 0.94rem;
-}
-.comparison-dock-title strong > span {
-  font-variant-numeric: tabular-nums;
-  color: var(--muted);
-  font-size: 0.82rem;
-}
-.comparison-dock-title small {
-  display: block;
-  margin-top: 5px;
-  color: var(--muted);
-  font-size: 0.74rem;
 }
 .comparison-slots {
   list-style: none;
@@ -157,22 +132,6 @@
 }
 .comparison-dock-actions .button {
   min-height: 44px;
-}
-.comparison-clear {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  min-height: 30px;
-  font-size: 0.76rem;
-  color: var(--muted);
-  background: transparent;
-}
-.comparison-clear:hover {
-  color: var(--text);
-}
-.comparison-clear > svg {
-  display: none;
 }
 
 /* The same criterion always stays aligned with each candidate. */
@@ -559,9 +518,6 @@
     position: sticky;
     top: 0;
     z-index: 10;
-    box-shadow:
-      0 4px 16px color-mix(in srgb, var(--brand-dark) 80%, transparent),
-      0 1px 0 var(--line);
   }
   .compare-table thead th:first-child {
     left: auto;
@@ -587,9 +543,6 @@
     position: sticky;
     top: 0;
     z-index: 10;
-    box-shadow:
-      0 4px 16px color-mix(in srgb, var(--brand-dark) 80%, transparent),
-      0 1px 0 var(--line);
   }
   .compare-scroll[data-columns="1"] .compare-table thead th:first-child,
   .compare-scroll[data-columns="2"] .compare-table thead th:first-child {
@@ -620,23 +573,6 @@
   }
 }
 @media (max-width: 1100px) {
-  .comparison-dock {
-    grid-template-columns: 1fr auto;
-    gap: 12px 20px;
-  }
-  .comparison-dock-actions {
-    grid-column: 2;
-    grid-row: 1;
-    flex-direction: row;
-    align-items: center;
-    gap: 12px;
-  }
-  .comparison-slots {
-    grid-column: 1 / -1;
-  }
-  .app-shell:has(.comparison-dock) .workspace {
-    padding-bottom: 172px;
-  }
   .candidate-decision {
     min-width: 205px;
   }
@@ -681,39 +617,22 @@
     right: 12px;
     bottom: max(12px, env(safe-area-inset-bottom));
     padding: 12px;
-    gap: 12px 8px;
+    gap: 10px;
     border-radius: 10px;
-  }
-  .comparison-dock-title {
-    gap: 7px;
-  }
-  .comparison-dock-title > svg {
-    display: none;
-  }
-  .comparison-dock-title strong {
-    font-size: 0.87rem;
-    gap: 7px;
-  }
-  .comparison-dock-title small {
-    font-size: 0.71rem;
+    grid-template-columns: 1fr;
   }
   .comparison-dock-actions {
-    gap: 4px;
+    width: 100%;
   }
   .comparison-dock-actions > .button {
+    width: 100%;
+    justify-content: center;
     padding: 10px 12px;
     gap: 6px;
     font-size: 0.87rem;
   }
-  .comparison-clear {
-    width: 36px;
-    min-height: 44px;
-  }
-  .comparison-clear > svg {
-    display: block;
-  }
-  .comparison-clear > span {
-    display: none;
+  .app-shell:has(.comparison-dock) .workspace {
+    padding-bottom: 160px;
   }
   .comparison-slots {
     gap: 6px;

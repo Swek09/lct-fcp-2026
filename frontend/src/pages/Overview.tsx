@@ -77,11 +77,6 @@ export function Overview() {
     <div className="overview-page">
       <header className="overview-heading">
         <div>
-          <p className="eyebrow">
-            {employer
-              ? company.data?.name || "Ваше рабочее пространство"
-              : "Ваш профессиональный маршрут"}
-          </p>
           <h1>
             {employer
               ? "Соберите сильную команду."
@@ -93,12 +88,6 @@ export function Overview() {
               : "Подтвердите уровень один раз. Получайте предложения от команд, которым нужен ваш опыт."}
           </p>
         </div>
-        <span className="overview-date">
-          {new Date().toLocaleDateString("ru-RU", {
-            day: "numeric",
-            month: "long",
-          })}
-        </span>
       </header>
       <ErrorBox error={q.error || profile.error || company.error} />
       {employer ? (

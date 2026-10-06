@@ -6,7 +6,6 @@ import {
   ArrowLeft,
   ArrowRight,
   Check,
-  CircleHelp,
   Columns2,
   Minus,
   Plus,
@@ -131,12 +130,6 @@ export function Compare() {
     else next.delete("ids");
     setParams(next, { replace: true });
   };
-  const mixedCategories =
-    new Set(
-      candidates.map(
-        (candidate) => `${candidate.specialization}:${candidate.grade}`,
-      ),
-    ).size > 1;
   const requestedSkills = [
     ...new Map(
       candidates
@@ -483,15 +476,6 @@ export function Compare() {
                 Первый кандидат на месте.{" "}
                 <Link to={returnTo}>Добавьте второго</Link>, чтобы сравнить их
                 по одной строке.
-              </span>
-            </div>
-          )}
-          {mixedCategories && (
-            <div className="comparison-guidance">
-              <CircleHelp size={17} />
-              <span>
-                Категории различаются — сопоставляйте баллы теста внутри одного
-                направления и уровня.
               </span>
             </div>
           )}

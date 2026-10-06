@@ -432,10 +432,6 @@ export function SearchPage({ saved = false }: { saved?: boolean }) {
           </Button>
         </div>
       )}
-      <p className="search-note">
-        <ShieldCheck size={15} />
-        Категория определяется тестированием. Навыки и опыт указаны кандидатами.
-      </p>
     </>
   );
 }
