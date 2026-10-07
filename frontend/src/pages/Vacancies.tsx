@@ -9,7 +9,6 @@ import {
 import {
   ArrowLeft,
   ArrowRight,
-  BriefcaseBusiness,
   MapPin,
   Plus,
   ShieldCheck,
@@ -141,7 +140,6 @@ export function Vacancies() {
           {rows.map((v) => (
             <article className="vacancy-row" key={v.id}>
               <div className="vacancy-company">
-                <BriefcaseBusiness size={18} />
                 <Avatar
                   name={v.company_name}
                   userId={v.company_id}
