@@ -656,22 +656,145 @@
   max-width: 75ch;
   line-height: 1.7;
 }
+/* ==========================================================================
+   Единая система списков и карточек сущностей (Entity Cards)
+   ========================================================================== */
+.entity-list,
 .vacancy-list,
-.application-list {
+.application-list,
+.invitation-list,
+.candidate-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border-top: none;
+  margin-top: 24px;
+}
+
+.entity-card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 24px 26px;
+  transition: border-color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.entity-card:hover {
+  background: var(--raised);
+  border-color: var(--line-strong);
+}
+
+.entity-card.is-highlighted,
+.entity-card.is-compared {
+  border-color: var(--accent-readable);
+  background: rgba(64, 47, 255, 0.08);
+  box-shadow: 0 0 0 1px var(--accent-readable);
+}
+
+.entity-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 18px;
+}
+
+.entity-card-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  flex: 1;
+  min-width: 0;
+}
+
+.entity-card-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-bottom: 4px;
+}
+
+.entity-card-eyebrow a {
+  color: var(--muted);
+  transition: color 0.15s ease;
+}
+
+.entity-card-eyebrow a:hover {
+  color: var(--text-bright);
+}
+
+.entity-card-title {
+  font-family: var(--font-ui);
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--text-bright);
+  margin: 0;
+}
+
+.entity-card-title a {
+  color: var(--text-bright);
+  transition: color 0.15s ease;
+  text-decoration: none;
+}
+
+.entity-card-title a:hover {
+  color: var(--accent-readable);
+}
+
+.entity-card-subtitle {
+  font-size: 0.86rem;
+  color: var(--muted);
+  margin-top: 5px;
+}
+
+.entity-card-aside {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.entity-card-body {
+  margin-top: 16px;
+}
+
+.entity-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 20px;
+  padding-top: 16px;
   border-top: 1px solid var(--line);
 }
-.tabs ~ .vacancy-list,
-.tabs ~ .application-list {
-  border-top: none;
+
+.entity-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  color: var(--muted);
+  font-size: 0.8rem;
 }
-.vacancy-row,
-.application-row {
-  padding: 28px 0;
-  border-bottom: 1px solid var(--line);
+
+.entity-card-meta > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
-.tabs ~ .vacancy-list > .vacancy-row:first-child,
-.tabs ~ .application-list > .application-row:first-child {
-  padding-top: 0;
+
+.entity-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-left: auto;
 }
 .vacancy-company {
   display: flex;
@@ -844,7 +967,8 @@
   border: 1px solid var(--success-border);
 }
 .status.sent,
-.status.viewed {
+.status.viewed,
+.status.new {
   color: var(--warning);
   background: var(--warning-bg);
   border: 1px solid var(--warning-border);
@@ -1059,9 +1183,45 @@
   .vacancy-editor .salary-fields {
     grid-template-columns: 1fr;
   }
+  .entity-card {
+    padding: 20px 18px;
+  }
+  .entity-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .entity-card-aside {
+    align-items: flex-start;
+    text-align: left;
+  }
+  .entity-card-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .entity-card-actions {
+    width: 100%;
+    margin-left: 0;
+  }
+  .candidate-evidence {
+    align-items: flex-start;
+    min-width: 0;
+  }
+  html {
+    scrollbar-gutter: auto;
+  }
 }
 * {
   box-sizing: border-box;
+}
+html {
+  scrollbar-gutter: stable;
+}
+@supports not (scrollbar-gutter: stable) {
+  html {
+    overflow-y: scroll;
+  }
 }
 body {
   margin: 0;
@@ -1851,27 +2011,10 @@ input[type="radio"] {
   font-size: 0.75rem;
 }
 .candidate-list {
-  display: flex;
-  flex-direction: column;
-  border: 1px solid var(--line);
-  border-radius: 9px;
-  overflow: hidden;
   transition: opacity 0.2s;
 }
 .candidate-list.updating {
   opacity: 0.55;
-}
-.candidate-row {
-  background: var(--surface);
-  padding: 26px 28px;
-  border-bottom: 1px solid var(--line);
-  transition: background-color 0.15s ease;
-}
-.candidate-row:last-child {
-  border: 0;
-}
-.candidate-row:hover {
-  background: var(--raised);
 }
 .candidate-main {
   display: flex;
@@ -1996,7 +2139,7 @@ input[type="radio"] {
   font-size: 0.8rem;
 }
 .match-explanation {
-  margin: 20px 0 0 66px;
+  margin: 16px 0 0 0;
   padding-top: 14px;
   border-top: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
 }
@@ -2633,16 +2776,7 @@ input[type="radio"] {
   background: var(--raised);
 }
 .invitation-list {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
   max-width: 900px;
-}
-.invitation {
-  border: 1px solid var(--line);
-  background: var(--surface);
-  border-radius: 9px;
-  padding: 28px;
 }
 .invitation-top {
   display: flex;
@@ -2881,9 +3015,6 @@ input[type="radio"] {
   main {
     padding-top: 56px;
   }
-  .candidate-row {
-    padding: 30px;
-  }
   .sidebar {
     width: 272px;
     padding-left: 28px;
@@ -2961,20 +3092,6 @@ input[type="radio"] {
   }
   .candidate-evidence > span {
     font-size: 0.68rem;
-  }
-  .candidate-row {
-    padding: 22px 18px;
-  }
-  .candidate-main {
-    gap: 12px;
-  }
-  .candidate-main > .avatar {
-    width: 38px;
-    height: 38px;
-    font-size: 0.73rem;
-  }
-  .match-explanation {
-    margin-left: 50px;
   }
   .candidate-name {
     flex-wrap: wrap;

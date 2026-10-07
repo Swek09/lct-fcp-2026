@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useSearchParams } from "react-router-dom";
-import { ArrowRight, Mail } from "lucide-react";
+import { ArrowRight, Clock3, Mail } from "lucide-react";
 import {
   api,
   type Application,
@@ -14,6 +14,8 @@ import {
 } from "../api";
 import { useUser } from "../App";
 import { Button } from "../components/ui/button";
+import { EntityCard } from "../components/ui/card";
+import { StatusBadge } from "../components/ui/badge";
 import { Empty, ErrorBox, Loading, PageTitle } from "../components/shared";
 
 export function Applications() {
@@ -81,103 +83,127 @@ export function Applications() {
       ) : q.error && !q.data ? (
         <Button onClick={() => void q.refetch()}>Повторить загрузку</Button>
       ) : rows.length ? (
-        <div className="application-list">
+        <div className="entity-list application-list">
           {rows.map((a) => (
-            <article className="application-row" key={a.id}>
-              <div className="application-top">
-                <div>
-                  <p className="eyebrow">
-                    {employer ? a.vacancy_title : a.company_name}
-                  </p>
-                  <h2>{employer ? a.candidate_name : a.vacancy_title}</h2>
-                  <p className="muted">
-                    {employer
-                      ? `${specs[a.specialization]} · ${grades[a.grade]} · тест ${a.test_score}/100`
-                      : `${money(a.salary_min)}–${money(a.salary_max)} ₽ в месяц`}
-                  </p>
-                </div>
-                <span className={`status ${a.status}`}>
-                  {applicationStatuses[a.status]}
-                </span>
-              </div>
-              {a.cover_letter && <p className="long-copy">{a.cover_letter}</p>}
-              <div className="application-bottom">
-                <small>{date(a.created_at)}</small>
-                {employer ? (
-                  <>
-                    <Link
-                      className="text-link"
-                      to={`/candidates/${a.candidate_id}`}
-                    >
-                      Профиль
-                      <ArrowRight size={15} />
-                    </Link>
-                    {a.candidate_email && (
-                      <a
+            <EntityCard key={a.id}>
+              <EntityCard.Header>
+                <EntityCard.Heading>
+                  <div className="entity-card-heading-text">
+                    <EntityCard.Eyebrow>
+                      {employer ? a.vacancy_title : a.company_name}
+                    </EntityCard.Eyebrow>
+                    <EntityCard.Title>
+                      {employer ? (
+                        <Link to={`/candidates/${a.candidate_id}`}>{a.candidate_name}</Link>
+                      ) : (
+                        <Link to={`/vacancies/${a.vacancy_id}`}>{a.vacancy_title}</Link>
+                      )}
+                    </EntityCard.Title>
+                    <EntityCard.Subtitle>
+                      {employer
+                        ? `${specs[a.specialization]} · ${grades[a.grade]} · тест ${a.test_score}/100`
+                        : `${money(a.salary_min)}–${money(a.salary_max)} ₽ в месяц`}
+                    </EntityCard.Subtitle>
+                  </div>
+                </EntityCard.Heading>
+                <EntityCard.Aside>
+                  <StatusBadge
+                    status={a.status}
+                    label={applicationStatuses[a.status]}
+                  />
+                </EntityCard.Aside>
+              </EntityCard.Header>
+
+              {a.cover_letter && (
+                <EntityCard.Body>
+                  <p className="long-copy">{a.cover_letter}</p>
+                </EntityCard.Body>
+              )}
+
+              <EntityCard.Footer>
+                <EntityCard.Meta>
+                  <span>
+                    <Clock3 size={14} />
+                    {date(a.created_at)}
+                  </span>
+                  {a.status === "withdrawn" && (
+                    <span>Доступ к контактам по этому отклику отозван.</span>
+                  )}
+                </EntityCard.Meta>
+                <EntityCard.Actions>
+                  {employer ? (
+                    <>
+                      <Link
                         className="text-link"
-                        href={`mailto:${a.candidate_email}`}
+                        to={`/candidates/${a.candidate_id}`}
                       >
-                        <Mail size={15} />
-                        Написать
-                      </a>
-                    )}
-                    {["new", "viewed"].includes(a.status) && (
-                      <>
-                        <Button
-                          size="sm"
-                          variant="secondary"
-                          disabled={busy === a.id}
-                          onClick={() => void change(a.id, "shortlisted")}
+                        Профиль
+                        <ArrowRight size={15} />
+                      </Link>
+                      {a.candidate_email && (
+                        <a
+                          className="text-link"
+                          href={`mailto:${a.candidate_email}`}
                         >
-                          В подборку
-                        </Button>
+                          <Mail size={15} />
+                          Написать
+                        </a>
+                      )}
+                      {["new", "viewed"].includes(a.status) && (
+                        <>
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            disabled={busy === a.id}
+                            onClick={() => void change(a.id, "shortlisted")}
+                          >
+                            В подборку
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            disabled={busy === a.id}
+                            onClick={() => void change(a.id, "rejected")}
+                          >
+                            Не подходит
+                          </Button>
+                        </>
+                      )}
+                      {a.status === "new" && (
                         <Button
                           size="sm"
                           variant="ghost"
                           disabled={busy === a.id}
-                          onClick={() => void change(a.id, "rejected")}
+                          onClick={() => void change(a.id, "viewed")}
                         >
-                          Не подходит
+                          Отметить рассмотренным
                         </Button>
-                      </>
-                    )}
-                    {a.status === "new" && (
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        disabled={busy === a.id}
-                        onClick={() => void change(a.id, "viewed")}
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        className="text-link"
+                        to={`/vacancies/${a.vacancy_id}`}
                       >
-                        Отметить рассмотренным
-                      </Button>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    <Link
-                      className="text-link"
-                      to={`/vacancies/${a.vacancy_id}`}
-                    >
-                      Вакансия
-                      <ArrowRight size={15} />
-                    </Link>
-                    {a.status !== "withdrawn" && (
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        disabled={busy === a.id}
-                        onClick={() => void change(a.id, "withdrawn")}
-                      >
-                        Отозвать отклик
-                      </Button>
-                    )}
-                  </>
-                )}
-              </div>
-              {a.status === "withdrawn" && (
-                <small>Доступ к контактам по этому отклику отозван.</small>
-              )}
-            </article>
+                        Вакансия
+                        <ArrowRight size={15} />
+                      </Link>
+                      {a.status !== "withdrawn" && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          disabled={busy === a.id}
+                          onClick={() => void change(a.id, "withdrawn")}
+                        >
+                          Отозвать отклик
+                        </Button>
+                      )}
+                    </>
+                  )}
+                </EntityCard.Actions>
+              </EntityCard.Footer>
+            </EntityCard>
           ))}
         </div>
       ) : (

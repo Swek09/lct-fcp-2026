@@ -6,6 +6,8 @@ import { api, date, type Invitation, money, queryClient } from "../api";
 import { useUser } from "../App";
 import { Avatar } from "../components/Avatar";
 import { Button } from "../components/ui/button";
+import { EntityCard } from "../components/ui/card";
+import { StatusBadge } from "../components/ui/badge";
 import { Empty, ErrorBox, Loading, PageTitle } from "../components/shared";
 const statuses: Record<string, string> = {
   sent: "Отправлено",
@@ -86,111 +88,124 @@ export function Invitations() {
           Повторить загрузку
         </Button>
       ) : list?.length ? (
-        <div className="invitation-list">
+        <div className="entity-list invitation-list">
           {list.map((i) => (
-            <article className="invitation" key={i.id}>
-              <div className="invitation-top">
-                {candidate ? (
-                  <Avatar
-                    name={i.company_name}
-                    userId={i.company_id}
-                    version={i.company_avatar_version}
-                    company
-                  />
-                ) : (
-                  <div className="company-mark">
-                    <Building2 size={22} />
-                  </div>
-                )}
-                <div>
-                  <span className="eyebrow">
-                    {candidate ? (
-                      <Link to={`/companies/${i.company_id}`}>
-                        {i.company_name}
-                      </Link>
-                    ) : (
-                      i.candidate_name
-                    )}
-                  </span>
-                  <h2>{i.title}</h2>
-                </div>
-                <span className={"tag status-" + i.status}>
-                  {statuses[i.status]}
-                </span>
-              </div>
-              <div className="salary">
-                {money(i.salary_min)} — {money(i.salary_max)} ₽
-                <span>в месяц, до вычета налогов</span>
-              </div>
-              <div className="invitation-bottom">
-                <span>
-                  <Clock3 size={14} />
-                  {date(i.created_at)}
-                </span>
-                <button
-                  className="text-link"
-                  onClick={() => expand(i)}
-                  aria-expanded={expanded.includes(i.id)}
-                >
-                  {expanded.includes(i.id) ? "Свернуть" : "Подробнее"}
-                  <ArrowRight size={15} />
-                </button>
-              </div>
-              {expanded.includes(i.id) && (
-                <div className="invitation-body">
-                  <p>{i.message}</p>
-                  <a className="text-link" href={"mailto:" + i.company_email}>
-                    <Mail size={16} />
-                    {i.company_email}
-                  </a>
-                  {!candidate && i.candidate_email && (
-                    <div className="notice success">
-                      <Check size={18} />
-                      <span>
-                        Кандидат принял приглашение:{" "}
-                        <a href={"mailto:" + i.candidate_email}>
-                          {i.candidate_email}
-                        </a>
-                      </span>
+            <EntityCard key={i.id}>
+              <EntityCard.Header>
+                <EntityCard.Heading>
+                  {candidate ? (
+                    <Avatar
+                      name={i.company_name}
+                      userId={i.company_id}
+                      version={i.company_avatar_version}
+                      company
+                    />
+                  ) : (
+                    <div className="company-mark">
+                      <Building2 size={22} />
                     </div>
                   )}
-                  {candidate && ["sent", "viewed"].includes(i.status) && (
-                    <>
-                      <p className="muted">
-                        Принимая приглашение, вы открываете этой компании свою
-                        электронную почту.
-                      </p>
-                      <div className="actions">
-                        <Button
-                          disabled={busy === i.id}
-                          onClick={() => action(i.id, "accepted")}
-                        >
-                          <Check size={16} />
-                          Принять приглашение
-                        </Button>
-                        <Button
-                          variant="secondary"
-                          disabled={busy === i.id}
-                          onClick={() => action(i.id, "declined")}
-                        >
-                          <X size={16} />
-                          Отклонить
-                        </Button>
-                      </div>
-                    </>
-                  )}
-                  {!candidate && (
-                    <Link
-                      className="text-link"
-                      to={"/candidates/" + i.candidate_id}
-                    >
-                      Профиль кандидата
-                      <ArrowRight size={16} />
-                    </Link>
-                  )}
+                  <div className="entity-card-heading-text">
+                    <EntityCard.Eyebrow>
+                      {candidate ? (
+                        <Link to={`/companies/${i.company_id}`}>
+                          {i.company_name}
+                        </Link>
+                      ) : (
+                        i.candidate_name
+                      )}
+                    </EntityCard.Eyebrow>
+                    <EntityCard.Title>{i.title}</EntityCard.Title>
+                  </div>
+                </EntityCard.Heading>
+                <EntityCard.Aside>
+                  <StatusBadge
+                    status={i.status}
+                    label={statuses[i.status]}
+                  />
+                </EntityCard.Aside>
+              </EntityCard.Header>
+
+              <EntityCard.Body>
+                <div className="salary">
+                  {money(i.salary_min)} — {money(i.salary_max)} ₽
+                  <span>в месяц, до вычета налогов</span>
                 </div>
-              )}
-            </article>
+                {expanded.includes(i.id) && (
+                  <div className="invitation-body">
+                    <p>{i.message}</p>
+                    <a className="text-link" href={"mailto:" + i.company_email}>
+                      <Mail size={16} />
+                      {i.company_email}
+                    </a>
+                    {!candidate && i.candidate_email && (
+                      <div className="notice success">
+                        <Check size={18} />
+                        <span>
+                          Кандидат принял приглашение:{" "}
+                          <a href={"mailto:" + i.candidate_email}>
+                            {i.candidate_email}
+                          </a>
+                        </span>
+                      </div>
+                    )}
+                    {candidate && ["sent", "viewed"].includes(i.status) && (
+                      <>
+                        <p className="muted">
+                          Принимая приглашение, вы открываете этой компании свою
+                          электронную почту.
+                        </p>
+                        <div className="actions">
+                          <Button
+                            disabled={busy === i.id}
+                            onClick={() => action(i.id, "accepted")}
+                          >
+                            <Check size={16} />
+                            Принять приглашение
+                          </Button>
+                          <Button
+                            variant="secondary"
+                            disabled={busy === i.id}
+                            onClick={() => action(i.id, "declined")}
+                          >
+                            <X size={16} />
+                            Отклонить
+                          </Button>
+                        </div>
+                      </>
+                    )}
+                    {!candidate && (
+                      <Link
+                        className="text-link"
+                        to={"/candidates/" + i.candidate_id}
+                      >
+                        Профиль кандидата
+                        <ArrowRight size={16} />
+                      </Link>
+                    )}
+                  </div>
+                )}
+              </EntityCard.Body>
+
+              <EntityCard.Footer>
+                <EntityCard.Meta>
+                  <span>
+                    <Clock3 size={14} />
+                    {date(i.created_at)}
+                  </span>
+                </EntityCard.Meta>
+                <EntityCard.Actions>
+                  <button
+                    className="text-link"
+                    onClick={() => expand(i)}
+                    aria-expanded={expanded.includes(i.id)}
+                  >
+                    {expanded.includes(i.id) ? "Свернуть" : "Подробнее"}
+                    <ArrowRight size={15} />
+                  </button>
+                </EntityCard.Actions>
+              </EntityCard.Footer>
+            </EntityCard>
           ))}
         </div>
       ) : (

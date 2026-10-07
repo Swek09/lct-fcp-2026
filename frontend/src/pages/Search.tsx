@@ -34,6 +34,7 @@ import { Select } from "../components/ui/select";
 import { EvidencePassport, MatchBreakdown } from "../components/Evidence";
 import { ProfessionalDetails } from "../components/ProfessionalProfile";
 import { Avatar } from "../components/Avatar";
+import { EntityCard } from "../components/ui/card";
 import { SaveCandidate } from "../components/SaveCandidate";
 import {
   CompareCandidate,
@@ -288,45 +289,74 @@ export function SearchPage({ saved = false }: { saved?: boolean }) {
       ) : q.data?.candidates.length ? (
         <div
           className={
-            "candidate-list " + (q.isPlaceholderData ? "updating" : "")
+            "entity-list candidate-list " + (q.isPlaceholderData ? "updating" : "")
           }
         >
-          {q.data.candidates.map((c) => (
-            <article
-              className={
-                "candidate-row " +
-                (comparison.candidates.some(
-                  (item) => item.user_id === c.user_id,
-                )
-                  ? "is-compared"
-                  : "")
-              }
-              key={c.user_id}
-            >
-              <div className="candidate-main">
-                <Avatar
-                  name={c.name}
-                  userId={c.user_id}
-                  version={c.avatar_version}
-                />
-                <div className="candidate-info">
-                  <div className="candidate-name">
-                    <Link
-                      to={"/candidates/" + c.user_id + "?" + params}
-                      state={{ returnTo: returnPath }}
-                    >
-                      {c.name}
-                    </Link>
-                    <span className="tag grade">{grades[c.grade]}</span>
-                  </div>
-                  <p>{c.headline || specs[c.specialization]}</p>
-                  <span className="location">
-                    <MapPin size={13} />
-                    {c.city || "Город не указан"}
-                    <span>·</span>
-                    {c.experience_years}{" "}
-                    {plural(c.experience_years, ["год", "года", "лет"])} опыта
-                  </span>
+          {q.data.candidates.map((c) => {
+            const isCompared = comparison.candidates.some(
+              (item) => item.user_id === c.user_id,
+            );
+            return (
+              <EntityCard
+                key={c.user_id}
+                isHighlighted={isCompared}
+              >
+                <EntityCard.Header>
+                  <EntityCard.Heading>
+                    <Avatar
+                      name={c.name}
+                      userId={c.user_id}
+                      version={c.avatar_version}
+                    />
+                    <div className="entity-card-heading-text">
+                      <div className="candidate-name">
+                        <EntityCard.Title>
+                          <Link
+                            to={"/candidates/" + c.user_id + "?" + params}
+                            state={{ returnTo: returnPath }}
+                          >
+                            {c.name}
+                          </Link>
+                        </EntityCard.Title>
+                        <span className="tag grade">{grades[c.grade]}</span>
+                      </div>
+                      <EntityCard.Subtitle>
+                        {c.headline || specs[c.specialization]}
+                      </EntityCard.Subtitle>
+                      <span className="location">
+                        <MapPin size={13} />
+                        {c.city || "Город не указан"}
+                        <span>·</span>
+                        {c.experience_years}{" "}
+                        {plural(c.experience_years, ["год", "года", "лет"])} опыта
+                      </span>
+                    </div>
+                  </EntityCard.Heading>
+                  <EntityCard.Aside>
+                    <div className="candidate-evidence">
+                      <span>
+                        <ShieldCheck size={17} />
+                        Тест <strong>{c.test_score}/100</strong>
+                      </span>
+                      {c.achievements.length > 0 ? (
+                        <span>
+                          <Trophy size={16} />
+                          {c.achievements.length}{" "}
+                          {plural(c.achievements.length, [
+                            "достижение",
+                            "достижения",
+                            "достижений",
+                          ])}{" "}
+                          ФСП
+                        </span>
+                      ) : (
+                        <span className="muted">Без истории ФСП</span>
+                      )}
+                    </div>
+                  </EntityCard.Aside>
+                </EntityCard.Header>
+
+                <EntityCard.Body>
                   <div className="tags">
                     {c.skills.map((s) => (
                       <span className="skill" key={s}>
@@ -334,32 +364,35 @@ export function SearchPage({ saved = false }: { saved?: boolean }) {
                       </span>
                     ))}
                   </div>
-                </div>
-                <div className="candidate-decision">
-                  <div className="candidate-evidence">
-                    <span>
-                      <ShieldCheck size={17} />
-                      Тест <strong>{c.test_score}/100</strong>
-                    </span>
+                  <details className="match-explanation">
+                    <summary>
+                      <span className="match-score">
+                        {c.match_score}
+                        <small>/100</small>
+                      </span>
+                      Почему в подборке <span>+</span>
+                    </summary>
+                    <MatchBreakdown match={c.match} />
+                    <ul>
+                      {c.reasons.map((r) => (
+                        <li key={r}>
+                          <Check size={14} />
+                          {r}
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+                </EntityCard.Body>
+
+                <EntityCard.Footer>
+                  <EntityCard.Meta>
                     {c.last_practice_at && (
                       <span className="practice-date">
                         Практика: {date(c.last_practice_at)}
                       </span>
                     )}
-                    {c.achievements.length > 0 ? (
-                      <span>
-                        <Trophy size={16} />
-                        {c.achievements.length}{" "}
-                        {plural(c.achievements.length, [
-                          "достижение",
-                          "достижения",
-                          "достижений",
-                        ])}{" "}
-                        ФСП
-                      </span>
-                    ) : (
-                      <span className="muted">Без истории ФСП</span>
-                    )}
+                  </EntityCard.Meta>
+                  <EntityCard.Actions>
                     <Link
                       className="text-link"
                       to={"/candidates/" + c.user_id + "?" + params}
@@ -368,37 +401,17 @@ export function SearchPage({ saved = false }: { saved?: boolean }) {
                       Открыть профиль
                       <ArrowRight size={16} />
                     </Link>
-                  </div>
-                  <div className="candidate-actions">
                     <CompareCandidate
                       candidate={c}
                       query={comparisonQuery(params)}
                       returnTo={returnPath}
                     />
                     <SaveCandidate id={c.user_id} />
-                  </div>
-                </div>
-              </div>
-              <details className="match-explanation">
-                <summary>
-                  <span className="match-score">
-                    {c.match_score}
-                    <small>/100</small>
-                  </span>
-                  Почему в подборке <span>+</span>
-                </summary>
-                <MatchBreakdown match={c.match} />
-                <ul>
-                  {c.reasons.map((r) => (
-                    <li key={r}>
-                      <Check size={14} />
-                      {r}
-                    </li>
-                  ))}
-                </ul>
-              </details>
-            </article>
-          ))}
+                  </EntityCard.Actions>
+                </EntityCard.Footer>
+              </EntityCard>
+            );
+          })}
         </div>
       ) : (
         <Empty title="Пока нет точных совпадений">

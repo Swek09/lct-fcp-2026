@@ -9,6 +9,7 @@ import {
 import {
   ArrowLeft,
   ArrowRight,
+  Clock3,
   MapPin,
   Plus,
   ShieldCheck,
@@ -29,6 +30,8 @@ import { useUser } from "../App";
 import { Button } from "../components/ui/button";
 import { Avatar } from "../components/Avatar";
 import { Select } from "../components/ui/select";
+import { EntityCard } from "../components/ui/card";
+import { StatusBadge } from "../components/ui/badge";
 import {
   Empty,
   ErrorBox,
@@ -136,42 +139,56 @@ export function Vacancies() {
       ) : q.error && !q.data ? (
         <Button onClick={() => void q.refetch()}>Повторить загрузку</Button>
       ) : rows.length ? (
-        <div className="vacancy-list">
+        <div className="entity-list vacancy-list">
           {rows.map((v) => (
-            <article className="vacancy-row" key={v.id}>
-              <div className="vacancy-company">
-                <Avatar
-                  name={v.company_name}
-                  userId={v.company_id}
-                  version={v.company_avatar_version}
-                  size="small"
-                  company
-                />
-                <Link to={`/companies/${v.company_id}`}>{v.company_name}</Link>
-                <small>{date(v.created_at)}</small>
-              </div>
-              <div className="vacancy-row-heading">
-                <div>
-                  <Link to={`/vacancies/${v.id}`}>
-                    <h2>{v.title}</h2>
-                  </Link>
-                  <p>
-                    {specs[v.specialization]} · {grades[v.grade]}
-                  </p>
-                </div>
-                <div className="vacancy-salary">
-                  <strong>
-                    {money(v.salary_min)}–{money(v.salary_max)} ₽
-                  </strong>
-                  <small>в месяц, до вычета налогов</small>
-                </div>
-              </div>
-              <p className="vacancy-excerpt">
-                {v.description.length > 180
-                  ? v.description.slice(0, 180) + "…"
-                  : v.description}
-              </p>
-              <div className="vacancy-row-footer">
+            <EntityCard key={v.id}>
+              <EntityCard.Header>
+                <EntityCard.Heading>
+                  {!employer && (
+                    <Avatar
+                      name={v.company_name}
+                      userId={v.company_id}
+                      version={v.company_avatar_version}
+                      size="small"
+                      company
+                    />
+                  )}
+                  <div className="entity-card-heading-text">
+                    <EntityCard.Eyebrow>
+                      {employer ? (
+                        <StatusBadge
+                          status={v.status}
+                          label={vacancyStatuses[v.status]}
+                        />
+                      ) : (
+                        <Link to={`/companies/${v.company_id}`}>
+                          {v.company_name}
+                        </Link>
+                      )}
+                    </EntityCard.Eyebrow>
+                    <EntityCard.Title>
+                      <Link to={`/vacancies/${v.id}`}>{v.title}</Link>
+                    </EntityCard.Title>
+                    <EntityCard.Subtitle>
+                      {specs[v.specialization]} · {grades[v.grade]}
+                    </EntityCard.Subtitle>
+                  </div>
+                </EntityCard.Heading>
+                <EntityCard.Aside>
+                  <div className="vacancy-salary">
+                    <strong>
+                      {money(v.salary_min)}–{money(v.salary_max)} ₽
+                    </strong>
+                    <small>в месяц, до вычета налогов</small>
+                  </div>
+                </EntityCard.Aside>
+              </EntityCard.Header>
+              <EntityCard.Body>
+                <p className="vacancy-excerpt">
+                  {v.description.length > 180
+                    ? v.description.slice(0, 180) + "…"
+                    : v.description}
+                </p>
                 <div className="tags">
                   <span className="tag">
                     <MapPin size={13} />
@@ -184,16 +201,26 @@ export function Vacancies() {
                     </span>
                   ))}
                 </div>
-                <Link className="text-link" to={`/vacancies/${v.id}`}>
-                  {employer
-                    ? `${vacancyStatuses[v.status]} · ${v.application_count} откликов`
-                    : v.my_application
-                      ? applicationStatuses[v.my_application.status]
-                      : "Посмотреть условия"}
-                  <ArrowRight size={16} />
-                </Link>
-              </div>
-            </article>
+              </EntityCard.Body>
+              <EntityCard.Footer>
+                <EntityCard.Meta>
+                  <span>
+                    <Clock3 size={14} />
+                    {date(v.created_at)}
+                  </span>
+                </EntityCard.Meta>
+                <EntityCard.Actions>
+                  <Link className="text-link" to={`/vacancies/${v.id}`}>
+                    {employer
+                      ? `${v.application_count} откликов`
+                      : v.my_application
+                        ? applicationStatuses[v.my_application.status]
+                        : "Посмотреть условия"}
+                    <ArrowRight size={16} />
+                  </Link>
+                </EntityCard.Actions>
+              </EntityCard.Footer>
+            </EntityCard>
           ))}
         </div>
       ) : (
